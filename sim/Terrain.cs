@@ -94,8 +94,7 @@ public class Terrain
         return Tiles[x, y].WaterHeight;
     }
 
-    // TODO: Remove amount and just implicitly always move 1 unit of water with this command.
-    public void MoveWater(int fromX, int fromY, int toX, int toY, int amount, WaterVelocity velocity, bool allowEmpty)
+    public void MoveWater(int fromX, int fromY, int toX, int toY, WaterVelocity velocity, bool allowEmpty)
     {
         if (toX < 0 || toY < 0 || toX >= Columns || toY >= Rows)
         {
@@ -106,7 +105,7 @@ public class Terrain
         var toHeight = TileHeight(toX, toY);
 
         int heightDifference = Math.Max(0, fromHeight - toHeight);
-        var trueAmount = Math.Min(Math.Min(Tiles[fromX, fromY].WaterHeight, amount), heightDifference);
+        var trueAmount = Math.Min(Math.Min((int)Tiles[fromX, fromY].WaterHeight, 1), heightDifference);
 
         if (TileWater(fromX, fromY) - trueAmount <= 0 && fromHeight == toHeight + trueAmount && !allowEmpty)
         {

@@ -53,25 +53,22 @@ public class WaterSimulation
 				}
 			}
 
-
-			const int WATER_UNITS_TO_MOVE = 1;
-
 			// TODO: Use a match statement or something instead.
 			if (direction == WaterVelocity.Up)
 			{
-				terrain.MoveWater(x, y, x, y - 1, WATER_UNITS_TO_MOVE, WaterVelocity.Up, false);
+				terrain.MoveWater(x, y, x, y - 1, WaterVelocity.Up, false);
 			}
 			if (direction == WaterVelocity.Down)
 			{
-				terrain.MoveWater(x, y, x, y + 1, WATER_UNITS_TO_MOVE, WaterVelocity.Down, doSpread);
+				terrain.MoveWater(x, y, x, y + 1, WaterVelocity.Down, doSpread);
 			}
 			if (direction == WaterVelocity.Left)
 			{
-				terrain.MoveWater(x, y, x - 1, y, WATER_UNITS_TO_MOVE, WaterVelocity.Left, false);
+				terrain.MoveWater(x, y, x - 1, y, WaterVelocity.Left, false);
 			}
 			if (direction == WaterVelocity.Right)
 			{
-				terrain.MoveWater(x, y, x + 1, y, WATER_UNITS_TO_MOVE, WaterVelocity.Right, false);
+				terrain.MoveWater(x, y, x + 1, y, WaterVelocity.Right, false);
 			}
 
 			if (i == 0) {
