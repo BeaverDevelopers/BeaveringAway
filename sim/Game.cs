@@ -17,6 +17,9 @@ public partial class Game : Node
     {
         simulator.Load(MapNode);
         waterLayer = MapNode.GetNode<TileMapLayer>("Level_0/Water");
+
+        // Not needed for now.
+        MapNode.GetNode<TileMapLayer>("Level_0/Water_Decoration").Visible = false;
     }
 
     void renderWater(Terrain terrain)
@@ -27,7 +30,7 @@ public partial class Game : Node
             {
                 var tile = terrain.Tiles[x, y];
                 var coords = new Vector2I(x, y);
-                if (tile.WaterHeight > 0)
+                if (tile.WaterShown > 0)
                 {
                     waterLayer.SetCell(coords, WATER_SOURCE_ID, WATER_CENTER);
                 }
@@ -41,12 +44,15 @@ public partial class Game : Node
 
     public override void _PhysicsProcess(double delta)
     {
+        // TODO: This is all crap code that I added to debug the water sim.
+
         //simulator.Terrain.Tiles[9, 0].WaterHeight = 2;
         if (simulator.Tick % 20 == 0)
         {
-            simulator.Terrain.Tiles[21, 20].WaterHeight = Math.Max(simulator.Terrain.Tiles[21, 20].WaterHeight, (byte)15);
+            /*simulator.Terrain.Tiles[21, 20].WaterHeight = Math.Max(simulator.Terrain.Tiles[21, 20].WaterHeight, (byte)21);
             simulator.Terrain.Tiles[21, 20].WaterVelocity = WaterVelocity.Down;
-            simulator.Terrain.Tiles[22, 20].WaterVelocity = WaterVelocity.Down;
+            simulator.Terrain.Tiles[22, 20].WaterVelocity = WaterVelocity.Down;*/
+            simulator.Terrain.Tiles[9, 2].WaterHeight = Math.Max(simulator.Terrain.Tiles[9, 2].WaterHeight, (byte)21);
         }
         if (Input.IsPhysicalKeyPressed(Key.A)) {
             Debug.WriteLine("Sneed!");
@@ -68,6 +74,9 @@ public partial class Game : Node
             var mapPos = bottomGround.LocalToMap(GetViewport().GetMousePosition());
             Debug.WriteLine(mapPos);
             simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight = 200;
+
+            var decorGround = MapNode.GetNode<TileMapLayer>("Level_0/Ground/Ground1");
+            decorGround.SetCell(mapPos, 6, new Vector2I(14, 12));
         }
 
         if (Input.IsPhysicalKeyPressed(Key.D)) {

@@ -19,6 +19,7 @@ public struct TerrainTile
     public byte GroundHeight;
     public byte ObstructionHeight;
     public bool Locked;
+    public byte WaterShown;
 
     public int TotalHeight()
     {
@@ -126,6 +127,7 @@ public class Terrain
 
         Tiles[toX, toY].WaterVelocity = velocity;
         Tiles[toX, toY].Locked = true;
+        Tiles[toX, toY].WaterShown = 20;
     }
 
     public void LoadTerrain(Node fromTerrain)
