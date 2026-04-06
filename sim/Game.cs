@@ -73,7 +73,7 @@ public partial class Game : Node
             var bottomGround = MapNode.GetNode<TileMapLayer>("Level_0/Ground");
             var mapPos = bottomGround.LocalToMap(GetViewport().GetMousePosition());
             Debug.WriteLine(mapPos);
-            simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight = 200;
+            simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight = (byte)Math.Min(simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight + 1, 4);
 
             var decorGround = MapNode.GetNode<TileMapLayer>("Level_0/Ground/Ground1");
             decorGround.SetCell(mapPos, 6, new Vector2I(14, 12));

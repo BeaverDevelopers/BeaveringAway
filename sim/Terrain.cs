@@ -23,7 +23,7 @@ public struct TerrainTile
 
     public int TotalHeight()
     {
-        return (int)GroundHeight * 5 + ObstructionHeight * 5 + WaterHeight;
+        return (int)GroundHeight * 5 + ObstructionHeight * 2 + WaterHeight;
     }
 }
 
@@ -71,6 +71,7 @@ public class Terrain
             height = (byte)(atlasCoordsToHeightChange(atlasCoords) + height);
 
             Tiles[column, i].GroundHeight = height;
+            Tiles[column, i].WaterVelocity = WaterVelocity.Down;
         }
     }
     public int TileHeight(int x, int y)
