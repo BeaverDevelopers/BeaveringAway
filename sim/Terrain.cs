@@ -92,6 +92,7 @@ public class Terrain
         return Tiles[x, y].WaterHeight;
     }
 
+    // TODO: Remove amount and just implicitly always move 1 unit of water with this command.
     public void MoveWater(int fromX, int fromY, int toX, int toY, int amount, WaterVelocity velocity)
     {
         if (toX < 0 || toY < 0 || toX >= Columns || toY >= Rows)

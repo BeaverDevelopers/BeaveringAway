@@ -28,7 +28,7 @@ public class WaterSimulation
             }
             if (direction == WaterVelocity.None)
             {
-                var newDirection = (tick + x + y + i) % 20;
+                var newDirection = (tick + x + y + i) % 5;
                 if (newDirection == 0)
                 {
                     direction = WaterVelocity.Down;
@@ -47,51 +47,28 @@ public class WaterSimulation
                 }
                 else if (newDirection == 4)
                 {
-                    direction = WaterVelocity.Down;
-                }
-                else if (newDirection == 5)
-                {
                     direction = WaterVelocity.None;
-                }
-                else if (newDirection == 6)
-                {
-                    direction = WaterVelocity.Down;
-                }
-                else if (newDirection == 8)
-                {
-                    direction = WaterVelocity.None;
-                }
-                else if (newDirection == 9)
-                {
-                    direction = WaterVelocity.Down;
-                }
-                else
-                {
-                    direction = WaterVelocity.Down;
                 }
             }
 
-            //terrain.Tiles[x, y].WaterVelocity = WaterVelocity.None;
-
-
-            const int WATER_MOVE = 1;
+            const int WATER_UNITS_TO_MOVE = 1;
 
             // TODO: Use a match statement or something instead.
             if (direction == WaterVelocity.Up)
             {
-                terrain.MoveWater(x, y, x, y - 1, WATER_MOVE, WaterVelocity.Up);
+                terrain.MoveWater(x, y, x, y - 1, WATER_UNITS_TO_MOVE, WaterVelocity.Up);
             }
             if (direction == WaterVelocity.Down)
             {
-                terrain.MoveWater(x, y, x, y + 1, WATER_MOVE, WaterVelocity.Down);
+                terrain.MoveWater(x, y, x, y + 1, WATER_UNITS_TO_MOVE, WaterVelocity.Down);
             }
             if (direction == WaterVelocity.Left)
             {
-                terrain.MoveWater(x, y, x - 1, y, WATER_MOVE, WaterVelocity.Left);
+                terrain.MoveWater(x, y, x - 1, y, WATER_UNITS_TO_MOVE, WaterVelocity.Left);
             }
             if (direction == WaterVelocity.Right)
             {
-                terrain.MoveWater(x, y, x + 1, y, WATER_MOVE, WaterVelocity.Right);
+                terrain.MoveWater(x, y, x + 1, y, WATER_UNITS_TO_MOVE, WaterVelocity.Right);
             }
 
             var doSpread = tick % 2 == 1;
