@@ -22,11 +22,6 @@ public class WaterSimulation
 		var direction = terrain.Tiles[x, y].WaterVelocity;
 		for (int i = 0; i < steps; i++)
 		{
-			/*if (adjacentWater < 2)
-			{
-				direction = WaterVelocity.Down;
-			}*/
-
 			var doSpread = (tick % 3 == 1);
 			if (i > 0 || doSpread)
 			{

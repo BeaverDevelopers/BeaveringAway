@@ -98,33 +98,35 @@ public class Terrain
     {
         if (toX < 0 || toY < 0 || toX >= Columns || toY >= Rows)
         {
+            // Can't be OOB.
             return;
         }
 
         var fromHeight = TileHeight(fromX, fromY);
         var toHeight = TileHeight(toX, toY);
 
-        int heightDifference = Math.Max(0, fromHeight - toHeight);
-        var trueAmount = Math.Min(Math.Min((int)Tiles[fromX, fromY].WaterHeight, 1), heightDifference);
+        if (fromHeight <= toHeight)
+        {
+            // There must be a hight difference for water to move.
+            return;
+        }
 
-        if (TileWater(fromX, fromY) - trueAmount <= 0 && fromHeight == toHeight + trueAmount && !allowEmpty)
+        if (Tiles[fromX, fromY].WaterHeight == 0)
+        {
+            // We need at least some water to move.
+            return;
+        }
+
+        if (fromHeight == toHeight + 1 && !allowEmpty)
         {
             // If we don't return here then we won't get pools.
             // Idea is to not do moves that result in a tile becoming completely empty.
             return;
         }
 
-        if (trueAmount <= 0)
-        {
-            return;
-        }
-
-        Tiles[fromX, fromY].WaterHeight = (byte)Math.Max(0, Math.Min(255, Tiles[fromX, fromY].WaterHeight - trueAmount));
-
-
-        //Debug.WriteLine("Moving: " + trueAmount);
-        Tiles[toX, toY].WaterHeight = (byte)Math.Max(0, Math.Min(255, trueAmount + Tiles[toX, toY].WaterHeight));
-
+        // TODO: Perform saturated add and remove using bitwise operations instead.
+        Tiles[fromX, fromY].WaterHeight = (byte)Math.Max(0, Math.Min(255, Tiles[fromX, fromY].WaterHeight - 1));
+        Tiles[toX, toY].WaterHeight = (byte)Math.Max(0, Math.Min(255, (int)1 + Tiles[toX, toY].WaterHeight));
         Tiles[toX, toY].WaterVelocity = velocity;
         Tiles[toX, toY].Locked = true;
         Tiles[toX, toY].WaterShown = 20;
