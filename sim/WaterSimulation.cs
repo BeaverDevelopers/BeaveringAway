@@ -8,27 +8,29 @@ public class WaterSimulation
 {
     private static void simulateWaterTile(Terrain terrain, int x, int y, int tick)
     {
-        var height = (int)terrain.Tiles[x, y].WaterHeight;
+        var waterHeight = (int)terrain.Tiles[x, y].WaterHeight;
 
         if (terrain.Tiles[x, y].Locked)
         {
-            //return;
+            return;
         }
 
         var adjacentWater = terrain.TileWater(x + 1, y) + terrain.TileWater(x - 1, y) + terrain.TileWater(x, y + 1) + terrain.TileWater(x, y - 1);
 
-        var steps = Math.Min(height, 40);
+        var steps = Math.Min(waterHeight, 40);
 
+        var direction = terrain.Tiles[x, y].WaterVelocity;
         for (int i = 0; i < steps; i++)
         {
-            var direction = terrain.Tiles[x, y].WaterVelocity;
             if (adjacentWater < 2)
             {
                 direction = WaterVelocity.Down;
             }
-            if (direction == WaterVelocity.None)
+
+            var doSpread = (tick % 3 == 1);
+            if (i > 0 || doSpread)
             {
-                var newDirection = (tick + x + y + i) % 5;
+                var newDirection = (tick * 7 + x * 5 + y * 3 + i) % 5;
                 if (newDirection == 0)
                 {
                     direction = WaterVelocity.Down;
@@ -51,33 +53,30 @@ public class WaterSimulation
                 }
             }
 
+
             const int WATER_UNITS_TO_MOVE = 1;
 
             // TODO: Use a match statement or something instead.
             if (direction == WaterVelocity.Up)
             {
-                terrain.MoveWater(x, y, x, y - 1, WATER_UNITS_TO_MOVE, WaterVelocity.Up);
+                terrain.MoveWater(x, y, x, y - 1, WATER_UNITS_TO_MOVE, WaterVelocity.Up, false);
             }
             if (direction == WaterVelocity.Down)
             {
-                terrain.MoveWater(x, y, x, y + 1, WATER_UNITS_TO_MOVE, WaterVelocity.Down);
+                terrain.MoveWater(x, y, x, y + 1, WATER_UNITS_TO_MOVE, WaterVelocity.Down, true);
             }
             if (direction == WaterVelocity.Left)
             {
-                terrain.MoveWater(x, y, x - 1, y, WATER_UNITS_TO_MOVE, WaterVelocity.Left);
+                terrain.MoveWater(x, y, x - 1, y, WATER_UNITS_TO_MOVE, WaterVelocity.Left, false);
             }
             if (direction == WaterVelocity.Right)
             {
-                terrain.MoveWater(x, y, x + 1, y, WATER_UNITS_TO_MOVE, WaterVelocity.Right);
+                terrain.MoveWater(x, y, x + 1, y, WATER_UNITS_TO_MOVE, WaterVelocity.Right, false);
             }
 
-            var doSpread = tick % 2 == 1;
-            if (doSpread)
-            {
-                direction = WaterVelocity.None;
+            if (i == 0) {
+                terrain.Tiles[x, y].WaterVelocity = direction;
             }
-
-            terrain.Tiles[x, y].WaterVelocity = direction;
         }
     }
 
@@ -123,7 +122,7 @@ public class WaterSimulation
                 }
             }
         }
-        
+
 
         int totalWater = 0;
         for (int y = 0; y < terrain.Rows; y++)

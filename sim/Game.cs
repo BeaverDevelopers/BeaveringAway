@@ -44,7 +44,7 @@ public partial class Game : Node
         //simulator.Terrain.Tiles[9, 0].WaterHeight = 2;
         if (simulator.Tick % 20 == 0)
         {
-            simulator.Terrain.Tiles[21, 20].WaterHeight = Math.Max(simulator.Terrain.Tiles[21, 20].WaterHeight, (byte)40);
+            simulator.Terrain.Tiles[21, 20].WaterHeight = Math.Max(simulator.Terrain.Tiles[21, 20].WaterHeight, (byte)15);
             simulator.Terrain.Tiles[21, 20].WaterVelocity = WaterVelocity.Down;
             simulator.Terrain.Tiles[22, 20].WaterVelocity = WaterVelocity.Down;
         }
@@ -62,6 +62,22 @@ public partial class Game : Node
                 }
             }
         }
+
+        if (Input.IsPhysicalKeyPressed(Key.P)) {
+            var bottomGround = MapNode.GetNode<TileMapLayer>("Level_0/Ground");
+            var mapPos = bottomGround.LocalToMap(GetViewport().GetMousePosition());
+            Debug.WriteLine(mapPos);
+            simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight = 200;
+        }
+
+        if (Input.IsPhysicalKeyPressed(Key.D)) {
+            var bottomGround = MapNode.GetNode<TileMapLayer>("Level_0/Ground");
+            var mapPos = bottomGround.LocalToMap(GetViewport().GetMousePosition());
+            Debug.WriteLine(mapPos);
+            Debug.WriteLine("Water height: " + simulator.Terrain.Tiles[mapPos.X, mapPos.Y].WaterHeight);
+            Debug.WriteLine("Terrain height: " + simulator.Terrain.Tiles[mapPos.X, mapPos.Y].GroundHeight);
+        }
+
         //simulator.Terrain.Tiles[4, 4].WaterHeight = 2;
         simulator.Run();
 

@@ -39,23 +39,23 @@ public class Terrain
         {
             return NORMAL_CLIFF_HEIGHT;
         }
-        if (vec.Y == 12 && vec.X >= 7 && vec.X <= 8)
+        if (vec.Y == 12 && vec.X == 7)
         {
             return NORMAL_CLIFF_HEIGHT;
         }
-        if (vec.Y == 12 && vec.X >= 10 && vec.X <= 11)
+        if (vec.Y == 12 && vec.X == 11)
         {
             return NORMAL_CLIFF_HEIGHT;
         }
-        if (vec.Y == 15 && vec.X >= 8 && vec.X <= 10) 
+        if (vec.Y == 15 && vec.X >= 8 && vec.X <= 10)
         {
             return -NORMAL_CLIFF_HEIGHT;
         }
-        if (vec.Y == 14 && vec.X >= 7 && vec.X <= 8)
+        if (vec.Y == 14 && vec.X == 8)
         {
             return -NORMAL_CLIFF_HEIGHT;
         }
-        if (vec.Y == 14 && vec.X >= 10 && vec.X <= 11)
+        if (vec.Y == 14 && vec.X == 11)
         {
             return -NORMAL_CLIFF_HEIGHT;
         }
@@ -65,7 +65,7 @@ public class Terrain
     private void calculateGroundHeightForColumn(int column, int rows, TileMapLayer from) {
         byte height = 128;
         for (int i = 0; i < rows; i++)
-        {      
+        {
             var atlasCoords = from.GetCellAtlasCoords(new Vector2I(column, i));
             height = (byte)(atlasCoordsToHeightChange(atlasCoords) + height);
 
@@ -74,7 +74,7 @@ public class Terrain
     }
     public int TileHeight(int x, int y)
     {
-        if (x < 0 || y < 0 || x >= Columns || y >= Rows) 
+        if (x < 0 || y < 0 || x >= Columns || y >= Rows)
         {
             return 512;
         }
@@ -93,7 +93,7 @@ public class Terrain
     }
 
     // TODO: Remove amount and just implicitly always move 1 unit of water with this command.
-    public void MoveWater(int fromX, int fromY, int toX, int toY, int amount, WaterVelocity velocity)
+    public void MoveWater(int fromX, int fromY, int toX, int toY, int amount, WaterVelocity velocity, bool allowEmpty)
     {
         if (toX < 0 || toY < 0 || toX >= Columns || toY >= Rows)
         {
@@ -106,10 +106,10 @@ public class Terrain
         int heightDifference = Math.Max(0, fromHeight - toHeight);
         var trueAmount = Math.Min(Math.Min(Tiles[fromX, fromY].WaterHeight, amount), heightDifference);
 
-        if (/*TileWater(fromX, fromY) - trueAmount <= 0 &&*/ fromHeight == toHeight + trueAmount)
+        if (TileWater(fromX, fromY) - trueAmount <= 0 && fromHeight == toHeight + trueAmount && !allowEmpty)
         {
             // If we don't return here then we won't get pools.
-            // Idea is to not do moves that result in a tile becoming completely empty. 
+            // Idea is to not do moves that result in a tile becoming completely empty.
             return;
         }
 
@@ -121,7 +121,7 @@ public class Terrain
         Tiles[fromX, fromY].WaterHeight = (byte)Math.Max(0, Math.Min(255, Tiles[fromX, fromY].WaterHeight - trueAmount));
 
 
-
+        //Debug.WriteLine("Moving: " + trueAmount);
         Tiles[toX, toY].WaterHeight = (byte)Math.Max(0, Math.Min(255, trueAmount + Tiles[toX, toY].WaterHeight));
 
         Tiles[toX, toY].WaterVelocity = velocity;
