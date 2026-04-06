@@ -55,8 +55,10 @@ public partial class Game : Node
             simulator.Terrain.Tiles[9, 2].WaterHeight = Math.Max(simulator.Terrain.Tiles[9, 2].WaterHeight, (byte)21);
         }
         if (Input.IsPhysicalKeyPressed(Key.A)) {
-            Debug.WriteLine("Sneed!");
-            simulator.Terrain.Tiles[21, 20].WaterHeight = Math.Max(simulator.Terrain.Tiles[21, 20].WaterHeight, (byte)20);
+            Debug.WriteLine("Give us some water!");
+            var bottomGround = MapNode.GetNode<TileMapLayer>("Level_0/Ground");
+            var mapPos = bottomGround.LocalToMap(GetViewport().GetMousePosition());
+            simulator.Terrain.Tiles[mapPos.X, mapPos.Y].WaterHeight = Math.Max(simulator.Terrain.Tiles[mapPos.X, mapPos.Y].WaterHeight, (byte)15);
         }
         if (Input.IsPhysicalKeyPressed(Key.R)) {
             for (int y = 0; y < simulator.Terrain.Rows; y++)
