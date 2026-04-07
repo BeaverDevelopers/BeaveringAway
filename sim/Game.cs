@@ -5,18 +5,27 @@ using System.Diagnostics;
 public partial class Game : Node
 {
 	[Export] public Node MapNode;
+	[Export(PropertyHint.Range, "1,500,1")] public int JunkSpawnInterval = 100;
+	[Export(PropertyHint.Range, "1,50,1")] public int JunkMaxCount = 5;
+	[Export(PropertyHint.Range, "0.05,2.0,0.05")] public float JunkDriftSpeed = 0.35f;
 
 	Simulator simulator;
+	JunkSystem junkSystem = new();
 
 	TileMapLayer waterLayer;
 
 	Vector2I WATER_CENTER = new Vector2I(5, 17);
 	const int WATER_SOURCE_ID = 2;
+	static readonly Vector2I WATER_SOURCE_TILE = new(9, 2);
 
 	public override void _Ready()
 	{
 		simulator.Load(MapNode);
 		waterLayer = MapNode.GetNode<TileMapLayer>("Level_0/Water");
+		junkSystem.Initialize(waterLayer);
+		junkSystem.SpawnInterval = JunkSpawnInterval;
+		junkSystem.MaxItems = JunkMaxCount;
+		junkSystem.DriftSpeed = JunkDriftSpeed;
 
 		// Not needed for now.
 		MapNode.GetNode<TileMapLayer>("Level_0/Water_Decoration").Visible = false;
@@ -49,10 +58,8 @@ public partial class Game : Node
 		//simulator.Terrain.Tiles[9, 0].WaterHeight = 2;
 		if (simulator.Tick % 20 == 0)
 		{
-			/*simulator.Terrain.Tiles[21, 20].WaterHeight = Math.Max(simulator.Terrain.Tiles[21, 20].WaterHeight, (byte)21);
-			simulator.Terrain.Tiles[21, 20].WaterVelocity = WaterVelocity.Down;
-			simulator.Terrain.Tiles[22, 20].WaterVelocity = WaterVelocity.Down;*/
-			simulator.Terrain.Tiles[9, 2].WaterHeight = Math.Max(simulator.Terrain.Tiles[9, 2].WaterHeight, (byte)21);
+			simulator.Terrain.Tiles[WATER_SOURCE_TILE.X, WATER_SOURCE_TILE.Y].WaterHeight =
+				Math.Max(simulator.Terrain.Tiles[WATER_SOURCE_TILE.X, WATER_SOURCE_TILE.Y].WaterHeight, (byte)21);
 		}
 		if (Input.IsPhysicalKeyPressed(Key.A)) {
 			Debug.WriteLine("Give us some water!");
@@ -69,6 +76,7 @@ public partial class Game : Node
 					simulator.Terrain.Tiles[x, y].WaterVelocity = WaterVelocity.None;
 				}
 			}
+			junkSystem.ClearAll();
 		}
 
 		if (Input.IsPhysicalKeyPressed(Key.P)) {
@@ -89,8 +97,9 @@ public partial class Game : Node
 			Debug.WriteLine("Terrain height: " + simulator.Terrain.Tiles[mapPos.X, mapPos.Y].GroundHeight);
 		}
 
-		//simulator.Terrain.Tiles[4, 4].WaterHeight = 2;
 		simulator.Run();
+		junkSystem.Spawn(simulator.Terrain, WATER_SOURCE_TILE, simulator.Tick);
+		junkSystem.Update(simulator.Terrain);
 
 		renderWater(simulator.Terrain);
 	}
