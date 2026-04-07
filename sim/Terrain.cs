@@ -20,6 +20,10 @@ public struct TerrainTile
 	public byte ObstructionHeight;
 	public bool Locked;
 	public byte WaterShown;
+	public int FlowX;
+	public int FlowY;
+	public float SmoothedFlowX;
+	public float SmoothedFlowY;
 
 	public int TotalHeight()
 	{
@@ -129,6 +133,12 @@ public class Terrain
 		Tiles[toX, toY].WaterHeight = (byte)Math.Max(0, Math.Min(255, (int)1 + Tiles[toX, toY].WaterHeight));
 		Tiles[toX, toY].WaterVelocity = velocity;
 		Tiles[toX, toY].Locked = true;
+
+		// Accumulate flow: +1 in the direction water moved
+		int dx = toX - fromX;
+		int dy = toY - fromY;
+		Tiles[fromX, fromY].FlowX += dx;
+		Tiles[fromX, fromY].FlowY += dy;
 		Tiles[toX, toY].WaterShown = 20;
 	}
 

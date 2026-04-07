@@ -12,6 +12,7 @@ height = 138.0
 [node name="Node2D" type="Node2D" unique_id=158556237 node_paths=PackedStringArray("MapNode")]
 script = ExtResource("1_yqjtg")
 MapNode = NodePath("world")
+JunkDriftSpeed = 0.8500000000000001
 
 [node name="world" parent="." unique_id=403739864 instance=ExtResource("1_uwrxv")]
 position = Vector2(2, 0)

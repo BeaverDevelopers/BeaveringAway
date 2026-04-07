@@ -85,8 +85,10 @@ public class WaterSimulation
 					terrain.Tiles[x, y].WaterHeight = (byte)Math.Max(0, terrain.Tiles[x, y].WaterHeight - 1);
 				}
 
-				// Reset are state variable resets.
+				// Reset per-tick state.
 				terrain.Tiles[x, y].Locked = false;
+				terrain.Tiles[x, y].FlowX = 0;
+				terrain.Tiles[x, y].FlowY = 0;
 				if (terrain.Tiles[x, y].WaterHeight == 0)
 				{
 					terrain.Tiles[x, y].WaterVelocity = WaterVelocity.None;
@@ -121,12 +123,15 @@ public class WaterSimulation
 			}
 		}
 
-		// Debug info.
+		// Smooth the flow field to reduce jitter from CA randomization.
+		const float Smoothing = 0.3f;
 		int totalWater = 0;
 		for (int y = 0; y < terrain.Rows; y++)
 		{
 			for (int x = 0; x < terrain.Columns; x++)
 			{
+				terrain.Tiles[x, y].SmoothedFlowX += (terrain.Tiles[x, y].FlowX - terrain.Tiles[x, y].SmoothedFlowX) * Smoothing;
+				terrain.Tiles[x, y].SmoothedFlowY += (terrain.Tiles[x, y].FlowY - terrain.Tiles[x, y].SmoothedFlowY) * Smoothing;
 				totalWater += terrain.Tiles[x, y].WaterHeight;
 			}
 		}

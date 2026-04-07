@@ -15,6 +15,11 @@ run/main_scene="uid://d3ac13jvgv87k"
 config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
+[display]
+
+window/size/viewport_width=977
+window/size/viewport_height=549
+
 [dotnet]
 
 project/assembly_name="Beavering Away"
