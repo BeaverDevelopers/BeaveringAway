@@ -11,6 +11,7 @@ public partial class Game : Node
 
 	Simulator simulator;
 	JunkSystem junkSystem = new();
+	GameHUD hud;
 
 	TileMapLayer waterLayer;
 
@@ -26,6 +27,13 @@ public partial class Game : Node
 		junkSystem.SpawnInterval = JunkSpawnInterval;
 		junkSystem.MaxItems = JunkMaxCount;
 		junkSystem.DriftSpeed = JunkDriftSpeed;
+
+		hud = new GameHUD();
+		AddChild(hud);
+		var tileSize = waterLayer.TileSet.TileSize;
+		int mapW = simulator.Terrain.Columns * tileSize.X;
+		int mapH = simulator.Terrain.Rows * tileSize.Y;
+		hud.SetMapBounds(mapW, mapH);
 
 		// Not needed for now.
 		MapNode.GetNode<TileMapLayer>("Level_0/Water_Decoration").Visible = false;
@@ -102,5 +110,11 @@ public partial class Game : Node
 		junkSystem.Update(simulator.Terrain);
 
 		renderWater(simulator.Terrain);
+
+		// Demo HUD values (replace with real game logic later)
+		hud.UpdateSeason(simulator.Tick);
+		hud.UpdateHunger(100 - (simulator.Tick % 6000) / 60f);
+		float seasonProgress = (simulator.Tick % 14400) / 14400f;
+		hud.UpdateTemperature(Mathf.Lerp(-10f, 35f, Mathf.Sin(seasonProgress * Mathf.Tau) * 0.5f + 0.5f));
 	}
 }
