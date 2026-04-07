@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://dcap6ci12uy2g" path="res://world/world.ldtk" id="1_uwrxv"]
 [ext_resource type="Script" uid="uid://7ckbrq7wcces" path="res://sim/Game.cs" id="1_yqjtg"]
-[ext_resource type="Script" uid="uid://bi52yo0sx1t4v" path="res://scenes/PlayerMove.cs" id="3_lbhrr"]
+[ext_resource type="Script" uid="uid://bi52yo0sx1t4v" path="res://player/PlayerMove.cs" id="3_lbhrr"]
 [ext_resource type="Texture2D" uid="uid://c1e0w8t7sxwnw" path="res://icon.svg" id="4_iywne"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_p57ef"]
@@ -14,6 +14,7 @@ script = ExtResource("1_yqjtg")
 MapNode = NodePath("world")
 
 [node name="world" parent="." unique_id=403739864 instance=ExtResource("1_uwrxv")]
+position = Vector2(2, 0)
 
 [node name="player" type="CharacterBody2D" parent="world" unique_id=369926073]
 motion_mode = 1
