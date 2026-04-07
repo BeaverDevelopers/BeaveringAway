@@ -7,6 +7,6 @@ Please use Godot 4.6.1
 - Use A to add some extra water to the simulation.
 
 # Open Tasks
-- [ ] Beaver Player Controller
+- [✓] Beaver Player Controller
 - [ ] Tree Cutting
 - [ ] Item following

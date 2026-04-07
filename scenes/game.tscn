@@ -2,9 +2,25 @@
 
 [ext_resource type="PackedScene" uid="uid://dcap6ci12uy2g" path="res://world/world.ldtk" id="1_uwrxv"]
 [ext_resource type="Script" uid="uid://7ckbrq7wcces" path="res://sim/Game.cs" id="1_yqjtg"]
+[ext_resource type="Script" uid="uid://bi52yo0sx1t4v" path="res://scenes/PlayerMove.cs" id="3_lbhrr"]
+[ext_resource type="Texture2D" uid="uid://c1e0w8t7sxwnw" path="res://icon.svg" id="4_iywne"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_p57ef"]
+radius = 69.0
+height = 138.0
 
 [node name="Node2D" type="Node2D" unique_id=158556237 node_paths=PackedStringArray("MapNode")]
 script = ExtResource("1_yqjtg")
 MapNode = NodePath("world")
 
 [node name="world" parent="." unique_id=403739864 instance=ExtResource("1_uwrxv")]
+
+[node name="player" type="CharacterBody2D" parent="world" unique_id=369926073]
+motion_mode = 1
+script = ExtResource("3_lbhrr")
+
+[node name="Sprite2D" type="Sprite2D" parent="world/player" unique_id=1334508339]
+texture = ExtResource("4_iywne")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="world/player" unique_id=693430827]
+shape = SubResource("CapsuleShape2D_p57ef")
