@@ -1,10 +1,10 @@
 using Godot;
-using System.Collections.Generic;
+using System.Linq;
 
 public partial class InventoryUI : CanvasLayer
 {
     [Export] public Texture2D emptyIcon;
-    [Export] public List<ItemData> itemDatas;
+    [Export] public Godot.Collections.Array<ItemData> itemDatas;
 
     [Export] public TextureRect itemIcon;
     [Export] public Label itemIdLabel;
@@ -25,7 +25,7 @@ public partial class InventoryUI : CanvasLayer
         }
         else
         {
-            var data = itemDatas.Find(i => i.itemId == InventoryData.ItemId);
+            var data = itemDatas.FirstOrDefault(i => i.itemId == InventoryData.ItemId);
             itemIcon.Texture = data?.icon ?? emptyIcon;
             itemIdLabel.Text = $"物品 {InventoryData.ItemId}";
             countLabel.Text = InventoryData.Count.ToString();

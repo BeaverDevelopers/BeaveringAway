@@ -1,9 +1,8 @@
 using Godot;
 
-// 物品配置（ID + 图标）
-[System.Serializable]
-public class ItemData
+[GlobalClass]
+public partial class ItemData : Resource
 {
-    public int itemId;
-    public Texture2D icon;
+    [Export] public int itemId;
+    [Export] public Texture2D icon;
 }
