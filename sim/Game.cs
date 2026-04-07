@@ -9,9 +9,10 @@ public partial class Game : Node
 	[Export(PropertyHint.Range, "1,50,1")] public int JunkMaxCount = 5;
 	[Export(PropertyHint.Range, "0.05,2.0,0.05")] public float JunkDriftSpeed = 0.35f;
 
+	[Export] public GameHUD hud;
+
 	Simulator simulator;
 	JunkSystem junkSystem = new();
-	GameHUD hud;
 
 	TileMapLayer waterLayer;
 
@@ -28,8 +29,6 @@ public partial class Game : Node
 		junkSystem.MaxItems = JunkMaxCount;
 		junkSystem.DriftSpeed = JunkDriftSpeed;
 
-		hud = new GameHUD();
-		AddChild(hud);
 		var tileSize = waterLayer.TileSet.TileSize;
 		int mapW = simulator.Terrain.Columns * tileSize.X;
 		int mapH = simulator.Terrain.Rows * tileSize.Y;

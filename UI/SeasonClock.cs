@@ -4,10 +4,10 @@ public enum Season { Spring, Summer, Autumn, Winter }
 
 public partial class SeasonClock : Control
 {
+	[Export] public Label SeasonLabel;
+
 	public Season CurrentSeason { get; private set; } = Season.Spring;
 	public float Progress { get; private set; }
-
-	Label _label;
 
 	static readonly Color[] SeasonColors =
 	{
@@ -20,19 +20,6 @@ public partial class SeasonClock : Control
 
 	const float Radius = 38f;
 	const float Ring = 8f;
-
-	public override void _Ready()
-	{
-		CustomMinimumSize = new Vector2(90, 105);
-
-		_label = new Label();
-		_label.HorizontalAlignment = HorizontalAlignment.Center;
-		_label.Position = new Vector2(0, Radius * 2 + 14);
-		_label.Size = new Vector2(90, 20);
-		_label.AddThemeFontSizeOverride("font_size", 13);
-		_label.Text = SeasonNames[0];
-		AddChild(_label);
-	}
 
 	public override void _Draw()
 	{
@@ -71,7 +58,8 @@ public partial class SeasonClock : Control
 	{
 		CurrentSeason = season;
 		Progress = Mathf.Clamp(progress, 0f, 0.999f);
-		_label.Text = SeasonNames[(int)season];
+		if (SeasonLabel != null)
+			SeasonLabel.Text = SeasonNames[(int)season];
 		QueueRedraw();
 	}
 }

@@ -1,0 +1,167 @@
+[gd_scene format=3 uid="uid://dwxdlrvfoand2"]
+
+[ext_resource type="Script" uid="uid://41hst2c6b6jg" path="res://UI/GameHUD.cs" id="1_oai51"]
+[ext_resource type="Script" uid="uid://cpoyv0vr417id" path="res://UI/SeasonClock.cs" id="2_4w34n"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r3msw"]
+bg_color = Color(0, 0, 0, 0.32941177)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h6ig4"]
+bg_color = Color(0.8033065, 0.29938444, 0.11049812, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[node name="GameHUD" type="CanvasLayer" unique_id=43781371 node_paths=PackedStringArray("Clock", "HungerBar", "TempBar", "HungerValue", "TempValue", "PauseButton", "PauseOverlay", "ResumeBtn", "QuitBtn", "RightPanel")]
+layer = 10
+script = ExtResource("1_oai51")
+Clock = NodePath("Root/RightPanel/SeasonClock")
+HungerBar = NodePath("Root/RightPanel/HungerRow/HungerBar")
+TempBar = NodePath("Root/RightPanel/TempRow/TempBar")
+HungerValue = NodePath("Root/RightPanel/HungerRow/HungerValue")
+TempValue = NodePath("Root/RightPanel/TempRow/TempValue")
+PauseButton = NodePath("Root/PauseButton")
+PauseOverlay = NodePath("Root/PauseOverlay")
+ResumeBtn = NodePath("Root/PauseOverlay/PausePanel/Vbox/ResumeBtn")
+QuitBtn = NodePath("Root/PauseOverlay/PausePanel/Vbox/QuitBtn")
+RightPanel = NodePath("Root/RightPanel")
+
+[node name="Root" type="Control" parent="." unique_id=245232659]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="PauseButton" type="Button" parent="Root" unique_id=27997733]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 48.0
+offset_bottom = 48.0
+text = "II"
+
+[node name="RightPanel" type="VBoxContainer" parent="Root" unique_id=2070801642]
+layout_mode = 0
+offset_left = 850.0
+offset_top = 18.0
+offset_right = 890.0
+offset_bottom = 58.0
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="SeasonClock" type="Control" parent="Root/RightPanel" unique_id=134071895 node_paths=PackedStringArray("SeasonLabel")]
+custom_minimum_size = Vector2(90, 105)
+layout_mode = 2
+script = ExtResource("2_4w34n")
+SeasonLabel = NodePath("Label")
+
+[node name="Label" type="Label" parent="Root/RightPanel/SeasonClock" unique_id=1551356290]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 13
+text = "Spring"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HungerRow" type="HBoxContainer" parent="Root/RightPanel" unique_id=487858801]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HungerLabel" type="Label" parent="Root/RightPanel/HungerRow" unique_id=1584310340]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Hunger"
+
+[node name="HungerBar" type="ProgressBar" parent="Root/RightPanel/HungerRow" unique_id=718291233]
+custom_minimum_size = Vector2(50, 14)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_r3msw")
+theme_override_styles/fill = SubResource("StyleBoxFlat_h6ig4")
+show_percentage = false
+
+[node name="HungerValue" type="Label" parent="Root/RightPanel/HungerRow" unique_id=2021658887]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "75"
+
+[node name="TempRow" type="HBoxContainer" parent="Root/RightPanel" unique_id=2064903866]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TempLabel" type="Label" parent="Root/RightPanel/TempRow" unique_id=1492130824]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Temp"
+
+[node name="TempBar" type="ProgressBar" parent="Root/RightPanel/TempRow" unique_id=195705357]
+custom_minimum_size = Vector2(50, 14)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_r3msw")
+theme_override_styles/fill = SubResource("StyleBoxFlat_h6ig4")
+show_percentage = false
+
+[node name="TempValue" type="Label" parent="Root/RightPanel/TempRow" unique_id=968654245]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "20"
+
+[node name="PauseOverlay" type="ColorRect" parent="Root" unique_id=798442052]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.49019608)
+
+[node name="PausePanel" type="PanelContainer" parent="Root/PauseOverlay" unique_id=602597433]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -130.0
+offset_top = -110.0
+offset_right = 130.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Vbox" type="VBoxContainer" parent="Root/PauseOverlay/PausePanel" unique_id=1870395231]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Root/PauseOverlay/PausePanel/Vbox" unique_id=1505637074]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "PAUSED"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="Root/PauseOverlay/PausePanel/Vbox" unique_id=954843002]
+layout_mode = 2
+
+[node name="ResumeBtn" type="Button" parent="Root/PauseOverlay/PausePanel/Vbox" unique_id=303058969]
+layout_mode = 2
+text = "Resume"
+
+[node name="SettingsBtn" type="Button" parent="Root/PauseOverlay/PausePanel/Vbox" unique_id=360500924]
+layout_mode = 2
+disabled = true
+text = "Settings"
+
+[node name="QuitBtn" type="Button" parent="Root/PauseOverlay/PausePanel/Vbox" unique_id=1940861841]
+layout_mode = 2
+text = "Quit"
