@@ -7,10 +7,18 @@
 [ext_resource type="PackedScene" path="res://UI/GameHUD.tscn" id="5_iywne"]
 [ext_resource type="Texture2D" uid="uid://bg01ox1deq3h8" path="res://world/images/Snipaste_2026-04-07_22-18-05.png" id="6_p57ef"]
 [ext_resource type="Script" uid="uid://h8akq30mo7v2" path="res://player/InventoryUI.cs" id="6_u5sy4"]
+[ext_resource type="Texture2D" uid="uid://bxqbe3yq5pjp4" path="res://Junk/sprites/Log.png" id="8_0tnpc"]
+[ext_resource type="Script" uid="uid://c1o4r7hkryrjo" path="res://player/ItemData.cs" id="9_vtaks"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_p57ef"]
 radius = 69.0
 height = 138.0
+
+[sub_resource type="Resource" id="Resource_kvpfn"]
+script = ExtResource("9_vtaks")
+ItemId = 1
+Icon = ExtResource("8_0tnpc")
+metadata/_custom_type_script = "uid://c1o4r7hkryrjo"
 
 [node name="Node2D" type="Node2D" unique_id=158556237 node_paths=PackedStringArray("MapNode")]
 script = ExtResource("1_yqjtg")
@@ -35,7 +43,7 @@ shape = SubResource("CapsuleShape2D_p57ef")
 [node name="InventoryUI" type="CanvasLayer" parent="GameHUD" unique_id=1715666977 node_paths=PackedStringArray("itemIcon", "itemIdLabel", "countLabel")]
 script = ExtResource("6_u5sy4")
 emptyIcon = ExtResource("6_p57ef")
-itemDatas = Array[Resource]([])
+itemDatas = Array[Resource]([SubResource("Resource_kvpfn")])
 itemIcon = NodePath("itemIcon")
 itemIdLabel = NodePath("itemIdLabel")
 countLabel = NodePath("countLabel")

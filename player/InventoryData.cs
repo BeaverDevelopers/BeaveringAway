@@ -9,6 +9,7 @@ public partial class InventoryData : Node
     // add items
     public static void AddItem(int id, int amount = 1)
     {
+
         if (Count == 0)
         {
             ItemId = id;

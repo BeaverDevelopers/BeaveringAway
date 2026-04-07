@@ -9,14 +9,39 @@ public partial class InventoryUI : CanvasLayer
     [Export] public Label itemIdLabel;
     [Export] public Label countLabel;
 
+    // 每帧刷新UI + 检测按键（最简单、最稳定）
     public override void _Process(double delta)
     {
+
+
+        // 刷新UI
         UpdateUI();
     }
-
-    void UpdateUI()
+    public override void _Input(InputEvent @event)
     {
-        if (InventoryData.Count <= 0)
+        // 仅处理键盘事件
+        if (@event is InputEventKey keyEvent)
+        {
+            // 按键 1 按下 → 添加物品
+            if (keyEvent.Keycode == Key.Key1 && keyEvent.Pressed)
+            {
+                GD.Print("✅ 按键1 触发！添加物品 ID=1");
+                InventoryData.AddItem(1);
+            }
+
+            // 按键 C 按下 → 清空背包
+            if (keyEvent.Keycode == Key.C && keyEvent.Pressed)
+            {
+                GD.Print("✅ 按键C 触发！清空背包");
+                InventoryData.Clear();
+            }
+        }
+    }
+
+    private void UpdateUI()
+    {
+        // 严格匹配你的单格子空状态
+        if (InventoryData.ItemId == -1)
         {
             itemIcon.Texture = emptyIcon;
             itemIdLabel.Text = "null";
@@ -24,18 +49,20 @@ public partial class InventoryUI : CanvasLayer
             return;
         }
 
-        ItemData targetData = null;
+        // 查找对应物品
+        ItemData target = null;
         foreach (var data in itemDatas)
         {
-            if (data != null && data.itemId == InventoryData.ItemId)
+            if (data != null && data.ItemId == InventoryData.ItemId)
             {
-                targetData = data;
+                target = data;
                 break;
             }
         }
 
-        itemIcon.Texture = targetData?.icon ?? emptyIcon;
-        itemIdLabel.Text = targetData != null ? $"item {InventoryData.ItemId}" : "null";
+        // 更新显示
+        itemIcon.Texture = target?.Icon ?? emptyIcon;
+        itemIdLabel.Text = $"item {InventoryData.ItemId}";
         countLabel.Text = InventoryData.Count.ToString();
     }
 }

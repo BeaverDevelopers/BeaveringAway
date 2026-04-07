@@ -1,9 +1,12 @@
 using Godot;
 
-// 【唯一正确】Godot C# 支持内嵌编辑的类
-public partial class ItemData : RefCounted
+// 🔥 核心特性：必须添加！让自定义资源在编辑器中可用
+[GlobalClass]
+public partial class ItemData : Resource
 {
-    // 面板直接显示的字段
-    [Export] public int itemId;
-    [Export] public Texture2D icon;
+    // 物品ID（唯一标识）
+    [Export] public int ItemId;
+
+    // 物品图标
+    [Export] public Texture2D Icon;
 }
