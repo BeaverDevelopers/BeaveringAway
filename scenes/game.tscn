@@ -4,7 +4,9 @@
 [ext_resource type="Script" uid="uid://7ckbrq7wcces" path="res://sim/Game.cs" id="1_yqjtg"]
 [ext_resource type="Script" uid="uid://bi52yo0sx1t4v" path="res://player/PlayerMove.cs" id="3_lbhrr"]
 [ext_resource type="Texture2D" uid="uid://c1e0w8t7sxwnw" path="res://icon.svg" id="4_iywne"]
-[ext_resource type="PackedScene" uid="uid://dwxdlrvfoand2" path="res://UI/GameHUD.tscn" id="5_iywne"]
+[ext_resource type="PackedScene" path="res://UI/GameHUD.tscn" id="5_iywne"]
+[ext_resource type="Texture2D" uid="uid://bg01ox1deq3h8" path="res://world/images/Snipaste_2026-04-07_22-18-05.png" id="6_p57ef"]
+[ext_resource type="Script" uid="uid://h8akq30mo7v2" path="res://player/InventoryUI.cs" id="6_u5sy4"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_p57ef"]
 radius = 69.0
@@ -29,3 +31,29 @@ texture = ExtResource("4_iywne")
 shape = SubResource("CapsuleShape2D_p57ef")
 
 [node name="GameHUD" parent="." unique_id=43781371 instance=ExtResource("5_iywne")]
+
+[node name="InventoryUI" type="CanvasLayer" parent="GameHUD" unique_id=1715666977 node_paths=PackedStringArray("itemIcon", "itemIdLabel", "countLabel")]
+script = ExtResource("6_u5sy4")
+emptyIcon = ExtResource("6_p57ef")
+itemDatas = Array[Resource]([])
+itemIcon = NodePath("itemIcon")
+itemIdLabel = NodePath("itemIdLabel")
+countLabel = NodePath("countLabel")
+
+[node name="itemIcon" type="TextureRect" parent="GameHUD/InventoryUI" unique_id=49477516]
+offset_left = 14.0
+offset_top = 214.0
+offset_right = 54.0
+offset_bottom = 254.0
+
+[node name="itemIdLabel" type="Label" parent="GameHUD/InventoryUI" unique_id=34278449]
+offset_left = 16.0
+offset_top = 256.0
+offset_right = 56.0
+offset_bottom = 279.0
+
+[node name="countLabel" type="Label" parent="GameHUD/InventoryUI" unique_id=1856308518]
+offset_left = 20.0
+offset_top = 285.0
+offset_right = 60.0
+offset_bottom = 308.0
