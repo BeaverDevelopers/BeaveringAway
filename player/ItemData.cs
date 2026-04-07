@@ -1,8 +1,9 @@
 using Godot;
 
-public partial class ItemData : Resource
+// 【唯一正确】Godot C# 支持内嵌编辑的类
+public partial class ItemData : RefCounted
 {
-	// 用 [field: Export] 直接修饰自动属性
-	[field: Export] public int itemId { get; set; }
-	[field: Export] public Texture2D icon { get; set; }
+    // 面板直接显示的字段
+    [Export] public int itemId;
+    [Export] public Texture2D icon;
 }
