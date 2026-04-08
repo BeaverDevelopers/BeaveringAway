@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://dweg84hk31t73"]
+
+[ext_resource type="Script" uid="uid://b8fx3figt5jay" path="res://scenes/log.gd" id="1_k0uux"]
+[ext_resource type="Texture2D" uid="uid://bxqbe3yq5pjp4" path="res://Junk/sprites/Log.png" id="1_spugk"]
+[ext_resource type="PackedScene" uid="uid://hu6w6rnkn2r5" path="res://Interaction/interactable.tscn" id="2_pt1ea"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_k0uux"]
+size = Vector2(30, 30)
+
+[node name="StaticBody2D" type="StaticBody2D" unique_id=1905285447]
+script = ExtResource("1_k0uux")
+
+[node name="Log" type="Sprite2D" parent="." unique_id=1138922943]
+position = Vector2(19, 12)
+texture = ExtResource("1_spugk")
+
+[node name="Interactable" parent="Log" unique_id=1712477042 instance=ExtResource("2_pt1ea")]
+interact_name = "Pick up Log"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Log/Interactable" unique_id=360356777]
+shape = SubResource("RectangleShape2D_k0uux")

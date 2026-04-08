@@ -28,12 +28,6 @@ public partial class InventoryUI : CanvasLayer
 				GD.Print("✅ 按键1 触发！添加物品 ID=1");
 				InventoryData.AddItem(1);
 			}
-			
-			if (keyEvent.Keycode == Key.E && keyEvent.Pressed)
-			{
-				GD.Print("✅ Chopped A tree ID=2");
-				InventoryData.AddItem(1, 3);
-			}
 
 			// 按键 C 按下 → 清空背包
 			if (keyEvent.Keycode == Key.C && keyEvent.Pressed)
