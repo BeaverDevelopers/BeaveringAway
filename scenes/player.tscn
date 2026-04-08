@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://bgyyy645ne8ei" path="res://Interaction/interacting_component.tscn" id="3_qlg0r"]
 [ext_resource type="Texture2D" uid="uid://dwahj54aoif2t" path="res://world/images/player/Beaver down walk sprite sheet.png" id="4_qlg0r"]
 [ext_resource type="Texture2D" uid="uid://cyc7m5iyoef0j" path="res://world/images/player/Beaver side walk sprite sheet.png" id="5_tuyoq"]
+[ext_resource type="Texture2D" uid="uid://baxrjfjnv43bt" path="res://world/images/player/beaver walk up sprite sheet.png" id="6_tuyoq"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_p57ef"]
 radius = 39.0
@@ -16,6 +17,10 @@ region = Rect2(67, 0, 67, 64)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_tuyoq"]
 atlas = ExtResource("5_tuyoq")
+region = Rect2(67, 0, 67, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oprun"]
+atlas = ExtResource("6_tuyoq")
 region = Rect2(67, 0, 67, 64)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_fjrip"]
@@ -50,6 +55,22 @@ region = Rect2(134, 0, 67, 64)
 atlas = ExtResource("5_tuyoq")
 region = Rect2(67, 0, 67, 64)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_a8ls1"]
+atlas = ExtResource("6_tuyoq")
+region = Rect2(0, 0, 67, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qfm1y"]
+atlas = ExtResource("6_tuyoq")
+region = Rect2(67, 0, 67, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fulsm"]
+atlas = ExtResource("6_tuyoq")
+region = Rect2(134, 0, 67, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4r5pv"]
+atlas = ExtResource("6_tuyoq")
+region = Rect2(201, 0, 67, 64)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_jej6c"]
 animations = [{
 "frames": [{
@@ -68,7 +89,10 @@ animations = [{
 "name": &"idle_left",
 "speed": 5.0
 }, {
-"frames": [],
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oprun")
+}],
 "loop": true,
 "name": &"idle_up",
 "speed": 5.0
@@ -107,7 +131,19 @@ animations = [{
 "name": &"walk_left",
 "speed": 5.0
 }, {
-"frames": [],
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a8ls1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qfm1y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fulsm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4r5pv")
+}],
 "loop": true,
 "name": &"walk_up",
 "speed": 5.0
@@ -128,4 +164,4 @@ shape = SubResource("CapsuleShape2D_p57ef")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=182636433]
 sprite_frames = SubResource("SpriteFrames_jej6c")
-animation = &"idle_down"
+animation = &"walk_up"
