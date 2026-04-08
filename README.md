@@ -7,8 +7,9 @@ Please use Godot 4.6.1
 - Use A to add some extra water to the simulation.
 - Use 1 to add a item 1
 - Use C to clear item
+- Use E to Chop Trees
 
 # Open Tasks
 - [✓] Beaver Player Controller
-- [ ] Tree Cutting
+- [✓] Tree Cutting
 - [ ] Item following
