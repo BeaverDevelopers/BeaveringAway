@@ -16,8 +16,10 @@ public class JunkSystem
 	const float Inertia = 0.12f;      // lerp factor toward desired velocity (lower = smoother)
 	const float SeparationDist = 12f;
 	const float SeparationForce = 0.08f;
+	public float GravityBias = 1.0f;
+	public int MaxLifetime = 3000;
 
-	static readonly Texture2D LogTexture = GD.Load<Texture2D>("res://Junk/sprites/Log.png");
+	static readonly PackedScene LogScene = GD.Load<PackedScene>("res://scenes/log.tscn");
 
 	public int Count => _items.Count;
 
@@ -33,26 +35,41 @@ public class JunkSystem
 		if (_items.Count >= MaxItems) return;
 		if (terrain.TileWater(spawnTile.X, spawnTile.Y) == 0) return;
 
-		var sprite = new Sprite2D();
-		sprite.Texture = LogTexture;
-		sprite.ZIndex = 2;
+		var node = LogScene.Instantiate<Node2D>();
+		node.ZIndex = 2;
 
 		var offset = new Vector2((_rng.NextSingle() - 0.5f) * 8f, (_rng.NextSingle() - 0.5f) * 8f);
 		var worldPos = _waterLayer.MapToLocal(spawnTile) + offset;
-		sprite.Position = worldPos;
-		_waterLayer.AddChild(sprite);
+		node.Position = worldPos;
+		_waterLayer.AddChild(node);
 
 		_items.Add(new JunkItem
 		{
 			Type = JunkType.Log,
 			WorldPos = worldPos,
 			Velocity = Vector2.Zero,
-			Sprite = sprite,
+			Node = node,
+			SpawnTick = tick,
 		});
 	}
 
-	public void Update(Terrain terrain)
+	public void Update(Terrain terrain, int tick)
 	{
+		// Remove items whose node was freed externally (e.g. player pickup)
+		for (int i = _items.Count - 1; i >= 0; i--)
+		{
+			if (!GodotObject.IsInstanceValid(_items[i].Node))
+			{
+				_items.RemoveAt(i);
+				continue;
+			}
+			if (tick - _items[i].SpawnTick > MaxLifetime)
+			{
+				Remove(i);
+				continue;
+			}
+		}
+
 		// Gentle separation so items don't pile up
 		for (int i = 0; i < _items.Count; i++)
 		{
@@ -65,8 +82,8 @@ public class JunkSystem
 					var push = diff / dist * (SeparationDist - dist) * SeparationForce;
 					_items[i].WorldPos += push;
 					_items[j].WorldPos -= push;
-					_items[i].Sprite.Position = _items[i].WorldPos;
-					_items[j].Sprite.Position = _items[j].WorldPos;
+					_items[i].Node.Position = _items[i].WorldPos;
+					_items[j].Node.Position = _items[j].WorldPos;
 				}
 			}
 		}
@@ -114,13 +131,14 @@ public class JunkSystem
 					WaterVelocity.Right => (1f, 0f),
 					_ => (0f, 0f),
 				};
-				if (dirX == 0f && dirY == 0f)
-					continue;
 			}
 
 			float depth = terrain.Tiles[tx, ty].WaterHeight;
 			float speed = MathF.Min(depth, 20) * DriftSpeed;
 			var desired = new Vector2(dirX * speed, dirY * speed);
+
+			// Gravity: always pull downward in water
+			desired.Y += GravityBias;
 
 			// Smooth velocity toward desired (inertia eliminates jitter)
 			item.Velocity = item.Velocity.Lerp(desired, Inertia);
@@ -128,29 +146,56 @@ public class JunkSystem
 			var newPos = item.WorldPos + item.Velocity;
 			var newTile = _waterLayer.LocalToMap(newPos);
 
-			// Dam collision with deflection
+			// Collision handling with gravity-aware deflection
 			if (IsDam(terrain, newTile.X, newTile.Y))
 			{
 				var slideH = item.WorldPos + new Vector2(item.Velocity.X, 0);
 				var slideV = item.WorldPos + new Vector2(0, item.Velocity.Y);
 				var tileH = _waterLayer.LocalToMap(slideH);
 				var tileV = _waterLayer.LocalToMap(slideV);
+				bool canH = !IsDam(terrain, tileH.X, tileH.Y);
+				bool canV = !IsDam(terrain, tileV.X, tileV.Y);
 
-				if (MathF.Abs(item.Velocity.Y) >= MathF.Abs(item.Velocity.X) && !IsDam(terrain, tileV.X, tileV.Y))
+				if (canV && canH)
+					newPos = MathF.Abs(item.Velocity.Y) >= MathF.Abs(item.Velocity.X) ? slideV : slideH;
+				else if (canV)
 					newPos = slideV;
-				else if (!IsDam(terrain, tileH.X, tileH.Y))
+				else if (canH)
 					newPos = slideH;
-				else if (!IsDam(terrain, tileV.X, tileV.Y))
-					newPos = slideV;
 				else
 				{
-					item.Velocity = Vector2.Zero;
-					continue;
+					// Blocked on both axes — nudge sideways to find a way around
+					if (item.SlideBias == 0)
+						item.SlideBias = _rng.Next(2) == 0 ? -1 : 1;
+
+					float nudge = GravityBias;
+					var tryPref = item.WorldPos + new Vector2(item.SlideBias * nudge, 0);
+					var tryOpp  = item.WorldPos + new Vector2(-item.SlideBias * nudge, 0);
+					var tilePref = _waterLayer.LocalToMap(tryPref);
+					var tileOpp  = _waterLayer.LocalToMap(tryOpp);
+
+					if (!IsDam(terrain, tilePref.X, tilePref.Y))
+						newPos = tryPref;
+					else if (!IsDam(terrain, tileOpp.X, tileOpp.Y))
+					{
+						item.SlideBias = -item.SlideBias;
+						newPos = tryOpp;
+					}
+					else
+					{
+						item.Velocity = Vector2.Zero;
+						continue;
+					}
 				}
+			}
+			else
+			{
+				// Path clear — reset slide bias so gravity pulls straight down
+				item.SlideBias = 0;
 			}
 
 			item.WorldPos = newPos;
-			item.Sprite.Position = newPos;
+			item.Node.Position = newPos;
 		}
 	}
 
@@ -163,7 +208,7 @@ public class JunkSystem
 
 	void Remove(int index)
 	{
-		_items[index].Sprite?.QueueFree();
+		_items[index].Node?.QueueFree();
 		_items.RemoveAt(index);
 	}
 

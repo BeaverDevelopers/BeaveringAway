@@ -106,7 +106,7 @@ public partial class Game : Node
 
 		simulator.Run();
 		junkSystem.Spawn(simulator.Terrain, WATER_SOURCE_TILE, simulator.Tick);
-		junkSystem.Update(simulator.Terrain);
+		junkSystem.Update(simulator.Terrain, simulator.Tick);
 
 		renderWater(simulator.Terrain);
 
