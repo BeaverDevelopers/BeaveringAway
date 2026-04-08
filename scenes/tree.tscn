@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://clxfw103c3bt1"]
+
+[ext_resource type="Script" uid="uid://bmpv8v53usar" path="res://scenes/tree.gd" id="1_viusy"]
+[ext_resource type="Texture2D" uid="uid://cn0verx5b17ha" path="res://world/images/tree and stump.png" id="2_viusy"]
+[ext_resource type="PackedScene" uid="uid://hu6w6rnkn2r5" path="res://Interaction/interactable.tscn" id="3_qd6xs"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vplca"]
+size = Vector2(51, 69)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ake3r"]
+size = Vector2(44.333336, 60)
+
+[node name="Tree" type="StaticBody2D" unique_id=862460062]
+script = ExtResource("1_viusy")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1422986373]
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("2_viusy")
+hframes = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1611133071]
+visible = false
+show_behind_parent = true
+shape = SubResource("RectangleShape2D_vplca")
+
+[node name="Interactable" parent="." unique_id=1712477042 instance=ExtResource("3_qd6xs")]
+interact_name = "Chop Tree"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactable" unique_id=1812830253]
+position = Vector2(9.536743e-07, -11)
+scale = Vector2(3, 3)
+shape = SubResource("RectangleShape2D_ake3r")
