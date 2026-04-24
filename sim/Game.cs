@@ -53,7 +53,7 @@ public partial class Game : Node
 				var coords = new Vector2I(x, y);
 				if (tile.WaterShown > 0)
 				{
-					if (tile.Saftey == WaterSaftey.Dangerous)
+					if (tile.DangerLevel > 5)
 					{
                         waterLayer.SetCell(coords, WATER_SOURCE_ID, WATER_DANGEROUS);
                     }
@@ -85,7 +85,7 @@ public partial class Game : Node
 		{
 			simulator.Terrain.Tiles[WATER_SOURCE_TILE.X, WATER_SOURCE_TILE.Y].WaterHeight =
 				Math.Max(simulator.Terrain.Tiles[WATER_SOURCE_TILE.X, WATER_SOURCE_TILE.Y].WaterHeight, (byte)21);
-			simulator.Terrain.Tiles[WATER_SOURCE_TILE.X, WATER_SOURCE_TILE.Y].Saftey = WaterSaftey.Dangerous;
+			simulator.Terrain.Tiles[WATER_SOURCE_TILE.X, WATER_SOURCE_TILE.Y].DangerLevel = 10;
 		}
 		if (Input.IsPhysicalKeyPressed(Key.A)) {
 			Debug.WriteLine("Give us some water!");

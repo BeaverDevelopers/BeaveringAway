@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Diagnostics;
+using System.Numerics;
 
 public enum WaterVelocity : byte
 {
@@ -27,7 +28,8 @@ public struct TerrainTile
 	public byte ObstructionHeight;
 	public bool Locked;
 	public byte WaterShown;
-	public WaterSaftey Saftey;
+	public sbyte DangerLevel;
+	//public WaterSaftey Saftey;
 
 
 	public int TotalHeight()
@@ -147,14 +149,18 @@ public class Terrain
 		Tiles[toX, toY].WaterHeight = (byte)Math.Max(0, Math.Min(255, (int)1 + Tiles[toX, toY].WaterHeight));
 		Tiles[toX, toY].WaterVelocity = velocity;
 		Tiles[toX, toY].Locked = true;
-		if (Tiles[toX, toY].ObstructionHeight == 0 && Tiles[fromX, fromY].Saftey != WaterSaftey.Neutral)
+		if (Tiles[toX, toY].ObstructionHeight == 0 && Tiles[fromX, fromY].DangerLevel != 0)
 		{
-			Tiles[toX, toY].Saftey = Tiles[fromX, fromY].Saftey;
+			if (Tiles[fromX, fromY].DangerLevel > Tiles[toX, toY].DangerLevel)
+			{
+				Tiles[toX, toY].DangerLevel += 2;
+			}
+			else
+			{
+                Tiles[toX, toY].DangerLevel -= 1;
+            }
+			//Tiles[toX, toY].DangerLevel = Tiles[fromX, fromY].DangerLevel;
 		}
-		else
-		{
-			Tiles[toX, toY].Saftey = WaterSaftey.Safe;
-        }
 		 
 
 		// Accumulate flow: +1 in the direction water moved

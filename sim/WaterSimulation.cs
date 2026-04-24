@@ -84,7 +84,11 @@ public class WaterSimulation
 			return;
 		}
 
-		terrain.Tiles[x, y].Saftey = WaterSaftey.Safe;
+		/*if (terrain.Tiles[x, y].DangerLevel < -20)
+		{
+			return;
+		}*/
+		terrain.Tiles[x, y].DangerLevel = -5;
 	}
 
 	public static void Run(Terrain terrain, int tick)
@@ -100,9 +104,9 @@ public class WaterSimulation
 					terrain.Tiles[x, y].WaterHeight = (byte)Math.Max(0, terrain.Tiles[x, y].WaterHeight - 1);
 				}
 
-				if (terrain.Tiles[x, y].WaterShown < 10)
+				if (terrain.Tiles[x, y].WaterShown < 3 && terrain.Tiles[x, y].DangerLevel > 0)
 				{
-                    terrain.Tiles[x, y].Saftey = WaterSaftey.Neutral;
+                    terrain.Tiles[x, y].DangerLevel -= 1;
                 }
 
 				// Reset per-tick state.
