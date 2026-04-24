@@ -19,7 +19,6 @@ metadata/_custom_type_script = "uid://c1o4r7hkryrjo"
 [node name="Node2D" type="Node2D" unique_id=158556237 node_paths=PackedStringArray("MapNode", "hud")]
 script = ExtResource("1_yqjtg")
 MapNode = NodePath("world")
-JunkDriftSpeed = 0.8500000000000001
 hud = NodePath("GameHUD")
 
 [node name="world" parent="." unique_id=403739864 instance=ExtResource("1_uwrxv")]

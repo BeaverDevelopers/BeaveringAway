@@ -11,6 +11,7 @@ public partial class PlayerMove : CharacterBody2D
     public override void _Ready()
     {
         _animSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+        GetTree().Root.GetNode<Game>("Node2D").MainCamera = GetNode<Camera2D>("Camera2D");
     }
 
     public override void _PhysicsProcess(double delta)

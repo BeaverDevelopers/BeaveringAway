@@ -11,6 +11,13 @@ public enum WaterVelocity : byte
 	Right
 }
 
+public enum WaterSaftey : byte
+{ 
+	Neutral,
+	Dangerous,
+	Safe,
+}
+
 [DebuggerDisplay("Height: {GroundHeight}, Water: {WaterHeight}")]
 public struct TerrainTile
 {
@@ -20,10 +27,8 @@ public struct TerrainTile
 	public byte ObstructionHeight;
 	public bool Locked;
 	public byte WaterShown;
-	public int FlowX;
-	public int FlowY;
-	public float SmoothedFlowX;
-	public float SmoothedFlowY;
+	public WaterSaftey Saftey;
+
 
 	public int TotalHeight()
 	{
@@ -31,11 +36,20 @@ public struct TerrainTile
 	}
 }
 
+public struct WaterFlow
+{
+    public int FlowX;
+    public int FlowY;
+    public float SmoothedFlowX;
+    public float SmoothedFlowY;
+}
+
 public class Terrain
 {
 	public int Rows;
 	public int Columns;
 	public TerrainTile[,] Tiles;
+	public WaterFlow[,] WaterTiles;
 
 	const int NORMAL_CLIFF_HEIGHT = 1;
 
@@ -133,12 +147,21 @@ public class Terrain
 		Tiles[toX, toY].WaterHeight = (byte)Math.Max(0, Math.Min(255, (int)1 + Tiles[toX, toY].WaterHeight));
 		Tiles[toX, toY].WaterVelocity = velocity;
 		Tiles[toX, toY].Locked = true;
+		if (Tiles[toX, toY].ObstructionHeight == 0 && Tiles[fromX, fromY].Saftey != WaterSaftey.Neutral)
+		{
+			Tiles[toX, toY].Saftey = Tiles[fromX, fromY].Saftey;
+		}
+		else
+		{
+			Tiles[toX, toY].Saftey = WaterSaftey.Safe;
+        }
+		 
 
 		// Accumulate flow: +1 in the direction water moved
 		int dx = toX - fromX;
 		int dy = toY - fromY;
-		Tiles[fromX, fromY].FlowX += dx;
-		Tiles[fromX, fromY].FlowY += dy;
+		WaterTiles[fromX, fromY].FlowX += dx;
+		WaterTiles[fromX, fromY].FlowY += dy;
 		Tiles[toX, toY].WaterShown = 20;
 	}
 
@@ -154,6 +177,7 @@ public class Terrain
 		Columns = columns;
 		Rows = rows;
 		Tiles = new TerrainTile[columns, rows];
+		WaterTiles = new WaterFlow[columns, rows];
 
 		var groundOverlay = fromTerrain.GetNode<TileMapLayer>("Level_0/Ground/Ground1");
 		Debug.Assert(groundOverlay != null);

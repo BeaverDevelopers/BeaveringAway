@@ -72,6 +72,21 @@ public class WaterSimulation
 		}
 	}
 
+	public static void Pacify(Terrain terrain, int x, int y, WaterVelocity exceptForDirection)
+	{
+		if (x < 0 || y < 0 || x >= terrain.Columns || y >= terrain.Rows)
+		{
+			return;
+		}
+
+		if (terrain.Tiles[x, y].WaterVelocity == exceptForDirection)
+		{
+			return;
+		}
+
+		terrain.Tiles[x, y].Saftey = WaterSaftey.Safe;
+	}
+
 	public static void Run(Terrain terrain, int tick)
 	{
 		// Reset some variables from previous runs.
@@ -85,13 +100,18 @@ public class WaterSimulation
 					terrain.Tiles[x, y].WaterHeight = (byte)Math.Max(0, terrain.Tiles[x, y].WaterHeight - 1);
 				}
 
+				if (terrain.Tiles[x, y].WaterShown < 10)
+				{
+                    terrain.Tiles[x, y].Saftey = WaterSaftey.Neutral;
+                }
+
 				// Reset per-tick state.
 				terrain.Tiles[x, y].Locked = false;
-				terrain.Tiles[x, y].FlowX = 0;
-				terrain.Tiles[x, y].FlowY = 0;
+				terrain.WaterTiles[x, y].FlowX = 0;
+				terrain.WaterTiles[x, y].FlowY = 0;
 				if (terrain.Tiles[x, y].WaterHeight == 0)
 				{
-					terrain.Tiles[x, y].WaterVelocity = WaterVelocity.None;
+                    terrain.Tiles[x, y].WaterVelocity = WaterVelocity.None;
 					if (terrain.Tiles[x, y].WaterShown > 0)
 					{
 						terrain.Tiles[x, y].WaterShown--;
@@ -101,6 +121,14 @@ public class WaterSimulation
 				{
 					terrain.Tiles[x, y].WaterShown = (byte)Math.Max((int)terrain.Tiles[x, y].WaterShown, 1);
 				}
+
+				if (terrain.Tiles[x, y].ObstructionHeight > 0)
+				{
+					Pacify(terrain, x, y - 1, WaterVelocity.Down);
+                    Pacify(terrain, x, y + 1, WaterVelocity.Up);
+                    Pacify(terrain, x - 1, y, WaterVelocity.Right);
+                    Pacify(terrain, x + 1, y, WaterVelocity.Left);
+                }
 			}
 		}
 
@@ -130,8 +158,8 @@ public class WaterSimulation
 		{
 			for (int x = 0; x < terrain.Columns; x++)
 			{
-				terrain.Tiles[x, y].SmoothedFlowX += (terrain.Tiles[x, y].FlowX - terrain.Tiles[x, y].SmoothedFlowX) * Smoothing;
-				terrain.Tiles[x, y].SmoothedFlowY += (terrain.Tiles[x, y].FlowY - terrain.Tiles[x, y].SmoothedFlowY) * Smoothing;
+				terrain.WaterTiles[x, y].SmoothedFlowX += (terrain.WaterTiles[x, y].FlowX - terrain.WaterTiles[x, y].SmoothedFlowX) * Smoothing;
+				terrain.WaterTiles[x, y].SmoothedFlowY += (terrain.WaterTiles[x, y].FlowY - terrain.WaterTiles[x, y].SmoothedFlowY) * Smoothing;
 				totalWater += terrain.Tiles[x, y].WaterHeight;
 			}
 		}

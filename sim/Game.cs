@@ -11,19 +11,24 @@ public partial class Game : Node
 
 	[Export] public GameHUD hud;
 
+	public Camera2D MainCamera;
+
 	Simulator simulator;
 	JunkSystem junkSystem = new();
 
 	TileMapLayer waterLayer;
 
 	Vector2I WATER_CENTER = new Vector2I(5, 17);
-	const int WATER_SOURCE_ID = 2;
+    Vector2I WATER_DANGEROUS = new Vector2I(15, 19);
+
+    const int WATER_SOURCE_ID = 2;
 	static readonly Vector2I WATER_SOURCE_TILE = new(9, 2);
 
 	public override void _Ready()
 	{
 		simulator.Load(MapNode);
 		waterLayer = MapNode.GetNode<TileMapLayer>("Level_0/Water");
+		waterLayer.TextureFilter = CanvasItem.TextureFilterEnum.Nearest;
 		junkSystem.Initialize(waterLayer);
 		junkSystem.SpawnInterval = JunkSpawnInterval;
 		junkSystem.MaxItems = JunkMaxCount;
@@ -48,7 +53,15 @@ public partial class Game : Node
 				var coords = new Vector2I(x, y);
 				if (tile.WaterShown > 0)
 				{
-					waterLayer.SetCell(coords, WATER_SOURCE_ID, WATER_CENTER);
+					if (tile.Saftey == WaterSaftey.Dangerous)
+					{
+                        waterLayer.SetCell(coords, WATER_SOURCE_ID, WATER_DANGEROUS);
+                    }
+					else
+					{
+                        waterLayer.SetCell(coords, WATER_SOURCE_ID, WATER_CENTER);
+                    }
+					
 				}
 				else
 				{
@@ -60,6 +73,11 @@ public partial class Game : Node
 
 	public override void _PhysicsProcess(double delta)
 	{
+		if (MainCamera == null)
+		{
+			Debug.WriteLine("Waiting for MainCamera to appear");
+			return;
+		}
 		// TODO: This is all crap code that I added to debug the water sim.
 
 		//simulator.Terrain.Tiles[9, 0].WaterHeight = 2;
@@ -67,11 +85,12 @@ public partial class Game : Node
 		{
 			simulator.Terrain.Tiles[WATER_SOURCE_TILE.X, WATER_SOURCE_TILE.Y].WaterHeight =
 				Math.Max(simulator.Terrain.Tiles[WATER_SOURCE_TILE.X, WATER_SOURCE_TILE.Y].WaterHeight, (byte)21);
+			simulator.Terrain.Tiles[WATER_SOURCE_TILE.X, WATER_SOURCE_TILE.Y].Saftey = WaterSaftey.Dangerous;
 		}
 		if (Input.IsPhysicalKeyPressed(Key.A)) {
 			Debug.WriteLine("Give us some water!");
 			var bottomGround = MapNode.GetNode<TileMapLayer>("Level_0/Ground");
-			var mapPos = bottomGround.LocalToMap(GetViewport().GetMousePosition());
+			var mapPos = bottomGround.LocalToMap(MainCamera.GetGlobalMousePosition());
 			simulator.Terrain.Tiles[mapPos.X, mapPos.Y].WaterHeight = Math.Max(simulator.Terrain.Tiles[mapPos.X, mapPos.Y].WaterHeight, (byte)15);
 		}
 		if (Input.IsPhysicalKeyPressed(Key.R)) {
@@ -88,7 +107,7 @@ public partial class Game : Node
 
 		if (Input.IsPhysicalKeyPressed(Key.P)) {
 			var bottomGround = MapNode.GetNode<TileMapLayer>("Level_0/Ground");
-			var mapPos = bottomGround.LocalToMap(GetViewport().GetMousePosition());
+			var mapPos = bottomGround.LocalToMap(MainCamera.GetGlobalMousePosition());
 			Debug.WriteLine(mapPos);
 			simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight = (byte)Math.Min(simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight + 1, 4);
 
@@ -98,7 +117,7 @@ public partial class Game : Node
 
 		if (Input.IsPhysicalKeyPressed(Key.D)) {
 			var bottomGround = MapNode.GetNode<TileMapLayer>("Level_0/Ground");
-			var mapPos = bottomGround.LocalToMap(GetViewport().GetMousePosition());
+			var mapPos = bottomGround.LocalToMap(MainCamera.GetGlobalMousePosition());
 			Debug.WriteLine(mapPos);
 			Debug.WriteLine("Water height: " + simulator.Terrain.Tiles[mapPos.X, mapPos.Y].WaterHeight);
 			Debug.WriteLine("Terrain height: " + simulator.Terrain.Tiles[mapPos.X, mapPos.Y].GroundHeight);

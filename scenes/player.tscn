@@ -165,3 +165,6 @@ shape = SubResource("CapsuleShape2D_p57ef")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=182636433]
 sprite_frames = SubResource("SpriteFrames_jej6c")
 animation = &"walk_up"
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1231891022]
+position_smoothing_enabled = true

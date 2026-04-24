@@ -110,8 +110,8 @@ public class JunkSystem
 			}
 
 			// Desired direction from flow field
-			float fx = terrain.Tiles[tx, ty].SmoothedFlowX;
-			float fy = terrain.Tiles[tx, ty].SmoothedFlowY;
+			float fx = terrain.WaterTiles[tx, ty].SmoothedFlowX;
+			float fy = terrain.WaterTiles[tx, ty].SmoothedFlowY;
 			float flowLen = MathF.Sqrt(fx * fx + fy * fy);
 
 			float dirX, dirY;
