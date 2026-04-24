@@ -23,14 +23,14 @@ public partial class InventoryUI : CanvasLayer
 		if (@event is InputEventKey keyEvent)
 		{
 			// 按键 1 按下 → 添加物品
-			if (keyEvent.Keycode == Key.Key1 && keyEvent.Pressed)
+			if (Input.IsPhysicalKeyPressed(Key.M) && keyEvent.Keycode == Key.Key1 && keyEvent.Pressed)
 			{
 				GD.Print("✅ 按键1 触发！添加物品 ID=1");
 				InventoryData.AddItem(1);
 			}
 
 			// 按键 C 按下 → 清空背包
-			if (keyEvent.Keycode == Key.C && keyEvent.Pressed)
+			if (Input.IsPhysicalKeyPressed(Key.M) && keyEvent.Keycode == Key.C && keyEvent.Pressed)
 			{
 				GD.Print("✅ 按键C 触发！清空背包");
 				InventoryData.Clear();

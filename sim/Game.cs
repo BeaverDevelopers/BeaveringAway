@@ -86,22 +86,8 @@ public partial class Game : Node
         }
     }
 
-    public override void _PhysicsProcess(double delta)
+    public void RunDebugCommands()
     {
-        if (MainCamera == null)
-        {
-            Debug.WriteLine("Waiting for MainCamera to appear");
-            return;
-        }
-        // TODO: This is all crap code that I added to debug the water sim.
-
-        //simulator.Terrain.Tiles[9, 0].WaterHeight = 2;
-        if (simulator.Tick % 20 == 0)
-        {
-            simulator.Terrain.Tiles[WATER_SOURCE_TILE.X, WATER_SOURCE_TILE.Y].WaterHeight =
-                Math.Max(simulator.Terrain.Tiles[WATER_SOURCE_TILE.X, WATER_SOURCE_TILE.Y].WaterHeight, (byte)21);
-            simulator.Terrain.Tiles[WATER_SOURCE_TILE.X, WATER_SOURCE_TILE.Y].DangerLevel = 10;
-        }
         if (Input.IsPhysicalKeyPressed(Key.A))
         {
             Debug.WriteLine("Give us some water!");
@@ -139,6 +125,31 @@ public partial class Game : Node
             Debug.WriteLine("Water height: " + simulator.Terrain.Tiles[mapPos.X, mapPos.Y].WaterHeight);
             Debug.WriteLine("Terrain height: " + simulator.Terrain.Tiles[mapPos.X, mapPos.Y].GroundHeight);
         }
+    }
+
+    public override void _PhysicsProcess(double delta)
+    {
+        if (MainCamera == null)
+        {
+            Debug.WriteLine("Waiting for MainCamera to appear");
+            return;
+        }
+        // TODO: This is all crap code that I added to debug the water sim.
+
+        //simulator.Terrain.Tiles[9, 0].WaterHeight = 2;
+        if (simulator.Tick % 20 == 0)
+        {
+            simulator.Terrain.Tiles[WATER_SOURCE_TILE.X, WATER_SOURCE_TILE.Y].WaterHeight =
+                Math.Max(simulator.Terrain.Tiles[WATER_SOURCE_TILE.X, WATER_SOURCE_TILE.Y].WaterHeight, (byte)21);
+            simulator.Terrain.Tiles[WATER_SOURCE_TILE.X, WATER_SOURCE_TILE.Y].DangerLevel = 10;
+        }
+
+        var DebugKeyPressed = Input.IsPhysicalKeyPressed(Key.M);
+        if (DebugKeyPressed)
+        {
+            RunDebugCommands();
+        }
+
 
         simulator.Run();
         junkSystem.Spawn(simulator.Terrain, WATER_SOURCE_TILE, simulator.Tick);

@@ -14,6 +14,8 @@ size = Vector2(44.333336, 60)
 script = ExtResource("1_viusy")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1422986373]
+texture_filter = 1
+texture_repeat = 1
 scale = Vector2(0.3, 0.3)
 texture = ExtResource("2_viusy")
 hframes = 2

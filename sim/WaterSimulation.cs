@@ -186,6 +186,10 @@ public class WaterSimulation
                 totalWater += terrain.Tiles[x, y].WaterHeight;
             }
         }
-        Debug.WriteLine("Total water: " + totalWater + " pacified: " + grandTotalPacified);
+
+        if (tick % 100 == 0)
+        {
+            Debug.WriteLine("Total water: " + totalWater + " pacified: " + grandTotalPacified);
+        }
     }
 }
