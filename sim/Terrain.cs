@@ -1,9 +1,8 @@
 using Godot;
 using System;
 using System.Diagnostics;
-using System.Numerics;
 
-public enum WaterVelocity : byte
+public enum WaterDirection : byte
 {
 	None,
 	Down,
@@ -12,25 +11,16 @@ public enum WaterVelocity : byte
 	Right
 }
 
-public enum WaterSaftey : byte
-{ 
-	Neutral,
-	Dangerous,
-	Safe,
-}
-
 [DebuggerDisplay("Height: {GroundHeight}, Water: {WaterHeight}")]
 public struct TerrainTile
 {
-	public byte WaterHeight;
-	public WaterVelocity WaterVelocity;
+	public WaterDirection WaterVelocity;
+    public bool Locked;
+    public byte WaterHeight;
 	public byte GroundHeight;
 	public byte ObstructionHeight;
-	public bool Locked;
 	public byte WaterShown;
 	public sbyte DangerLevel;
-	//public WaterSaftey Saftey;
-
 
 	public int TotalHeight()
 	{
@@ -91,7 +81,7 @@ public class Terrain
 			height = (byte)(atlasCoordsToHeightChange(atlasCoords) + height);
 
 			Tiles[column, i].GroundHeight = height;
-			Tiles[column, i].WaterVelocity = WaterVelocity.Down;
+			Tiles[column, i].WaterVelocity = WaterDirection.Down;
 		}
 	}
 	public int TileHeight(int x, int y)
@@ -114,7 +104,7 @@ public class Terrain
 		return Tiles[x, y].WaterHeight;
 	}
 
-	public void MoveWater(int fromX, int fromY, int toX, int toY, WaterVelocity velocity, bool allowEmpty)
+	public void MoveWater(int fromX, int fromY, int toX, int toY, WaterDirection velocity, bool allowEmpty)
 	{
 		if (toX < 0 || toY < 0 || toX >= Columns || toY >= Rows)
 		{

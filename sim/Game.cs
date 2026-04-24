@@ -99,7 +99,7 @@ public partial class Game : Node
 				for (int x = 0; x < simulator.Terrain.Columns; x++)
 				{
 					simulator.Terrain.Tiles[x, y].WaterHeight = 0;
-					simulator.Terrain.Tiles[x, y].WaterVelocity = WaterVelocity.None;
+					simulator.Terrain.Tiles[x, y].WaterVelocity = WaterDirection.None;
 				}
 			}
 			junkSystem.ClearAll();

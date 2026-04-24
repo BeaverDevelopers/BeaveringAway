@@ -28,42 +28,42 @@ public class WaterSimulation
 				var newDirection = (tick * 7 + x * 5 + y * 3 + i) % 5;
 				if (newDirection == 0)
 				{
-					direction = WaterVelocity.Down;
+					direction = WaterDirection.Down;
 				}
 				else if (newDirection == 1)
 				{
-					direction = WaterVelocity.Up;
+					direction = WaterDirection.Up;
 				}
 				else if (newDirection == 2)
 				{
-					direction = WaterVelocity.Right;
+					direction = WaterDirection.Right;
 				}
 				else if (newDirection == 3)
 				{
-					direction = WaterVelocity.Left;
+					direction = WaterDirection.Left;
 				}
 				else if (newDirection == 4)
 				{
-					direction = WaterVelocity.None;
+					direction = WaterDirection.None;
 				}
 			}
 
 			// TODO: Use a match statement or something instead.
-			if (direction == WaterVelocity.Up)
+			if (direction == WaterDirection.Up)
 			{
-				terrain.MoveWater(x, y, x, y - 1, WaterVelocity.Up, false);
+				terrain.MoveWater(x, y, x, y - 1, WaterDirection.Up, false);
 			}
-			if (direction == WaterVelocity.Down)
+			if (direction == WaterDirection.Down)
 			{
-				terrain.MoveWater(x, y, x, y + 1, WaterVelocity.Down, doSpread);
+				terrain.MoveWater(x, y, x, y + 1, WaterDirection.Down, doSpread);
 			}
-			if (direction == WaterVelocity.Left)
+			if (direction == WaterDirection.Left)
 			{
-				terrain.MoveWater(x, y, x - 1, y, WaterVelocity.Left, false);
+				terrain.MoveWater(x, y, x - 1, y, WaterDirection.Left, false);
 			}
-			if (direction == WaterVelocity.Right)
+			if (direction == WaterDirection.Right)
 			{
-				terrain.MoveWater(x, y, x + 1, y, WaterVelocity.Right, false);
+				terrain.MoveWater(x, y, x + 1, y, WaterDirection.Right, false);
 			}
 
 			if (i == 0) {
@@ -72,22 +72,13 @@ public class WaterSimulation
 		}
 	}
 
-	public static void Pacify(Terrain terrain, int x, int y, WaterVelocity exceptForDirection)
+	public static void Pacify(Terrain terrain, int x, int y)
 	{
 		if (x < 0 || y < 0 || x >= terrain.Columns || y >= terrain.Rows)
 		{
 			return;
 		}
 
-		if (terrain.Tiles[x, y].WaterVelocity == exceptForDirection)
-		{
-			return;
-		}
-
-		/*if (terrain.Tiles[x, y].DangerLevel < -20)
-		{
-			return;
-		}*/
 		terrain.Tiles[x, y].DangerLevel = -5;
 	}
 
@@ -115,7 +106,7 @@ public class WaterSimulation
 				terrain.WaterTiles[x, y].FlowY = 0;
 				if (terrain.Tiles[x, y].WaterHeight == 0)
 				{
-                    terrain.Tiles[x, y].WaterVelocity = WaterVelocity.None;
+                    terrain.Tiles[x, y].WaterVelocity = WaterDirection.None;
 					if (terrain.Tiles[x, y].WaterShown > 0)
 					{
 						terrain.Tiles[x, y].WaterShown--;
@@ -128,10 +119,18 @@ public class WaterSimulation
 
 				if (terrain.Tiles[x, y].ObstructionHeight > 0)
 				{
-					Pacify(terrain, x, y - 1, WaterVelocity.Down);
-                    Pacify(terrain, x, y + 1, WaterVelocity.Up);
-                    Pacify(terrain, x - 1, y, WaterVelocity.Right);
-                    Pacify(terrain, x + 1, y, WaterVelocity.Left);
+                    // If we are under water, we can only pacify the current tile.
+                    Pacify(terrain, x, y);
+
+					// Pacifying the surrounding since we are above water.
+                    if (terrain.Tiles[x, y].WaterHeight == 0)
+					{
+                        Pacify(terrain, x, y - 1);
+                        Pacify(terrain, x, y + 1);
+                        Pacify(terrain, x - 1, y);
+                        Pacify(terrain, x + 1, y);
+                    }
+
                 }
 			}
 		}

@@ -125,10 +125,10 @@ public class JunkSystem
 				var vel = terrain.Tiles[tx, ty].WaterVelocity;
 				(dirX, dirY) = vel switch
 				{
-					WaterVelocity.Down  => (0f, 1f),
-					WaterVelocity.Up    => (0f, -1f),
-					WaterVelocity.Left  => (-1f, 0f),
-					WaterVelocity.Right => (1f, 0f),
+					WaterDirection.Down  => (0f, 1f),
+					WaterDirection.Up    => (0f, -1f),
+					WaterDirection.Left  => (-1f, 0f),
+					WaterDirection.Right => (1f, 0f),
 					_ => (0f, 0f),
 				};
 			}
