@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://5twt8odhns0b"]
+
+[ext_resource type="Texture2D" uid="uid://c1e0w8t7sxwnw" path="res://icon.svg" id="1_nawbp"]
+[ext_resource type="Script" uid="uid://cctxqfqp620ib" path="res://fox/FoxMovement.cs" id="1_y32pt"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_y32pt"]
+size = Vector2(130, 130)
+
+[node name="fox" type="CharacterBody2D" unique_id=203894665]
+scale = Vector2(0.5, 0.5)
+script = ExtResource("1_y32pt")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1131454246]
+texture = ExtResource("1_nawbp")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2042222579]
+shape = SubResource("RectangleShape2D_y32pt")
