@@ -15,3 +15,7 @@ texture = ExtResource("1_nawbp")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2042222579]
 shape = SubResource("RectangleShape2D_y32pt")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="." unique_id=751489942]
+
+[connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="on_screen_exited"]

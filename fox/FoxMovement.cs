@@ -15,7 +15,8 @@ public partial class FoxMovement : CharacterBody2D
 	public override void _Ready()
 	{
 		player = GetNode<CharacterBody2D>("../player"); //get reference to player
-		
+		var onscreen = GetNode<VisibleOnScreenNotifier2D>("VisibleOnScreenNotifier2D");
+        var visibility = onscreen.Connect("on_screen_exited", new Callable(this, nameof(Destroy)));
 
 	}
 
@@ -27,8 +28,7 @@ public partial class FoxMovement : CharacterBody2D
         }
 		else
         {
-            Velocity = Vector2.Zero; //stop moving when not chasing
-            // Could add what is should do in "unactive" state here.
+            WalkAway(delta);
         }
         
 	}
@@ -45,18 +45,28 @@ public partial class FoxMovement : CharacterBody2D
             if (collider == player)
             {
                 GD.Print("Fox collided with player!");
-                Stop(); //stop moving when colliding with player
+                InventoryData.AddItem(1,-1); //steals one stick
+                GD.Print("Fox stole a stick!");
+                WalkAway(delta); //walk away from player after collision
             }
         }
     
      
 	}
 
-    public void Stop()
+    public void WalkAway(double delta)
     {
         isChasing = false; //stop chasing
-        Velocity = Vector2.Zero; //stop moving
-        GD.Print("Fox stopped moving.");
+        Vector2 direction = (GlobalPosition - player.GlobalPosition).Normalized(); //get direction from player
+		Velocity = direction * (speed * 0.5f); //set velocity away from player
+        var collision = MoveAndCollide(Velocity * (float)delta, false, (float)0.08, true);
         
+    }
+
+    public void Destroy()
+    {
+        //This never seems to be called.
+        QueueFree(); //remove fox from scene
+        GD.Print("Fox destroyed.");
     }
 }
