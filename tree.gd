@@ -12,13 +12,12 @@ func _ready() -> void:
 	
 	
 func _on_interact():
-	
 	#spawns the fox
 	var fox = FOX.instantiate()
 	fox.position = Vector2(60,60) #sets position of the fox
 	add_sibling(fox) #adds the fox in the scene
 	
-	#change the tree to a stump
+	#changes the tree to a stump
 	if sprite_2d.frame == 0:
 		sprite_2d.frame = 1
 		remove_child(collision_shape_2d) #removes the collision
