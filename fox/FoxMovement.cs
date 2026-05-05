@@ -49,10 +49,15 @@ public partial class FoxMovement : CharacterBody2D
             var collider = collision.GetCollider();
             if (collider == player)
             {
-                GD.Print("Fox collided with player!");
-                InventoryData.AddItem(1, -1);
-                GD.Print("Fox stole a stick!");
-                WalkAway(delta);
+                
+                if (InventoryData.Count > 0)
+                {                
+                    InventoryData.AddItem(1, -1);
+                    GD.Print("Fox stole a stick!");
+                    WalkAway(delta);
+                }
+                //If you don't have anything in your inventory the fox will keep following you until you pick something up
+                // Could do an else statement, that it maybe steals a log from the ground
             }
         }
     }
