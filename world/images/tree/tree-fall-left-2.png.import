@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bhjo4hdcudqbp"
-path="res://.godot/imported/tree-fall-right.png-7ad9e0c3fc62efe70ee12c06fe65a974.ctex"
+uid="uid://dwygavprd6bdf"
+path="res://.godot/imported/tree-fall-left-2.png-67632f3cd12ebdf3309966db34106dbc.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://world/images/tree/tree-fall-right.png"
-dest_files=["res://.godot/imported/tree-fall-right.png-7ad9e0c3fc62efe70ee12c06fe65a974.ctex"]
+source_file="res://world/images/tree/tree-fall-left-2.png"
+dest_files=["res://.godot/imported/tree-fall-left-2.png-67632f3cd12ebdf3309966db34106dbc.ctex"]
 
 [params]
 

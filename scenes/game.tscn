@@ -25,7 +25,7 @@ hud = NodePath("GameHUD")
 [node name="world" parent="." unique_id=403739864 instance=ExtResource("1_uwrxv")]
 position = Vector2(2, 0)
 
-[node name="player" parent="world" unique_id=2057284693 instance=ExtResource("3_0tnpc")]
+[node name="player" parent="world" unique_id=2057284693 groups=["player"] instance=ExtResource("3_0tnpc")]
 
 [node name="Tree" parent="world" unique_id=73844678 instance=ExtResource("5_vtaks")]
 position = Vector2(415, 277)

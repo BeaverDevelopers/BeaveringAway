@@ -2,40 +2,67 @@
 
 [ext_resource type="Script" uid="uid://bmpv8v53usar" path="res://scenes/tree.gd" id="1_viusy"]
 [ext_resource type="Texture2D" uid="uid://cn0verx5b17ha" path="res://world/images/tree and stump.png" id="2_viusy"]
-[ext_resource type="Texture2D" uid="uid://bhjo4hdcudqbp" path="res://world/images/tree/tree-fall-right.png" id="3_ake3r"]
+[ext_resource type="Texture2D" uid="uid://ctkrvgniw78ms" path="res://world/images/tree/tree-fall-right-2.png" id="3_ake3r"]
 [ext_resource type="PackedScene" uid="uid://hu6w6rnkn2r5" path="res://Interaction/interactable.tscn" id="3_qd6xs"]
-[ext_resource type="Texture2D" uid="uid://bjmefxjien5o8" path="res://world/images/tree/trees.png" id="4_18mvg"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vplca"]
-size = Vector2(51, 69)
+size = Vector2(23, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_18mvg"]
+atlas = ExtResource("3_ake3r")
+region = Rect2(0, 0, 117, 110)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_dmmp0"]
 atlas = ExtResource("3_ake3r")
-region = Rect2(0, 0, 58, 110)
+region = Rect2(122, 0, 117, 110)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_m26wl"]
 atlas = ExtResource("3_ake3r")
-region = Rect2(116, 0, 58, 110)
+region = Rect2(244, 0, 117, 110)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_5yujg"]
 atlas = ExtResource("3_ake3r")
-region = Rect2(232, 0, 58, 110)
+region = Rect2(366, 0, 117, 110)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_r7adx"]
 atlas = ExtResource("3_ake3r")
-region = Rect2(336, 0, 84, 110)
+region = Rect2(488, 0, 117, 110)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_xprpn"]
 atlas = ExtResource("3_ake3r")
-region = Rect2(437, 0, 117, 110)
+region = Rect2(610, 0, 117, 110)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2bmcu"]
-atlas = ExtResource("4_18mvg")
-region = Rect2(7, 0, 50, 80)
+atlas = ExtResource("3_ake3r")
+region = Rect2(732, 0, 117, 110)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_528u0"]
+atlas = ExtResource("3_ake3r")
+region = Rect2(854, 0, 117, 110)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m0l3a"]
+atlas = ExtResource("3_ake3r")
+region = Rect2(976, 0, 117, 110)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_70dru"]
+atlas = ExtResource("3_ake3r")
+region = Rect2(1098, 0, 117, 110)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l31us"]
+atlas = ExtResource("3_ake3r")
+region = Rect2(1226, 0, 105, 110)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_528u0"]
 animations = [{
+"frames": [],
+"loop": false,
+"name": &"fall_left",
+"speed": 5.0
+}, {
 "frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_18mvg")
+}, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_dmmp0")
 }, {
@@ -50,17 +77,24 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_xprpn")
-}],
-"loop": true,
-"name": &"fall",
-"speed": 5.0
 }, {
-"frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_2bmcu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_528u0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m0l3a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_70dru")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_l31us")
 }],
-"loop": true,
-"name": &"idle",
+"loop": false,
+"name": &"fall_right",
 "speed": 5.0
 }]
 
@@ -71,6 +105,7 @@ size = Vector2(44.333336, 60)
 script = ExtResource("1_viusy")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1422986373]
+visible = false
 texture_filter = 1
 texture_repeat = 1
 scale = Vector2(0.3, 0.3)
@@ -78,17 +113,15 @@ texture = ExtResource("2_viusy")
 hframes = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1611133071]
-visible = false
 show_behind_parent = true
+position = Vector2(-1, 39)
 shape = SubResource("RectangleShape2D_vplca")
 
 [node name="TreeAnim" type="AnimatedSprite2D" parent="." unique_id=313139479]
-visible = false
-position = Vector2(0, -22.999998)
+position = Vector2(63.000004, 3.9999962)
 scale = Vector2(1.993447, 1.993447)
 sprite_frames = SubResource("SpriteFrames_528u0")
-animation = &"fall"
-frame = 4
+animation = &"fall_right"
 
 [node name="Interactable" parent="." unique_id=1712477042 instance=ExtResource("3_qd6xs")]
 interact_name = "Chop Tree"
