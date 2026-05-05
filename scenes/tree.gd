@@ -2,9 +2,7 @@ extends StaticBody2D
 
 @onready var interactable: Area2D = $Interactable
 @onready var sprite_2d: Sprite2D = $Sprite2D
-#@onready var log: Sprite2D = $Log
-#@onready var log_2: Sprite2D = $Log2
-#@onready var log_3: Sprite2D = $Log3
+@onready var FOX: PackedScene = preload("res://fox/fox.tscn") #loads the fox scene
 @onready var LOG: PackedScene = preload("res://scenes/log.tscn") #loads the log scene
 @onready var collision_shape_2d: CollisionShape2D = $CollisionShape2D
 
@@ -14,9 +12,14 @@ func _ready() -> void:
 	
 	
 func _on_interact():
+	#spawns the fox
+	var fox = FOX.instantiate()
+	fox.position = Vector2(60,60) #sets position of the fox
+	add_sibling(fox) #adds the fox in the scene
+	
+	#changes the tree to a stump
 	if sprite_2d.frame == 0:
 		sprite_2d.frame = 1
-		#log.visible = true
 		remove_child(collision_shape_2d) #removes the collision
 		remove_child(interactable) #removes the interactable component that should now be the logs
 		interactable.is_interactable = false
