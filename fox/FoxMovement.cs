@@ -3,7 +3,7 @@ using System;
 
 public partial class FoxMovement : CharacterBody2D
 {
-    public float speed = 100f;
+    public float speed = 220f;
     CharacterBody2D player;
     bool isChasing = true;
 
@@ -61,7 +61,7 @@ public partial class FoxMovement : CharacterBody2D
     {
         isChasing = false;
         Vector2 direction = (GlobalPosition - player.GlobalPosition).Normalized();
-        Velocity = direction * (speed * 0.5f);
+        Velocity = direction * (speed * 0.8f);
         MoveAndCollide(Velocity * (float)delta, false, (float)0.08, true);
     }
 
@@ -92,7 +92,10 @@ public partial class FoxMovement : CharacterBody2D
 
     public void Destroy()
     {
-        QueueFree();
-        GD.Print("Fox destroyed.");
+        if (!isChasing)
+        {
+            QueueFree();
+            GD.Print("Fox destroyed.");
+        }
     }
 }
