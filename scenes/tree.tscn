@@ -2,10 +2,67 @@
 
 [ext_resource type="Script" uid="uid://bmpv8v53usar" path="res://scenes/tree.gd" id="1_viusy"]
 [ext_resource type="Texture2D" uid="uid://cn0verx5b17ha" path="res://world/images/tree and stump.png" id="2_viusy"]
+[ext_resource type="Texture2D" uid="uid://bhjo4hdcudqbp" path="res://world/images/tree/tree-fall-right.png" id="3_ake3r"]
 [ext_resource type="PackedScene" uid="uid://hu6w6rnkn2r5" path="res://Interaction/interactable.tscn" id="3_qd6xs"]
+[ext_resource type="Texture2D" uid="uid://bjmefxjien5o8" path="res://world/images/tree/trees.png" id="4_18mvg"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vplca"]
 size = Vector2(51, 69)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dmmp0"]
+atlas = ExtResource("3_ake3r")
+region = Rect2(0, 0, 58, 110)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m26wl"]
+atlas = ExtResource("3_ake3r")
+region = Rect2(116, 0, 58, 110)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5yujg"]
+atlas = ExtResource("3_ake3r")
+region = Rect2(232, 0, 58, 110)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r7adx"]
+atlas = ExtResource("3_ake3r")
+region = Rect2(336, 0, 84, 110)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xprpn"]
+atlas = ExtResource("3_ake3r")
+region = Rect2(437, 0, 117, 110)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2bmcu"]
+atlas = ExtResource("4_18mvg")
+region = Rect2(7, 0, 50, 80)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_528u0"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dmmp0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m26wl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5yujg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r7adx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xprpn")
+}],
+"loop": true,
+"name": &"fall",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2bmcu")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ake3r"]
 size = Vector2(44.333336, 60)
@@ -24,6 +81,14 @@ hframes = 2
 visible = false
 show_behind_parent = true
 shape = SubResource("RectangleShape2D_vplca")
+
+[node name="TreeAnim" type="AnimatedSprite2D" parent="." unique_id=313139479]
+visible = false
+position = Vector2(0, -22.999998)
+scale = Vector2(1.993447, 1.993447)
+sprite_frames = SubResource("SpriteFrames_528u0")
+animation = &"fall"
+frame = 4
 
 [node name="Interactable" parent="." unique_id=1712477042 instance=ExtResource("3_qd6xs")]
 interact_name = "Chop Tree"
