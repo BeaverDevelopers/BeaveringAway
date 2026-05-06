@@ -1,0 +1,16 @@
+// https://godotshaders.com/shader/topdown-game-2d-cloud-shader/
+// I think a physical cloud would be nicer... like this one: https://godotshaders.com/shader/cloud-cast-shadow-shader-2d/
+
+shader_type canvas_item;
+//render_mode unshaded;
+
+uniform sampler2D noise_texture: repeat_enable, filter_nearest;
+uniform float density: hint_range(0.0, 1.0) = 0.25;
+uniform vec2 speed = vec2(0.02, 0.01);
+
+void fragment() {
+	vec2 uv = UV + speed * TIME;
+	float noise = texture(noise_texture, uv).r;
+	float fog = clamp(noise * 2.0 - 1.0, 0.0, 1.0);
+	COLOR.a *= fog * density;
+}

@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bmpv8v53usar" path="res://scenes/tree.gd" id="1_viusy"]
 [ext_resource type="Texture2D" uid="uid://cn0verx5b17ha" path="res://world/images/tree and stump.png" id="2_viusy"]
+[ext_resource type="Material" uid="uid://cii5tkm2h0esy" path="res://materials/wind.tres" id="3_18mvg"]
 [ext_resource type="Texture2D" uid="uid://ctkrvgniw78ms" path="res://world/images/tree/tree-fall-right-2.png" id="3_ake3r"]
 [ext_resource type="PackedScene" uid="uid://hu6w6rnkn2r5" path="res://Interaction/interactable.tscn" id="3_qd6xs"]
 
@@ -118,6 +119,7 @@ position = Vector2(-1, 39)
 shape = SubResource("RectangleShape2D_vplca")
 
 [node name="TreeAnim" type="AnimatedSprite2D" parent="." unique_id=313139479]
+material = ExtResource("3_18mvg")
 position = Vector2(63.000004, 3.9999962)
 scale = Vector2(1.993447, 1.993447)
 sprite_frames = SubResource("SpriteFrames_528u0")

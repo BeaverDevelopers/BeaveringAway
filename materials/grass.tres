@@ -1,0 +1,19 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://u2twuo8lpsr6"]
+
+[ext_resource type="Shader" uid="uid://dqan1ic2ei7vv" path="res://materials/grass.gdshader" id="1_oysvd"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_oysvd"]
+frequency = 0.0181
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_322h8"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_oysvd")
+seamless = true
+
+[resource]
+shader = ExtResource("1_oysvd")
+shader_parameter/noise_texture = SubResource("NoiseTexture2D_322h8")
+shader_parameter/green = Color(0, 0.7348626, 0, 1)
+shader_parameter/greener = Color(0, 0.78039217, 0, 1)
+shader_parameter/density = 32.00000152

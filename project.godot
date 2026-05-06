@@ -11,14 +11,15 @@ config_version=5
 [application]
 
 config/name="Beavering Away"
-run/main_scene="uid://d3ac13jvgv87k"
+run/main_scene="uid://dgh75bangq83e"
 config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [display]
 
-window/size/viewport_width=977
-window/size/viewport_height=549
+window/size/viewport_width=1280
+window/size/viewport_height=960
+window/stretch/mode="viewport"
 
 [dotnet]
 

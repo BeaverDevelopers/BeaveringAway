@@ -22,7 +22,7 @@ script = ExtResource("1_yqjtg")
 MapNode = NodePath("world")
 hud = NodePath("GameHUD")
 
-[node name="world" parent="." unique_id=403739864 instance=ExtResource("1_uwrxv")]
+[node name="world" parent="." unique_id=1920069822 instance=ExtResource("1_uwrxv")]
 position = Vector2(2, 0)
 
 [node name="player" parent="world" unique_id=2057284693 groups=["player"] instance=ExtResource("3_0tnpc")]
