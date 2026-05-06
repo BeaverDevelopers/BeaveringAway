@@ -9,4 +9,6 @@ public partial class ItemData : Resource
 
     // 物品图标
     [Export] public Texture2D Icon;
+
+    [Export] public int ItemCount = 1;
 }
