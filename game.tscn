@@ -2,7 +2,9 @@
 
 [ext_resource type="PackedScene" uid="uid://dcap6ci12uy2g" path="res://world/world.ldtk" id="1_uwrxv"]
 [ext_resource type="Script" uid="uid://7ckbrq7wcces" path="res://sim/Game.cs" id="1_yqjtg"]
+[ext_resource type="PackedScene" uid="uid://d2l4ew4d5dbh2" path="res://scenes/ambience.tscn" id="2_hve3p"]
 [ext_resource type="PackedScene" uid="uid://lqrn2i626md4" path="res://scenes/player.tscn" id="3_0tnpc"]
+[ext_resource type="PackedScene" uid="uid://g2fcng8hjdv0" path="res://scenes/clouds.tscn" id="3_mfdv2"]
 [ext_resource type="PackedScene" uid="uid://dwxdlrvfoand2" path="res://UI/GameHUD.tscn" id="5_iywne"]
 [ext_resource type="PackedScene" uid="uid://clxfw103c3bt1" path="res://scenes/tree.tscn" id="5_vtaks"]
 [ext_resource type="Texture2D" uid="uid://bg01ox1deq3h8" path="res://world/images/Snipaste_2026-04-07_22-18-05.png" id="6_p57ef"]
@@ -21,10 +23,15 @@ script = ExtResource("1_yqjtg")
 MapNode = NodePath("world")
 hud = NodePath("GameHUD")
 
-[node name="world" parent="." unique_id=403739864 instance=ExtResource("1_uwrxv")]
+[node name="AudioStreamPlayer2D" parent="." unique_id=1664354570 instance=ExtResource("2_hve3p")]
+
+[node name="Clouds" parent="." unique_id=514881015 instance=ExtResource("3_mfdv2")]
+
+[node name="world" parent="." unique_id=1487674054 instance=ExtResource("1_uwrxv")]
 position = Vector2(2, 0)
 
-[node name="player" parent="world" unique_id=2057284693 instance=ExtResource("3_0tnpc")]
+[node name="player" parent="world" unique_id=2057284693 groups=["player"] instance=ExtResource("3_0tnpc")]
+position = Vector2(1028, 352)
 
 [node name="Tree" parent="world" unique_id=73844678 instance=ExtResource("5_vtaks")]
 position = Vector2(415, 277)

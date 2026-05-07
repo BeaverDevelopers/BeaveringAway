@@ -1,25 +1,15 @@
 [gd_scene format=3 uid="uid://dgh75bangq83e"]
 
+[ext_resource type="PackedScene" uid="uid://g2fcng8hjdv0" path="res://scenes/clouds.tscn" id="1_4bqqs"]
 [ext_resource type="Material" uid="uid://u2twuo8lpsr6" path="res://materials/grass.tres" id="1_m8u5f"]
 [ext_resource type="PackedScene" uid="uid://lqrn2i626md4" path="res://scenes/player.tscn" id="1_rupst"]
-[ext_resource type="Material" uid="uid://ph6paxhy8cm2" path="res://materials/clouds.tres" id="2_wt17y"]
 [ext_resource type="TileSet" uid="uid://rvg4vmjit6ia" path="res://tiles/water.tres" id="3_is3ju"]
 [ext_resource type="PackedScene" uid="uid://clxfw103c3bt1" path="res://scenes/tree.tscn" id="5_o00ia"]
-[ext_resource type="AudioStream" uid="uid://ixyfbn4r7r3l" path="res://sounds/background_music.mp3" id="6_4bqqs"]
+[ext_resource type="PackedScene" uid="uid://d2l4ew4d5dbh2" path="res://scenes/ambience.tscn" id="6_4bqqs"]
 
 [node name="Playground" type="Node2D" unique_id=1162118845]
 
-[node name="Clouds" type="Parallax2D" parent="." unique_id=1489119339]
-repeat_size = Vector2(1280, 960)
-
-[node name="CloudImplementation" type="ColorRect" parent="Clouds" unique_id=683560533]
-z_index = 1
-material = ExtResource("2_wt17y")
-offset_right = 1280.0
-offset_bottom = 960.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-color = Color(0.23031491, 0.23031494, 0.23031494, 1)
+[node name="Clouds" parent="." unique_id=514881015 instance=ExtResource("1_4bqqs")]
 
 [node name="World" type="Node2D" parent="." unique_id=1270347130]
 
@@ -37,8 +27,4 @@ offset_bottom = 10240.0
 [node name="Tree" parent="World" unique_id=862460062 instance=ExtResource("5_o00ia")]
 position = Vector2(731, 392)
 
-[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=1609128013]
-stream = ExtResource("6_4bqqs")
-volume_db = -14.555
-autoplay = true
-parameters/looping = true
+[node name="AudioStreamPlayer2D" parent="." unique_id=1664354570 instance=ExtResource("6_4bqqs")]

@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Data.Common;
 using System.Diagnostics;
 
 public enum WaterDirection : byte
@@ -14,12 +15,14 @@ public enum WaterDirection : byte
 [DebuggerDisplay("Height: {GroundHeight}, Water: {WaterHeight}")]
 public struct TerrainTile
 {
-    public WaterDirection WaterVelocity;
-    public bool Locked;
+
+    public WaterDirection WaterDirection;
+
+    // How much water is not allowed to move?
+    public byte WaterLocked;
     public byte WaterHeight;
     public byte GroundHeight;
     public byte ObstructionHeight;
-    public byte WaterShown;
     public byte ObstructionHealth;
     public sbyte DangerLevel;
 
@@ -28,6 +31,13 @@ public struct TerrainTile
         return (int)GroundHeight * 5 + ObstructionHeight * 2 + WaterHeight;
     }
 }
+
+public struct WaterRandomTickData
+{
+    public int DistanceToSea;
+    public int NextSoak;
+}
+
 
 public struct WaterFlow
 {
@@ -43,50 +53,36 @@ public class Terrain
     public int Columns;
     public TerrainTile[,] Tiles;
     public WaterFlow[,] WaterTiles;
+    public WaterRandomTickData[,] WaterRandomTickData;
+    public Vector2I[] ProcessingOrder;
 
-    const int NORMAL_CLIFF_HEIGHT = 1;
+    public const byte NORMAL_TILE_HEIGHT = 2;
+    public const byte MUDFLOOR_TILE_HEIGHT = 1;
+    WaterRandomTickData BAD_WATER_RANDOM_TICK_DATA;
 
-    private int atlasCoordsToHeightChange(Vector2I vec)
+    private byte atlasCoordsToHeight(Vector2I vec)
     {
-        if (vec.Y == 11 && vec.X >= 8 && vec.X <= 10)
+        if (vec.X >= 1 && vec.X <= 8 && vec.Y >= 6 && vec.Y < 10)
         {
-            return NORMAL_CLIFF_HEIGHT;
+            return MUDFLOOR_TILE_HEIGHT;
         }
-        if (vec.Y == 12 && vec.X == 7)
-        {
-            return NORMAL_CLIFF_HEIGHT;
-        }
-        if (vec.Y == 12 && vec.X == 11)
-        {
-            return NORMAL_CLIFF_HEIGHT;
-        }
-        if (vec.Y == 15 && vec.X >= 8 && vec.X <= 10)
-        {
-            return -NORMAL_CLIFF_HEIGHT;
-        }
-        if (vec.Y == 14 && vec.X == 8)
-        {
-            return -NORMAL_CLIFF_HEIGHT;
-        }
-        if (vec.Y == 14 && vec.X == 11)
-        {
-            return -NORMAL_CLIFF_HEIGHT;
-        }
-        return 0;
+        return NORMAL_TILE_HEIGHT;
     }
 
-    private void calculateGroundHeightForColumn(int column, int rows, TileMapLayer from)
-    {
-        byte height = 128;
-        for (int i = 0; i < rows; i++)
-        {
-            var atlasCoords = from.GetCellAtlasCoords(new Vector2I(column, i));
-            height = (byte)(atlasCoordsToHeightChange(atlasCoords) + height);
-
-            Tiles[column, i].GroundHeight = height;
-            Tiles[column, i].WaterVelocity = WaterDirection.Down;
-        }
+    private bool atlasCoordsIsSeaTile(Vector2I vec) {
+        return (vec.X >= 13 && vec.Y <= 18 && vec.X >= 17 && vec.Y < 21);
     }
+
+    public WaterRandomTickData GetWaterRandomTickData(int x, int y)
+    {
+        if (x < 0 || y < 0 || x >= Columns || y >= Rows)
+        {
+            return BAD_WATER_RANDOM_TICK_DATA;
+        }
+
+        return WaterRandomTickData[x, y];
+    }
+
     public int TileHeight(int x, int y)
     {
         if (x < 0 || y < 0 || x >= Columns || y >= Rows)
@@ -159,8 +155,7 @@ public class Terrain
         // TODO: Perform saturated add and remove using bitwise operations instead.
         Tiles[fromX, fromY].WaterHeight = (byte)Math.Clamp(Tiles[fromX, fromY].WaterHeight - 1, 0, 255);
         Tiles[toX, toY].WaterHeight = (byte)Math.Clamp((int)1 + Tiles[toX, toY].WaterHeight, 0, 255);
-        Tiles[toX, toY].WaterVelocity = velocity;
-        Tiles[toX, toY].Locked = true;
+        Tiles[toX, toY].WaterLocked = (byte)Math.Clamp((int)1 + Tiles[toX, toY].WaterHeight, 0, 255);
         if (Tiles[toX, toY].ObstructionHeight == 0 && Tiles[toX, toY].DangerLevel > -100 && Tiles[toX, toY].DangerLevel < 100)
         {
             // Hopefully the compiler is smart enough to unroll here.
@@ -185,15 +180,16 @@ public class Terrain
         int dy = toY - fromY;
         WaterTiles[fromX, fromY].FlowX += dx;
         WaterTiles[fromX, fromY].FlowY += dy;
-        Tiles[toX, toY].WaterShown = 20;
     }
 
     public void LoadTerrain(Node fromTerrain)
     {
-        var bottomGround = fromTerrain.GetNode<TileMapLayer>("Level_0/Ground");
-        Debug.Assert(bottomGround != null);
+        BAD_WATER_RANDOM_TICK_DATA.DistanceToSea = int.MaxValue;
 
-        var mapBounds = bottomGround.GetUsedRect();
+        var terrain = fromTerrain.GetNode<TileMapLayer>("Level_0/Terrain");
+        Debug.Assert(terrain != null);
+
+        var mapBounds = terrain.GetUsedRect();
         var rows = mapBounds.Size.Y;
         var columns = mapBounds.Size.X;
         Debug.WriteLine($"Creating simulation tiles of size: {rows}, {columns}");
@@ -201,13 +197,27 @@ public class Terrain
         Rows = rows;
         Tiles = new TerrainTile[columns, rows];
         WaterTiles = new WaterFlow[columns, rows];
+        WaterRandomTickData = new WaterRandomTickData[columns, rows];
+        ProcessingOrder = new Vector2I[columns * rows];
 
         var groundOverlay = fromTerrain.GetNode<TileMapLayer>("Level_0/Ground/Ground1");
         Debug.Assert(groundOverlay != null);
 
-        for (int i = 0; i < columns; i++)
+        for (int y = 0; y < Rows; y++)
         {
-            calculateGroundHeightForColumn(i, rows, groundOverlay);
+            for (int x = 0; x < Columns; x++)
+            {
+                int i = x + y * Rows;
+                var coord = new Vector2I(x, y);
+                ProcessingOrder[i] = coord;
+                
+                var atlasCoords = terrain.GetCellAtlasCoords(coord);
+                byte height = atlasCoordsToHeight(atlasCoords);
+                Tiles[x, y].GroundHeight = height;
+                WaterRandomTickData[x, y].DistanceToSea = atlasCoordsIsSeaTile(atlasCoords) ? 0 : (height == MUDFLOOR_TILE_HEIGHT ? int.MaxValue / 2 : int.MaxValue);
+                WaterRandomTickData[x, y].NextSoak = Random.Shared.Next(0, 800);
+            }
         }
+        Random.Shared.Shuffle(ProcessingOrder);
     }
 }

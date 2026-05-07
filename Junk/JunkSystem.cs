@@ -122,7 +122,7 @@ public class JunkSystem
 			}
 			else
 			{
-				var vel = terrain.Tiles[tx, ty].WaterVelocity;
+				var vel = terrain.Tiles[tx, ty].WaterDirection;
 				(dirX, dirY) = vel switch
 				{
 					WaterDirection.Down  => (0f, 1f),

@@ -3,69 +3,31 @@ using System.Diagnostics;
 
 public class WaterSimulation
 {
-    private static void simulateWaterTile(Terrain terrain, int x, int y, int tick)
+    private static void SimulateWaterTile(Terrain terrain, int x, int y, int tick)
     {
-        var waterHeight = (int)terrain.Tiles[x, y].WaterHeight;
-
-        if (terrain.Tiles[x, y].Locked)
-        {
-            return;
-        }
-
-        var adjacentWater = terrain.TileWater(x + 1, y) + terrain.TileWater(x - 1, y) + terrain.TileWater(x, y + 1) + terrain.TileWater(x, y - 1);
-
+        int waterHeight = ((int)terrain.Tiles[x, y].WaterHeight) - ((int)terrain.Tiles[x, y].WaterLocked);
         var steps = Math.Min(waterHeight, 40);
 
-        var direction = terrain.Tiles[x, y].WaterVelocity;
+        var direction = terrain.Tiles[x, y].WaterDirection;
         for (int i = 0; i < steps; i++)
         {
-            var doSpread = (tick % 3 == 1);
-            if (i > 0 || doSpread)
-            {
-                var newDirection = (tick * 7 + x * 5 + y * 3 + i) % 5;
-                if (newDirection == 0)
-                {
-                    direction = WaterDirection.Down;
-                }
-                else if (newDirection == 1)
-                {
-                    direction = WaterDirection.Up;
-                }
-                else if (newDirection == 2)
-                {
+            switch (direction) {
+                case WaterDirection.Up:
+                    terrain.MoveWater(x, y, x, y - 1, WaterDirection.Up, i == 0);
                     direction = WaterDirection.Right;
-                }
-                else if (newDirection == 3)
-                {
+                    break;
+                case WaterDirection.Down:
+                    terrain.MoveWater(x, y, x, y + 1, WaterDirection.Down, i == 0);
+                    direction = WaterDirection.Up;
+                    break;
+                case WaterDirection.Left:
+                    terrain.MoveWater(x, y, x - 1, y, WaterDirection.Left, i == 0);
+                    direction = WaterDirection.Down;
+                    break;
+                case WaterDirection.Right:
+                    terrain.MoveWater(x, y, x + 1, y, WaterDirection.Right, i == 0);
                     direction = WaterDirection.Left;
-                }
-                else if (newDirection == 4)
-                {
-                    direction = WaterDirection.None;
-                }
-            }
-
-            // TODO: Use a match statement or something instead.
-            if (direction == WaterDirection.Up)
-            {
-                terrain.MoveWater(x, y, x, y - 1, WaterDirection.Up, false);
-            }
-            if (direction == WaterDirection.Down)
-            {
-                terrain.MoveWater(x, y, x, y + 1, WaterDirection.Down, doSpread);
-            }
-            if (direction == WaterDirection.Left)
-            {
-                terrain.MoveWater(x, y, x - 1, y, WaterDirection.Left, false);
-            }
-            if (direction == WaterDirection.Right)
-            {
-                terrain.MoveWater(x, y, x + 1, y, WaterDirection.Right, false);
-            }
-
-            if (i == 0)
-            {
-                terrain.Tiles[x, y].WaterVelocity = direction;
+                    break;
             }
         }
     }
@@ -100,33 +62,14 @@ public class WaterSimulation
         {
             for (int x = 0; x < terrain.Columns; x++)
             {
-                // Simulate the ground soaking some water.
-                if ((tick * 2 + x * 71 + y * 33) % 2400 == 0)
-                {
-                    terrain.Tiles[x, y].WaterHeight = (byte)Math.Max(0, terrain.Tiles[x, y].WaterHeight - 1);
-                }
-
-                if (terrain.Tiles[x, y].WaterShown < 3 && terrain.Tiles[x, y].DangerLevel > 0)
+                if (terrain.Tiles[x, y].DangerLevel > 0)
                 {
                     terrain.Tiles[x, y].DangerLevel -= 1;
                 }
 
                 // Reset per-tick state.
-                terrain.Tiles[x, y].Locked = false;
                 terrain.WaterTiles[x, y].FlowX = 0;
                 terrain.WaterTiles[x, y].FlowY = 0;
-                if (terrain.Tiles[x, y].WaterHeight == 0)
-                {
-                    terrain.Tiles[x, y].WaterVelocity = WaterDirection.None;
-                    if (terrain.Tiles[x, y].WaterShown > 0)
-                    {
-                        terrain.Tiles[x, y].WaterShown--;
-                    }
-                }
-                else
-                {
-                    terrain.Tiles[x, y].WaterShown = (byte)Math.Max((int)terrain.Tiles[x, y].WaterShown, 1);
-                }
 
                 if (terrain.Tiles[x, y].ObstructionHeight > 0)
                 {
@@ -155,22 +98,85 @@ public class WaterSimulation
             }
         }
 
-        for (int y = terrain.Rows - 1; y >= 0; y--)
+        // Slowly recalculate distance to sea.
+        // And maybe soak water.
+        for (int i = 0; i < 7350; i++)
         {
-            // We don't want to pick a favorite side. So we alternate.
-            if ((tick + y) % 2 == 0)
+            int idx = (i + tick * 7350) % terrain.ProcessingOrder.Length;
+            Godot.Vector2I pos = terrain.ProcessingOrder[idx];
+
+            var currentDistance = terrain.WaterRandomTickData[pos.X, pos.Y].DistanceToSea;
+            if (currentDistance == 0)
             {
-                for (int x = 0; x < terrain.Columns; x++)
-                {
-                    simulateWaterTile(terrain, x, y, tick);
-                }
+                continue;
+            }
+
+            var up    = terrain.GetWaterRandomTickData(pos.X, pos.Y - 1).DistanceToSea;
+            var down  = terrain.GetWaterRandomTickData(pos.X, pos.Y + 1).DistanceToSea;
+            var left  = terrain.GetWaterRandomTickData(pos.X - 1, pos.Y).DistanceToSea;
+            var right = terrain.GetWaterRandomTickData(pos.X + 1, pos.Y).DistanceToSea;
+
+            if (terrain.Tiles[pos.X, pos.Y].GroundHeight == Terrain.MUDFLOOR_TILE_HEIGHT)
+            {
+                terrain.WaterRandomTickData[pos.X, pos.Y].DistanceToSea = Math.Min(Math.Min(Math.Min(up, down), Math.Min(left, right)) + 1, int.MaxValue / 2) + terrain.Tiles[pos.X, pos.Y].WaterHeight;
+            }
+            if (currentDistance > up && i % 4 != 0)
+            {
+                terrain.Tiles[pos.X, pos.Y].WaterDirection = WaterDirection.Up;
+            }
+            if (currentDistance > down && i % 4 != 1)
+            {
+                terrain.Tiles[pos.X, pos.Y].WaterDirection = WaterDirection.Down;
+            }
+            if (currentDistance > left && i % 4 != 2)
+            {
+                terrain.Tiles[pos.X, pos.Y].WaterDirection = WaterDirection.Left;
+            }
+            if (currentDistance > right && i % 4 != 3)
+            {
+                terrain.Tiles[pos.X, pos.Y].WaterDirection = WaterDirection.Right;
+            }
+
+            // Water soaking starts here.
+            if (terrain.WaterRandomTickData[pos.X, pos.Y].NextSoak > 0)
+            {
+                terrain.WaterRandomTickData[pos.X, pos.Y].NextSoak--;
             }
             else
             {
-                for (int x = terrain.Columns - 1; x >= 0; x--)
+                terrain.Tiles[pos.X, pos.Y].WaterHeight = (byte)Math.Max(0, terrain.Tiles[pos.X, pos.Y].WaterHeight - 1);
+
+                int nextSoakIn = 200;
+                if (terrain.Tiles[pos.X, pos.Y].GroundHeight == Terrain.MUDFLOOR_TILE_HEIGHT)
                 {
-                    simulateWaterTile(terrain, x, y, tick);
+                    if (currentDistance < int.MaxValue / 2)
+                    {
+                        nextSoakIn = 1600;
+                    }
+                    else
+                    {
+                        nextSoakIn = 800;
+                    }
                 }
+                terrain.WaterRandomTickData[pos.X, pos.Y].NextSoak = nextSoakIn;
+            }
+        }
+
+        // The bread and butter.
+        for (int y = 0; y < terrain.Rows; y++)
+        {
+            for (int x = 0; x < terrain.Columns; x++)
+            {
+                if (terrain.WaterRandomTickData[x, y].DistanceToSea < 5)
+                {
+                    // We reachedd the sea. No need to render water anymore.
+                    terrain.Tiles[x, y].WaterHeight = 0;
+                }
+
+                SimulateWaterTile(terrain, x, y, tick);
+
+                // Free the water.
+                terrain.Tiles[x, y].WaterLocked = 0;
             }
         }
 
