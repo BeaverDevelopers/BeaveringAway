@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://dwahj54aoif2t" path="res://world/images/player/Beaver down walk sprite sheet.png" id="4_qlg0r"]
 [ext_resource type="Texture2D" uid="uid://cyc7m5iyoef0j" path="res://world/images/player/Beaver side walk sprite sheet.png" id="5_tuyoq"]
 [ext_resource type="Texture2D" uid="uid://baxrjfjnv43bt" path="res://world/images/player/beaver walk up sprite sheet.png" id="6_tuyoq"]
+[ext_resource type="AudioStream" uid="uid://bvpnghsejbtvh" path="res://sounds/grass_run.mp3" id="7_fjrip"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_p57ef"]
 radius = 18.0
@@ -168,3 +169,7 @@ animation = &"walk_up"
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1231891022]
 position_smoothing_enabled = true
+
+[node name="AudioRunPlayer" type="AudioStreamPlayer2D" parent="." unique_id=1067284633]
+stream = ExtResource("7_fjrip")
+parameters/looping = true

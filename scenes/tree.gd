@@ -5,6 +5,7 @@ extends StaticBody2D
 @onready var FOX: PackedScene = preload("res://fox/fox.tscn")
 @onready var LOG: PackedScene = preload("res://scenes/log.tscn")
 @onready var collision_shape_2d: CollisionShape2D = $CollisionShape2D
+@onready var tree_falling_audio: AudioStreamPlayer2D = $FallingSoundPlayer
 
 func _ready() -> void:
 	# Setup interaction and default tree pose
@@ -34,6 +35,9 @@ func _on_interact():
 
 	# Check which side the player is on
 	var player_side = player.global_position.x - global_position.x
+	
+	tree_falling_audio.play()
+	await get_tree().create_timer(1).timeout
 	
 	# Play fall animation based on player position
 	if player_side > 0:

@@ -4,6 +4,7 @@ public partial class PlayerMove : CharacterBody2D
 {
     public const float Speed = 300.0f;
     private AnimatedSprite2D _animSprite;
+    private AudioStreamPlayer2D _audioRunPlayer;
 
     // 保存最后朝向（用于idle）
     private Vector2 _lastDirection = Vector2.Down;
@@ -11,6 +12,7 @@ public partial class PlayerMove : CharacterBody2D
     public override void _Ready()
     {
         _animSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+        _audioRunPlayer = GetNode<AudioStreamPlayer2D>("AudioRunPlayer");
         GetTree().Root.GetNode<Game>("Node2D").MainCamera = GetNode<Camera2D>("Camera2D");
     }
 
@@ -23,6 +25,13 @@ public partial class PlayerMove : CharacterBody2D
         if (direction != Vector2.Zero)
         {
             _lastDirection = direction;
+            if (!_audioRunPlayer.Playing)
+            {
+                _audioRunPlayer.Play();
+            }
+        }
+        else {
+            _audioRunPlayer.Stop();
         }
 
         // 动画控制

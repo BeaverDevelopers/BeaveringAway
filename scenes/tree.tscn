@@ -5,6 +5,7 @@
 [ext_resource type="Material" uid="uid://cii5tkm2h0esy" path="res://materials/wind.tres" id="3_18mvg"]
 [ext_resource type="Texture2D" uid="uid://ctkrvgniw78ms" path="res://world/images/tree/tree-fall-right-2.png" id="3_ake3r"]
 [ext_resource type="PackedScene" uid="uid://hu6w6rnkn2r5" path="res://Interaction/interactable.tscn" id="3_qd6xs"]
+[ext_resource type="AudioStream" uid="uid://c6vlftid66ey4" path="res://sounds/tree_falling.mp3" id="6_18mvg"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vplca"]
 size = Vector2(23, 22)
@@ -132,3 +133,6 @@ interact_name = "Chop Tree"
 position = Vector2(9.536743e-07, -11)
 scale = Vector2(3, 3)
 shape = SubResource("RectangleShape2D_ake3r")
+
+[node name="FallingSoundPlayer" type="AudioStreamPlayer2D" parent="." unique_id=18113057]
+stream = ExtResource("6_18mvg")
