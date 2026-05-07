@@ -118,7 +118,7 @@ public class WaterSimulation
 
             if (terrain.Tiles[pos.X, pos.Y].GroundHeight == Terrain.MUDFLOOR_TILE_HEIGHT)
             {
-                terrain.WaterRandomTickData[pos.X, pos.Y].DistanceToSea = Math.Min(Math.Min(Math.Min(up, down), Math.Min(left, right)) + 1, int.MaxValue / 2) + terrain.Tiles[pos.X, pos.Y].WaterHeight;
+                terrain.WaterRandomTickData[pos.X, pos.Y].DistanceToSea = Math.Max(1, Math.Min(Math.Min(Math.Min(up, down), Math.Min(left, right)) + 1, int.MaxValue / 2) + terrain.Tiles[pos.X, pos.Y].WaterHeight);
             }
             if (currentDistance > up && i % 4 != 0)
             {
