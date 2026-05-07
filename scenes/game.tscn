@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://dcap6ci12uy2g" path="res://world/world.ldtk" id="1_uwrxv"]
 [ext_resource type="Script" uid="uid://7ckbrq7wcces" path="res://sim/Game.cs" id="1_yqjtg"]
+[ext_resource type="PackedScene" uid="uid://d2l4ew4d5dbh2" path="res://scenes/ambience.tscn" id="2_kvpfn"]
 [ext_resource type="PackedScene" uid="uid://lqrn2i626md4" path="res://scenes/player.tscn" id="3_0tnpc"]
 [ext_resource type="PackedScene" uid="uid://dwxdlrvfoand2" path="res://UI/GameHUD.tscn" id="5_iywne"]
 [ext_resource type="PackedScene" uid="uid://5twt8odhns0b" path="res://fox/fox.tscn" id="5_kvpfn"]
@@ -21,6 +22,8 @@ metadata/_custom_type_script = "uid://c1o4r7hkryrjo"
 script = ExtResource("1_yqjtg")
 MapNode = NodePath("world")
 hud = NodePath("GameHUD")
+
+[node name="AudioStreamPlayer2D" parent="." unique_id=1664354570 instance=ExtResource("2_kvpfn")]
 
 [node name="world" parent="." unique_id=1066226252 instance=ExtResource("1_uwrxv")]
 position = Vector2(2, 0)
