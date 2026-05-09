@@ -4,13 +4,16 @@
 [ext_resource type="Script" uid="uid://7ckbrq7wcces" path="res://sim/Game.cs" id="1_yqjtg"]
 [ext_resource type="PackedScene" uid="uid://d2l4ew4d5dbh2" path="res://scenes/ambience.tscn" id="2_kvpfn"]
 [ext_resource type="PackedScene" uid="uid://lqrn2i626md4" path="res://scenes/player.tscn" id="3_0tnpc"]
-[ext_resource type="PackedScene" uid="uid://dwxdlrvfoand2" path="res://UI/GameHUD.tscn" id="5_iywne"]
+[ext_resource type="PackedScene" uid="uid://dwxdlrvfoand2" path="res://ui/UILegacy/GameHUD.tscn" id="5_iywne"]
 [ext_resource type="PackedScene" uid="uid://5twt8odhns0b" path="res://fox/fox.tscn" id="5_kvpfn"]
 [ext_resource type="PackedScene" uid="uid://clxfw103c3bt1" path="res://scenes/tree.tscn" id="5_vtaks"]
 [ext_resource type="Texture2D" uid="uid://bg01ox1deq3h8" path="res://world/images/Snipaste_2026-04-07_22-18-05.png" id="6_p57ef"]
 [ext_resource type="Script" uid="uid://h8akq30mo7v2" path="res://player/InventoryUI.cs" id="6_u5sy4"]
 [ext_resource type="Texture2D" uid="uid://bxqbe3yq5pjp4" path="res://Junk/sprites/Log.png" id="8_0tnpc"]
 [ext_resource type="Script" uid="uid://c1o4r7hkryrjo" path="res://player/ItemData.cs" id="9_vtaks"]
+[ext_resource type="Script" uid="uid://bellygsignteq" path="res://ui/Core/UIRoot.cs" id="12_kvuet"]
+[ext_resource type="Script" uid="uid://csffcwef02br8" path="res://ui/Core/LegacyInventoryAdapter.cs" id="13_trtic"]
+[ext_resource type="PackedScene" uid="uid://dxyrnkjl5io8n" path="res://Inventory/InventoryWindow.tscn" id="14_invwn"]
 
 [sub_resource type="Resource" id="Resource_kvpfn"]
 script = ExtResource("9_vtaks")
@@ -106,3 +109,11 @@ offset_left = 20.0
 offset_top = 285.0
 offset_right = 60.0
 offset_bottom = 308.0
+
+[node name="GameUICanvasLayer" type="CanvasLayer" parent="GameHUD" unique_id=1060453332]
+script = ExtResource("12_kvuet")
+
+[node name="LegacyInventoryAdapter" type="Node" parent="GameHUD/GameUICanvasLayer" unique_id=268585226]
+script = ExtResource("13_trtic")
+
+[node name="InventoryWindow" parent="GameHUD/GameUICanvasLayer" unique_id=312948701 instance=ExtResource("14_invwn")]

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://dupwcnvi2wslk"]
+
+[ext_resource type="Texture2D" uid="uid://bxqbe3yq5pjp4" path="res://Junk/sprites/Log.png" id="1_kmn7u"]
+[ext_resource type="Script" uid="uid://c1o4r7hkryrjo" path="res://player/ItemData.cs" id="2_20o2x"]
+
+[resource]
+script = ExtResource("2_20o2x")
+ItemId = 1
+Icon = ExtResource("1_kmn7u")
+metadata/_custom_type_script = "uid://c1o4r7hkryrjo"

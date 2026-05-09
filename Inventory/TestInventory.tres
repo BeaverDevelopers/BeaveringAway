@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="InventoryDataNew" format=3 uid="uid://b554re5vahbbf"]
+
+[ext_resource type="Resource" uid="uid://dupwcnvi2wslk" path="res://Resources/logs.tres" id="1_yrl7o"]
+[ext_resource type="Script" uid="uid://7attli4m7lxq" path="res://Inventory/InventoryDataNew.cs" id="2_n3k7v"]
+
+[resource]
+script = ExtResource("2_n3k7v")
+itemData = Array[Object]([ExtResource("1_yrl7o"), ExtResource("1_yrl7o"), null, ExtResource("1_yrl7o"), null])
+metadata/_custom_type_script = "uid://7attli4m7lxq"
