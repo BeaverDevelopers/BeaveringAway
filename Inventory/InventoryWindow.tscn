@@ -2,6 +2,9 @@
 
 [ext_resource type="Script" uid="uid://r5lcotjbwuq5" path="res://Inventory/InventoryWindow.cs" id="1_crlts"]
 [ext_resource type="Resource" uid="uid://b554re5vahbbf" path="res://Inventory/TestInventory.tres" id="2_v6bil"]
+[ext_resource type="PackedScene" uid="uid://bl6c7gylq4tfe" path="res://Inventory/slot.tscn" id="3_kwfqg"]
+[ext_resource type="Resource" uid="uid://b5nn53d36fxwf" path="res://Inventory/CraftingAreaInventoryData.tres" id="3_yxvqn"]
+[ext_resource type="Resource" uid="uid://caro8oda7wmki" path="res://Inventory/ResultData.tres" id="4_goe2n"]
 
 [node name="InventoryWindow" type="Control" unique_id=248437042]
 layout_mode = 3
@@ -12,6 +15,8 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_crlts")
 InventoryData = ExtResource("2_v6bil")
+CraftingData = ExtResource("3_yxvqn")
+ResultData = ExtResource("4_goe2n")
 
 [node name="Inventory" type="PanelContainer" parent="." unique_id=335329300]
 layout_mode = 1
@@ -41,3 +46,74 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 columns = 9
+
+[node name="Crafting" type="PanelContainer" parent="." unique_id=875446266]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -142.5
+offset_top = -281.5
+offset_right = 141.5
+offset_bottom = -37.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Crafting" unique_id=2028986276]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Crafting/MarginContainer" unique_id=1359422205]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Crafting/MarginContainer/VBoxContainer" unique_id=507842899]
+layout_mode = 2
+text = "Crafting Area"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Crafting/MarginContainer/VBoxContainer" unique_id=522545904]
+layout_mode = 2
+
+[node name="CraftingSlotGroup" type="GridContainer" parent="Crafting/MarginContainer/VBoxContainer/HBoxContainer" unique_id=193852404]
+unique_name_in_owner = true
+layout_mode = 2
+columns = 3
+
+[node name="Slot" parent="Crafting/MarginContainer/VBoxContainer/HBoxContainer/CraftingSlotGroup" unique_id=545271320 instance=ExtResource("3_kwfqg")]
+layout_mode = 2
+
+[node name="Slot2" parent="Crafting/MarginContainer/VBoxContainer/HBoxContainer/CraftingSlotGroup" unique_id=123639430 instance=ExtResource("3_kwfqg")]
+layout_mode = 2
+
+[node name="Slot3" parent="Crafting/MarginContainer/VBoxContainer/HBoxContainer/CraftingSlotGroup" unique_id=1826142846 instance=ExtResource("3_kwfqg")]
+layout_mode = 2
+
+[node name="Slot4" parent="Crafting/MarginContainer/VBoxContainer/HBoxContainer/CraftingSlotGroup" unique_id=1886804244 instance=ExtResource("3_kwfqg")]
+layout_mode = 2
+
+[node name="Slot5" parent="Crafting/MarginContainer/VBoxContainer/HBoxContainer/CraftingSlotGroup" unique_id=1527569615 instance=ExtResource("3_kwfqg")]
+layout_mode = 2
+
+[node name="Slot6" parent="Crafting/MarginContainer/VBoxContainer/HBoxContainer/CraftingSlotGroup" unique_id=1811418428 instance=ExtResource("3_kwfqg")]
+layout_mode = 2
+
+[node name="Slot7" parent="Crafting/MarginContainer/VBoxContainer/HBoxContainer/CraftingSlotGroup" unique_id=1344560464 instance=ExtResource("3_kwfqg")]
+layout_mode = 2
+
+[node name="Slot8" parent="Crafting/MarginContainer/VBoxContainer/HBoxContainer/CraftingSlotGroup" unique_id=1185866466 instance=ExtResource("3_kwfqg")]
+layout_mode = 2
+
+[node name="Slot9" parent="Crafting/MarginContainer/VBoxContainer/HBoxContainer/CraftingSlotGroup" unique_id=571045588 instance=ExtResource("3_kwfqg")]
+layout_mode = 2
+
+[node name="ResultSlot" type="PanelContainer" parent="Crafting/MarginContainer/VBoxContainer/HBoxContainer" unique_id=186053974]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Slot" parent="Crafting/MarginContainer/VBoxContainer/HBoxContainer/ResultSlot" unique_id=1030692450 instance=ExtResource("3_kwfqg")]
+layout_mode = 2
