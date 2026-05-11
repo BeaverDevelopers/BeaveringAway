@@ -25,7 +25,19 @@ public partial class GlobalData : Node
 			if (item == null || item.itemRecipe == null || item.itemRecipe.Count == 0)
 				continue;
 
-			allItems[string.Join(",", item.itemRecipe)] = item;
+			var exactKey = string.Join(",", item.itemRecipe);
+			allItems[exactKey] = item;
+
+			var compactRecipe = new List<string>();
+			foreach (var itemId in item.itemRecipe)
+			{
+				if (!string.IsNullOrEmpty(itemId) && itemId != "null")
+					compactRecipe.Add(itemId);
+			}
+
+			compactRecipe.Sort();
+			if (compactRecipe.Count > 0)
+				allItems[string.Join(",", compactRecipe)] = item;
 		}
 	}
 }

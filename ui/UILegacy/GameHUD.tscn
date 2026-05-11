@@ -1,0 +1,679 @@
+[gd_scene format=3 uid="uid://dwxdlrvfoand2"]
+
+[ext_resource type="Script" uid="uid://41hst2c6b6jg" path="res://ui/UILegacy/GameHUD.cs" id="1_oai51"]
+[ext_resource type="Script" uid="uid://cpoyv0vr417id" path="res://ui/UILegacy/SeasonClock.cs" id="2_4w34n"]
+[ext_resource type="Script" uid="uid://bellygsignteq" path="res://ui/Core/UIRoot.cs" id="3_ps4tr"]
+[ext_resource type="Script" uid="uid://csffcwef02br8" path="res://ui/Core/LegacyInventoryAdapter.cs" id="4_uyhn2"]
+[ext_resource type="Script" uid="uid://cdk8pqo1lf6ag" path="res://ui/Widgets/ObjectiveTracker.cs" id="5_kercc"]
+[ext_resource type="Script" uid="uid://domsd3oihpue7" path="res://ui/Widgets/WorldStatusPanel.cs" id="6_m23xc"]
+[ext_resource type="Script" uid="uid://bdj1jy8f2nthr" path="res://ui/Widgets/ToastFeed.cs" id="7_kercc"]
+[ext_resource type="Texture2D" uid="uid://bimm3gj506uwj" path="res://ui/Resources/Assets/Raw/SettingsTasks/UI Big Play Button.png" id="8_axpph"]
+[ext_resource type="Script" uid="uid://birp5k5c0eu1u" path="res://ui/Widgets/InteractionPrompt.cs" id="8_m23xc"]
+[ext_resource type="Script" uid="uid://wkylsv0f3wmg" path="res://ui/Widgets/HealthBar.cs" id="9_m23xc"]
+[ext_resource type="Script" uid="uid://c8kyu1ocflslv" path="res://ui/Widgets/InventoryBar.cs" id="10_ncsmu"]
+[ext_resource type="Texture2D" uid="uid://p8boxgktmuqf" path="res://ui/Resources/Assets/Raw/Icon/Square Buttons 26x26.png" id="10_qt1ud"]
+[ext_resource type="Script" uid="uid://btpr7hv6klkco" path="res://ui/Widgets/InventorySlotView.cs" id="11_47l4v"]
+[ext_resource type="Texture2D" uid="uid://clli34sa1uarl" path="res://ui/Resources/Assets/Raw/HUD/inventory_Light_example_2.png" id="12_1krav"]
+[ext_resource type="Script" uid="uid://7uyieomxfeh0" path="res://ui/Widgets/DialogueBox.cs" id="12_dkxse"]
+[ext_resource type="Script" uid="uid://b8ybbkgeuieqk" path="res://ui/Screens/PauseMenu.cs" id="13_axpph"]
+[ext_resource type="Resource" uid="uid://b554re5vahbbf" path="res://Inventory/TestInventory.tres" id="14_s0qbv"]
+[ext_resource type="Texture2D" uid="uid://dnf4cshk3dhbw" path="res://ui/Resources/Assets/Raw/HUD/Inventory_Blocks_Spritesheet.png" id="15_134uf"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r3msw"]
+bg_color = Color(0, 0, 0, 0.32941177)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h6ig4"]
+bg_color = Color(0.8033065, 0.29938444, 0.11049812, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_qt1ud"]
+texture = ExtResource("8_axpph")
+texture_margin_left = 2.0
+texture_margin_top = 2.0
+texture_margin_right = 2.0
+texture_margin_bottom = 2.0
+region_rect = Rect2(2.8131218, 1.6918385, 90.40808, 27.437073)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1krav"]
+atlas = ExtResource("10_qt1ud")
+region = Rect2(10.698265, 154.71172, 26.46772, 28.594864)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_134uf"]
+texture = ExtResource("12_1krav")
+region_rect = Rect2(2.9781036, 0, 296.00836, 96)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_s0qbv"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wco1k"]
+atlas = ExtResource("15_134uf")
+region = Rect2(2.7094574, 97.79471, 42.492096, 44.287537)
+
+[node name="GameHUD" type="CanvasLayer" unique_id=43781371 node_paths=PackedStringArray("Clock", "HungerBar", "TempBar", "HungerValue", "TempValue", "PauseButton", "PauseOverlay", "ResumeBtn", "QuitBtn", "RightPanel")]
+layer = 10
+script = ExtResource("1_oai51")
+Clock = NodePath("Root/RightPanel/SeasonClock")
+HungerBar = NodePath("Root/RightPanel/HungerRow/HungerBar")
+TempBar = NodePath("Root/RightPanel/TempRow/TempBar")
+HungerValue = NodePath("Root/RightPanel/HungerRow/HungerValue")
+TempValue = NodePath("Root/RightPanel/TempRow/TempValue")
+PauseButton = NodePath("Root/PauseButton")
+PauseOverlay = NodePath("Root/PauseOverlay")
+ResumeBtn = NodePath("Root/PauseOverlay/PausePanel/Vbox/ResumeBtn")
+QuitBtn = NodePath("Root/PauseOverlay/PausePanel/Vbox/QuitBtn")
+RightPanel = NodePath("Root/RightPanel")
+
+[node name="Root" type="Control" parent="." unique_id=245232659]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="PauseButton" type="Button" parent="Root" unique_id=27997733]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 48.0
+offset_bottom = 48.0
+text = "II"
+
+[node name="RightPanel" type="VBoxContainer" parent="Root" unique_id=2070801642]
+layout_mode = 0
+offset_left = 1141.0
+offset_top = 18.0
+offset_right = 1252.0
+offset_bottom = 171.0
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="SeasonClock" type="Control" parent="Root/RightPanel" unique_id=134071895 node_paths=PackedStringArray("SeasonLabel")]
+custom_minimum_size = Vector2(90, 105)
+layout_mode = 2
+script = ExtResource("2_4w34n")
+SeasonLabel = NodePath("Label")
+
+[node name="Label" type="Label" parent="Root/RightPanel/SeasonClock" unique_id=1551356290]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 13
+text = "Spring"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HungerRow" type="HBoxContainer" parent="Root/RightPanel" unique_id=487858801]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HungerLabel" type="Label" parent="Root/RightPanel/HungerRow" unique_id=1584310340]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Hunger"
+
+[node name="HungerBar" type="ProgressBar" parent="Root/RightPanel/HungerRow" unique_id=718291233]
+custom_minimum_size = Vector2(50, 14)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_r3msw")
+theme_override_styles/fill = SubResource("StyleBoxFlat_h6ig4")
+show_percentage = false
+
+[node name="HungerValue" type="Label" parent="Root/RightPanel/HungerRow" unique_id=2021658887]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "75"
+
+[node name="TempRow" type="HBoxContainer" parent="Root/RightPanel" unique_id=2064903866]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TempLabel" type="Label" parent="Root/RightPanel/TempRow" unique_id=1492130824]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Temp"
+
+[node name="TempBar" type="ProgressBar" parent="Root/RightPanel/TempRow" unique_id=195705357]
+custom_minimum_size = Vector2(50, 14)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_r3msw")
+theme_override_styles/fill = SubResource("StyleBoxFlat_h6ig4")
+show_percentage = false
+
+[node name="TempValue" type="Label" parent="Root/RightPanel/TempRow" unique_id=968654245]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "20"
+
+[node name="PauseOverlay" type="ColorRect" parent="Root" unique_id=798442052]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.49019608)
+
+[node name="PausePanel" type="PanelContainer" parent="Root/PauseOverlay" unique_id=602597433]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -130.0
+offset_top = -110.0
+offset_right = 130.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Vbox" type="VBoxContainer" parent="Root/PauseOverlay/PausePanel" unique_id=1870395231]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Root/PauseOverlay/PausePanel/Vbox" unique_id=1505637074]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "PAUSED"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="Root/PauseOverlay/PausePanel/Vbox" unique_id=954843002]
+layout_mode = 2
+
+[node name="ResumeBtn" type="Button" parent="Root/PauseOverlay/PausePanel/Vbox" unique_id=303058969]
+layout_mode = 2
+text = "Resume"
+
+[node name="SettingsBtn" type="Button" parent="Root/PauseOverlay/PausePanel/Vbox" unique_id=360500924]
+layout_mode = 2
+disabled = true
+text = "Settings"
+
+[node name="QuitBtn" type="Button" parent="Root/PauseOverlay/PausePanel/Vbox" unique_id=1940861841]
+layout_mode = 2
+text = "Quit"
+
+[node name="GameUI" type="CanvasLayer" parent="." unique_id=129801]
+script = ExtResource("3_ps4tr")
+
+[node name="LegacyInventoryAdapter" type="Node" parent="GameUI" unique_id=1042376769]
+script = ExtResource("4_uyhn2")
+
+[node name="HUDLayer" type="Control" parent="GameUI" unique_id=1668312552]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ObjectiveTracker" type="PanelContainer" parent="GameUI/HUDLayer" unique_id=2084354377]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("5_kercc")
+
+[node name="Content" type="VBoxContainer" parent="GameUI/HUDLayer/ObjectiveTracker" unique_id=51425161]
+layout_mode = 2
+
+[node name="HeaderRow" type="HBoxContainer" parent="GameUI/HUDLayer/ObjectiveTracker/Content" unique_id=1037286362]
+layout_mode = 2
+
+[node name="HeaderLabel" type="Label" parent="GameUI/HUDLayer/ObjectiveTracker/Content/HeaderRow" unique_id=287567899]
+layout_mode = 2
+
+[node name="ToggleButton" type="Button" parent="GameUI/HUDLayer/ObjectiveTracker/Content/HeaderRow" unique_id=1438960731]
+layout_mode = 2
+
+[node name="CurrentTitleLabel" type="Label" parent="GameUI/HUDLayer/ObjectiveTracker/Content" unique_id=1410760686]
+layout_mode = 2
+
+[node name="CurrentDetailLabel" type="Label" parent="GameUI/HUDLayer/ObjectiveTracker/Content" unique_id=1182062089]
+layout_mode = 2
+
+[node name="CurrentProgressBar" type="ProgressBar" parent="GameUI/HUDLayer/ObjectiveTracker/Content" unique_id=1891301663]
+layout_mode = 2
+
+[node name="ExpandedPanel" type="VBoxContainer" parent="GameUI/HUDLayer/ObjectiveTracker/Content" unique_id=158151398]
+layout_mode = 2
+
+[node name="Rows" type="VBoxContainer" parent="GameUI/HUDLayer/ObjectiveTracker/Content/ExpandedPanel" unique_id=736973724]
+layout_mode = 2
+
+[node name="WorldStatusPanel" type="PanelContainer" parent="GameUI/HUDLayer" unique_id=374530081 node_paths=PackedStringArray("HeaderLabel", "RestoredLabel", "RestoredBar", "AnimalsLabel", "AnimalBar")]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -217.62
+offset_right = 2.380005
+offset_bottom = 119.91
+grow_horizontal = 0
+script = ExtResource("6_m23xc")
+HeaderLabel = NodePath("VBoxContainer/HeaderLabel")
+RestoredLabel = NodePath("VBoxContainer/RestoredLabel")
+RestoredBar = NodePath("VBoxContainer/RestoredBar")
+AnimalsLabel = NodePath("VBoxContainer/AnimalsLabel")
+AnimalBar = NodePath("VBoxContainer/AnimalBar")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameUI/HUDLayer/WorldStatusPanel" unique_id=1737481145]
+layout_mode = 2
+
+[node name="HeaderLabel" type="Label" parent="GameUI/HUDLayer/WorldStatusPanel/VBoxContainer" unique_id=1107435999]
+layout_mode = 2
+text = "World"
+
+[node name="RestoredLabel" type="Label" parent="GameUI/HUDLayer/WorldStatusPanel/VBoxContainer" unique_id=1725955703]
+layout_mode = 2
+text = "Land"
+
+[node name="RestoredBar" type="ProgressBar" parent="GameUI/HUDLayer/WorldStatusPanel/VBoxContainer" unique_id=688723418]
+layout_mode = 2
+
+[node name="AnimalsLabel" type="Label" parent="GameUI/HUDLayer/WorldStatusPanel/VBoxContainer" unique_id=1073396605]
+layout_mode = 2
+text = "Friends"
+
+[node name="AnimalBar" type="ProgressBar" parent="GameUI/HUDLayer/WorldStatusPanel/VBoxContainer" unique_id=1207959460]
+layout_mode = 2
+
+[node name="ToastFeed" type="VBoxContainer" parent="GameUI/HUDLayer" unique_id=1399801196]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 40.0
+grow_horizontal = 2
+script = ExtResource("7_kercc")
+
+[node name="InteractionPrompt" type="PanelContainer" parent="GameUI/HUDLayer" unique_id=666591497]
+layout_mode = 0
+offset_right = 132.56
+offset_bottom = 40.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_qt1ud")
+script = ExtResource("8_m23xc")
+
+[node name="MarginContainer" type="MarginContainer" parent="GameUI/HUDLayer/InteractionPrompt" unique_id=1335397231]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GameUI/HUDLayer/InteractionPrompt/MarginContainer" unique_id=231935073]
+layout_mode = 2
+
+[node name="keyBox" type="Control" parent="GameUI/HUDLayer/InteractionPrompt/MarginContainer/HBoxContainer" unique_id=876144137]
+custom_minimum_size = Vector2(36, 26)
+layout_mode = 2
+
+[node name="KeyBg" type="TextureRect" parent="GameUI/HUDLayer/InteractionPrompt/MarginContainer/HBoxContainer/keyBox" unique_id=859741563]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 5.33
+offset_top = -16.05
+offset_right = 35.329994
+offset_bottom = 13.950031
+grow_vertical = 2
+texture = SubResource("AtlasTexture_1krav")
+
+[node name="KeyLabel" type="Label" parent="GameUI/HUDLayer/InteractionPrompt/MarginContainer/HBoxContainer/keyBox/KeyBg" unique_id=2136494677]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -4.5
+offset_top = -11.5
+offset_right = 4.5
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "E"
+
+[node name="PromptLabel" type="Label" parent="GameUI/HUDLayer/InteractionPrompt/MarginContainer/HBoxContainer" unique_id=1931348700]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.16862746, 0.101960786, 0.05490196, 1)
+
+[node name="HealthBar" type="Control" parent="GameUI/HUDLayer" unique_id=1878427942]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("9_m23xc")
+
+[node name="Hearts" type="HBoxContainer" parent="GameUI/HUDLayer/HealthBar" unique_id=34257447]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Heart1" type="TextureRect" parent="GameUI/HUDLayer/HealthBar/Hearts" unique_id=801862245]
+layout_mode = 2
+
+[node name="Heart2" type="TextureRect" parent="GameUI/HUDLayer/HealthBar/Hearts" unique_id=895366015]
+layout_mode = 2
+
+[node name="Heart3" type="TextureRect" parent="GameUI/HUDLayer/HealthBar/Hearts" unique_id=1498366999]
+layout_mode = 2
+
+[node name="InventoryBar" type="PanelContainer" parent="GameUI/HUDLayer" unique_id=2006892441 node_paths=PackedStringArray("Slots")]
+custom_minimum_size = Vector2(304, 96)
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -40.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxTexture_134uf")
+script = ExtResource("10_ncsmu")
+InventoryData = ExtResource("14_s0qbv")
+Slots = NodePath("Slots")
+
+[node name="Slots" type="HBoxContainer" parent="GameUI/HUDLayer/InventoryBar" unique_id=2019711152]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Slot5" type="PanelContainer" parent="GameUI/HUDLayer/InventoryBar/Slots" unique_id=1934229651 node_paths=PackedStringArray("IconRect", "CountLabel", "NameLabel", "EmptySwatch")]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_s0qbv")
+script = ExtResource("11_47l4v")
+IconRect = NodePath("Iconholder/IconRect")
+CountLabel = NodePath("CountLabel")
+NameLabel = NodePath("NameLabel")
+EmptySwatch = NodePath("")
+
+[node name="Iconholder" type="Control" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot5" unique_id=541741317]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+
+[node name="EmptyBG" type="TextureRect" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot5/Iconholder" unique_id=1481232393]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 14.44
+offset_top = -15.970001
+offset_right = 106.07637
+offset_bottom = 80.03
+grow_vertical = 2
+scale = Vector2(0.54, 0.54)
+texture = SubResource("AtlasTexture_wco1k")
+expand_mode = 3
+
+[node name="IconRect" type="TextureRect" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot5/Iconholder" unique_id=1271048269]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 19.05
+offset_top = -10.720001
+offset_right = 59.05
+offset_bottom = 29.280014
+grow_vertical = 2
+expand_mode = 3
+
+[node name="CountLabel" type="Label" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot5" unique_id=1350713650]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot5" unique_id=1602379714]
+layout_mode = 2
+
+[node name="Slot4" type="PanelContainer" parent="GameUI/HUDLayer/InventoryBar/Slots" unique_id=1119931299 node_paths=PackedStringArray("IconRect", "CountLabel", "NameLabel", "EmptySwatch")]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_s0qbv")
+script = ExtResource("11_47l4v")
+IconRect = NodePath("Iconholder/IconRect")
+CountLabel = NodePath("CountLabel")
+NameLabel = NodePath("NameLabel")
+EmptySwatch = NodePath("")
+
+[node name="Iconholder" type="Control" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot4" unique_id=1842595331]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+
+[node name="EmptyBG" type="TextureRect" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot4/Iconholder" unique_id=1656850053]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 14.44
+offset_top = -15.970001
+offset_right = 106.07637
+offset_bottom = 80.03
+grow_vertical = 2
+scale = Vector2(0.54, 0.54)
+texture = SubResource("AtlasTexture_wco1k")
+expand_mode = 3
+
+[node name="IconRect" type="TextureRect" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot4/Iconholder" unique_id=47264886]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 19.05
+offset_top = -10.720001
+offset_right = 59.05
+offset_bottom = 29.280014
+grow_vertical = 2
+expand_mode = 3
+
+[node name="CountLabel" type="Label" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot4" unique_id=1871392843]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot4" unique_id=949233386]
+layout_mode = 2
+
+[node name="Slot2" type="PanelContainer" parent="GameUI/HUDLayer/InventoryBar/Slots" unique_id=1820648222 node_paths=PackedStringArray("IconRect", "CountLabel", "NameLabel", "EmptySwatch")]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_s0qbv")
+script = ExtResource("11_47l4v")
+IconRect = NodePath("Iconholder/IconRect")
+CountLabel = NodePath("CountLabel")
+NameLabel = NodePath("NameLabel")
+EmptySwatch = NodePath("")
+
+[node name="Iconholder" type="Control" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot2" unique_id=468613879]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+
+[node name="EmptyBG" type="TextureRect" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot2/Iconholder" unique_id=647223239]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 14.44
+offset_top = -15.970001
+offset_right = 106.07637
+offset_bottom = 80.03
+grow_vertical = 2
+scale = Vector2(0.54, 0.54)
+texture = SubResource("AtlasTexture_wco1k")
+expand_mode = 3
+
+[node name="IconRect" type="TextureRect" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot2/Iconholder" unique_id=892245186]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 19.05
+offset_top = -10.720001
+offset_right = 59.05
+offset_bottom = 29.280014
+grow_vertical = 2
+expand_mode = 3
+
+[node name="CountLabel" type="Label" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot2" unique_id=1071277215]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot2" unique_id=2077979066]
+layout_mode = 2
+
+[node name="Slot1" type="PanelContainer" parent="GameUI/HUDLayer/InventoryBar/Slots" unique_id=1428909514 node_paths=PackedStringArray("IconRect", "CountLabel", "NameLabel", "EmptySwatch")]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_s0qbv")
+script = ExtResource("11_47l4v")
+IconRect = NodePath("Iconholder/IconRect")
+CountLabel = NodePath("CountLabel")
+NameLabel = NodePath("NameLabel")
+EmptySwatch = NodePath("")
+
+[node name="Iconholder" type="Control" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot1" unique_id=2036795243]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+
+[node name="EmptyBG" type="TextureRect" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot1/Iconholder" unique_id=375787597]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 14.44
+offset_top = -15.970001
+offset_right = 106.07637
+offset_bottom = 80.03
+grow_vertical = 2
+scale = Vector2(0.54, 0.54)
+texture = SubResource("AtlasTexture_wco1k")
+expand_mode = 3
+
+[node name="IconRect" type="TextureRect" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot1/Iconholder" unique_id=456122237]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 19.05
+offset_top = -10.720001
+offset_right = 59.05
+offset_bottom = 29.280014
+grow_vertical = 2
+expand_mode = 3
+
+[node name="CountLabel" type="Label" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot1" unique_id=1988904957]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot1" unique_id=435270932]
+layout_mode = 2
+
+[node name="Slot3" type="PanelContainer" parent="GameUI/HUDLayer/InventoryBar/Slots" unique_id=2122897451 node_paths=PackedStringArray("IconRect", "CountLabel", "NameLabel", "EmptySwatch")]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_s0qbv")
+script = ExtResource("11_47l4v")
+IconRect = NodePath("Iconholder/IconRect")
+CountLabel = NodePath("CountLabel")
+NameLabel = NodePath("NameLabel")
+EmptySwatch = NodePath("")
+
+[node name="Iconholder" type="Control" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot3" unique_id=1932999523]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+
+[node name="EmptyBG" type="TextureRect" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot3/Iconholder" unique_id=1329127779]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 14.44
+offset_top = -15.970001
+offset_right = 106.07637
+offset_bottom = 80.03
+grow_vertical = 2
+scale = Vector2(0.54, 0.54)
+texture = SubResource("AtlasTexture_wco1k")
+expand_mode = 3
+
+[node name="IconRect" type="TextureRect" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot3/Iconholder" unique_id=1372945615]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 19.05
+offset_top = -10.720001
+offset_right = 59.05
+offset_bottom = 29.280014
+grow_vertical = 2
+expand_mode = 3
+
+[node name="CountLabel" type="Label" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot3" unique_id=673498974]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="GameUI/HUDLayer/InventoryBar/Slots/Slot3" unique_id=1641817189]
+layout_mode = 2
+
+[node name="ModalLayer" type="Control" parent="GameUI/HUDLayer" unique_id=1381995921]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="PauseDim" type="ColorRect" parent="GameUI/HUDLayer/ModalLayer" unique_id=1607300506]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="DialogueBox" type="PanelContainer" parent="GameUI/HUDLayer/ModalLayer" unique_id=124996810]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("12_dkxse")
+
+[node name="PortraitRect" type="TextureRect" parent="GameUI/HUDLayer/ModalLayer/DialogueBox" unique_id=1921508387]
+layout_mode = 2
+
+[node name="SpeakerLabel" type="Label" parent="GameUI/HUDLayer/ModalLayer/DialogueBox" unique_id=594528849]
+layout_mode = 2
+
+[node name="BodyLabel" type="Label" parent="GameUI/HUDLayer/ModalLayer/DialogueBox" unique_id=479209690]
+layout_mode = 2
+
+[node name="ContinueIndicator" type="Label" parent="GameUI/HUDLayer/ModalLayer/DialogueBox" unique_id=1810583577]
+layout_mode = 2
+
+[node name="PauseMenu" type="PanelContainer" parent="GameUI/HUDLayer/ModalLayer" unique_id=713652445]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("13_axpph")
+
+[node name="TitleLabel" type="Label" parent="GameUI/HUDLayer/ModalLayer/PauseMenu" unique_id=1669143298]
+layout_mode = 2
+
+[node name="ResumeButton" type="Button" parent="GameUI/HUDLayer/ModalLayer/PauseMenu" unique_id=1470548937]
+layout_mode = 2
+
+[node name="SettingsButton" type="Button" parent="GameUI/HUDLayer/ModalLayer/PauseMenu" unique_id=599186604]
+layout_mode = 2
+
+[node name="QuitButton" type="Button" parent="GameUI/HUDLayer/ModalLayer/PauseMenu" unique_id=1160478383]
+layout_mode = 2

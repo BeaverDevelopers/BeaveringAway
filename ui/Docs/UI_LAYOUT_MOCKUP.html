@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Beavering Away UI Layout Mockup</title>
+  <style>
+    :root {
+      --bg: #172822;
+      --panel: #3a2a1c;
+      --panel-2: #5a3d22;
+      --line: #120d08;
+      --text: #fff3cf;
+      --muted: #cbbd91;
+      --paper: #ead89e;
+      --green: #70b85a;
+      --water: #4385bb;
+      --heart: #d84a3a;
+      --gold: #e7a437;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 28px;
+      background: #151716;
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    h1, h2, p { max-width: 1100px; }
+    h1 { margin: 0 0 8px; font-size: 28px; }
+    h2 { margin: 28px 0 12px; font-size: 20px; }
+    .note { color: var(--muted); margin-bottom: 22px; }
+
+    .screen {
+      position: relative;
+      width: min(100%, 1100px);
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      border: 4px solid #0b0d0c;
+      border-radius: 10px;
+      background:
+        radial-gradient(circle at 49% 54%, rgba(112, 184, 90, 0.25), transparent 10%),
+        radial-gradient(circle at 67% 35%, rgba(67, 133, 187, 0.46), transparent 18%),
+        linear-gradient(135deg, #284d3d, #172822 58%, #1c211d);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    .panel {
+      position: absolute;
+      border: 3px solid var(--line);
+      border-radius: 8px;
+      background: rgba(58, 42, 28, 0.94);
+      box-shadow: 0 5px 0 rgba(0, 0, 0, 0.25);
+      padding: 12px;
+    }
+
+    .title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .button {
+      min-width: 26px;
+      padding: 2px 7px;
+      border: 2px solid var(--line);
+      border-radius: 5px;
+      background: var(--panel-2);
+      text-align: center;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .small { color: var(--muted); font-size: 13px; }
+
+    .bar {
+      height: 9px;
+      margin: 7px 0;
+      border: 2px solid rgba(18, 13, 8, 0.8);
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      background: var(--green);
+    }
+
+    .objective {
+      left: 18px;
+      top: 18px;
+      width: 292px;
+    }
+
+    .expanded {
+      position: static;
+      margin-top: 9px;
+      padding-top: 9px;
+      border-top: 1px solid rgba(255, 243, 207, 0.22);
+    }
+
+    .task-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .world {
+      right: 18px;
+      top: 18px;
+      width: 210px;
+    }
+
+    .toast {
+      left: 50%;
+      top: 18px;
+      width: 255px;
+      transform: translateX(-50%);
+      text-align: center;
+      background: rgba(90, 61, 34, 0.95);
+    }
+
+    .player {
+      position: absolute;
+      left: 50%;
+      top: 52%;
+      width: 58px;
+      height: 72px;
+      transform: translate(-50%, -50%);
+      border-radius: 24px 24px 18px 18px;
+      background: #8b5e36;
+      border: 4px solid #2a190e;
+    }
+
+    .player::before,
+    .player::after {
+      content: "";
+      position: absolute;
+      top: 16px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #140d09;
+    }
+
+    .player::before { left: 16px; }
+    .player::after { right: 16px; }
+
+    .prompt {
+      left: 50%;
+      top: calc(52% - 92px);
+      width: 196px;
+      transform: translateX(-50%);
+      text-align: center;
+      padding: 7px 10px;
+    }
+
+    .health {
+      left: 50%;
+      bottom: 92px;
+      width: 250px;
+      transform: translateX(-50%);
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      padding: 0;
+      border: none;
+      background: transparent;
+      box-shadow: none;
+      color: var(--heart);
+      font-size: 21px;
+      text-shadow: 2px 2px 0 #120d08;
+    }
+
+    .inventory {
+      left: 50%;
+      bottom: 18px;
+      width: 500px;
+      transform: translateX(-50%);
+      padding: 10px;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 7px;
+      background: rgba(0, 0, 0, 0.25);
+      border-color: rgba(18, 13, 8, 0.75);
+    }
+
+    .slot {
+      height: 58px;
+      border: 3px solid var(--line);
+      border-radius: 7px;
+      background: var(--panel);
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .slot.active {
+      border-color: var(--gold);
+      background: var(--panel-2);
+    }
+
+    .tab-note {
+      right: 18px;
+      bottom: 18px;
+      width: 225px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .dialogue {
+      left: 50%;
+      bottom: 122px;
+      width: 700px;
+      min-height: 112px;
+      transform: translateX(-50%);
+      display: none;
+      background: rgba(234, 216, 158, 0.97);
+      color: #1a120b;
+    }
+
+    .pause-dim {
+      position: absolute;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(0, 0, 0, 0.55);
+    }
+
+    .pause-menu {
+      width: 280px;
+      text-align: center;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      max-width: 1100px;
+    }
+
+    .card {
+      border: 1px solid rgba(255, 243, 207, 0.16);
+      border-radius: 8px;
+      background: #20231f;
+      padding: 14px;
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .card p {
+      margin: 0;
+      color: #d8ceb1;
+      font-size: 14px;
+    }
+
+    code { color: #f4d280; }
+  </style>
+</head>
+<body>
+  <h1>Beavering Away UI Layout Mockup</h1>
+  <p class="note">新版规划：常驻 HUD 更轻；任务面板可收纳；合成台继续使用现有 Tab 窗口；交互提示跟随玩家头顶。</p>
+
+  <section class="screen" aria-label="UI layout mockup">
+    <div class="panel objective">
+      <div class="title">
+        <span>Tracked Goal</span>
+        <span class="button">+</span>
+      </div>
+      <div>Restore dry grass</div>
+      <div class="small">Bring water back to the forest floor</div>
+      <div class="bar"><span style="width: 28%"></span></div>
+
+      <div class="expanded">
+        <div class="small">Expanded list after clicking +</div>
+        <div class="task-row">
+          <div>
+            Bring back Rabbit
+            <div class="bar"><span style="width: 0%"></span></div>
+          </div>
+          <span class="button">Track</span>
+        </div>
+        <div class="task-row">
+          <div>
+            Build a dam block
+            <div class="bar"><span style="width: 70%; background: var(--water)"></span></div>
+          </div>
+          <span class="button">Track</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel toast">ToastFeed: Fox stole a log</div>
+
+    <div class="panel world">
+      <div class="title">World</div>
+      <div class="small">Land</div>
+      <div class="bar"><span style="width: 45%"></span></div>
+      <div class="small">Friends</div>
+      <div class="bar"><span style="width: 12%; background: var(--gold)"></span></div>
+    </div>
+
+    <div class="panel prompt"><strong>E</strong> Chop tree</div>
+    <div class="player" aria-label="player"></div>
+
+    <div class="panel health">
+      <span>♥</span><span>♥</span><span>♥</span><span>♥</span><span>♥</span>
+      <span>♥</span><span>♥</span><span>♥</span><span>♡</span><span>♡</span>
+    </div>
+
+    <div class="panel inventory">
+      <div class="slot active">Log<br />x3</div>
+      <div class="slot">Toy</div>
+      <div class="slot">Flower</div>
+      <div class="slot">Stone</div>
+      <div class="slot">Feather</div>
+      <div class="slot">Berry</div>
+      <div class="slot">Dam</div>
+      <div class="slot"></div>
+    </div>
+
+    <div class="panel tab-note">Tab opens the existing Inventory + Crafting window. No duplicate crafting HUD here.</div>
+
+    <div class="panel dialogue">
+      <div class="title">DialogueBox</div>
+      <div>Rabbit: This grass is starting to look snackable.</div>
+    </div>
+
+    <div class="pause-dim">
+      <div class="panel pause-menu">
+        <div class="title">PauseMenu</div>
+        <div class="button">Resume</div>
+        <div class="button">Settings</div>
+        <div class="button">Quit</div>
+      </div>
+    </div>
+  </section>
+
+  <h2>每个 UI 的逻辑</h2>
+  <div class="legend">
+    <div class="card">
+      <h3>ObjectiveTracker</h3>
+      <p>左上角。默认收纳，只显示当前追踪任务、简短描述和进度。点 <code>+</code> 展开任务列表，每个任务有 <code>Track</code> 按钮。</p>
+    </div>
+    <div class="card">
+      <h3>WorldStatusPanel</h3>
+      <p>右上角。只保留两个进度条：土地恢复度和动物朋友回归度。水 tile 数、长文字焦点不常驻显示。</p>
+    </div>
+    <div class="card">
+      <h3>HealthBar</h3>
+      <p>底部居中，背包上方。做成类似 Minecraft 的心形生命条，之后可以用贴图替换文本心形。</p>
+    </div>
+    <div class="card">
+      <h3>InventoryBar</h3>
+      <p>底部居中。只显示快捷物品/当前资源，不承载完整合成逻辑。</p>
+    </div>
+    <div class="card">
+      <h3>InteractionPrompt</h3>
+      <p>显示在玩家操控角色头顶，跟随玩家与相机移动。接近树、物品、动物时显示 <code>E</code> 提示。</p>
+    </div>
+    <div class="card">
+      <h3>InventoryWindow / Crafting</h3>
+      <p>已经存在。按 <code>Tab</code> 打开完整背包和合成台，所以新 HUD 不再规划单独 <code>CraftingScreen</code>。</p>
+    </div>
+    <div class="card">
+      <h3>ToastFeed</h3>
+      <p>顶部中间。短消息：狐狸偷东西、新配方、新动物回归。几秒后消失。</p>
+    </div>
+    <div class="card">
+      <h3>DialogueBox</h3>
+      <p>底部大框。动物 one-liner 和配方提示时出现，平时隐藏。</p>
+    </div>
+  </div>
+</body>
+</html>

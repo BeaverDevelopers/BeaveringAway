@@ -18,35 +18,6 @@ InventoryData = ExtResource("2_v6bil")
 CraftingData = ExtResource("3_yxvqn")
 ResultData = ExtResource("4_goe2n")
 
-[node name="Inventory" type="PanelContainer" parent="." unique_id=335329300]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="Inventory" unique_id=97883210]
-layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Inventory/MarginContainer" unique_id=1335420588]
-layout_mode = 2
-
-[node name="SlotGroup" type="GridContainer" parent="Inventory/MarginContainer/VBoxContainer" unique_id=1341727670]
-unique_name_in_owner = true
-layout_mode = 2
-columns = 9
-
 [node name="Crafting" type="PanelContainer" parent="." unique_id=875446266]
 layout_mode = 1
 anchors_preset = 8

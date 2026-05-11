@@ -1,4 +1,3 @@
-using System.Linq;
 using Godot;
 using Godot.Collections;
 
@@ -14,7 +13,9 @@ public partial class InventoryWindow : Control
 	public override void _Ready()
 	{
 		Visible = false;
+		MouseFilter = MouseFilterEnum.Ignore;
 		updateInventoryData();
+		updateCraftingArea();
 	}
 
 	public override void _Process(double delta)
@@ -46,13 +47,18 @@ public partial class InventoryWindow : Control
 	void SetOpen(bool open)
 	{
 		Visible = open;
+		MouseFilter = MouseFilterEnum.Ignore;
 		if (open)
 			Input.MouseMode = Input.MouseModeEnum.Visible;
 	}
 
 	public void updateInventoryData()
 	{
-		var slotGroup = GetNode<GridContainer>("Inventory/MarginContainer/VBoxContainer/SlotGroup");
+		var slotGroup = GetInventorySlotGroup();
+		if (slotGroup == null || InventoryData == null)
+			return;
+
+		InventoryData.itemData ??= new Godot.Collections.Array<ItemData>();
 		foreach (var slot in slotGroup.GetChildren())
 			slot.QueueFree();
 
@@ -66,7 +72,13 @@ public partial class InventoryWindow : Control
 
 	public void updateCraftingArea()
 	{
-		var craftingSlotGroup = GetNode<GridContainer>("Crafting/MarginContainer/VBoxContainer/HBoxContainer/CraftingSlotGroup");
+		var craftingSlotGroup = GetCraftingSlotGroup();
+		if (craftingSlotGroup == null || CraftingData == null)
+			return;
+
+		var slotCount = Mathf.Max(CraftingData.itemData?.Count ?? 0, craftingSlotGroup.GetChildCount());
+		EnsureItemDataSize(CraftingData, slotCount);
+
 		foreach (var slot in craftingSlotGroup.GetChildren())
 			slot.QueueFree();
 
@@ -76,20 +88,36 @@ public partial class InventoryWindow : Control
 			var newSlot = GD.Load<PackedScene>("res://Inventory/Slot.tscn").Instantiate<Slot>();
 			newSlot.currentItem = item;
 			craftingSlotGroup.AddChild(newSlot);
-			currentItems.Append(item != null ? item.ItemId.ToString() : "null");
+			currentItems.Add(item != null ? item.ItemId.ToString() : "null");
 		}
 		updateResultSlot(currentItems);
 	}
 
 	public void updateResultSlot(Godot.Collections.Array<string> currentRecipe)
 	{
-		var resultSlot = GetNode<PanelContainer>("Crafting/MarginContainer/VBoxContainer/HBoxContainer/ResultSlot");
+		var resultSlot = GetResultSlot();
+		if (resultSlot == null || ResultData == null)
+			return;
+
+		EnsureItemDataSize(ResultData, 1);
+
 		foreach (var slot in resultSlot.GetChildren())
 			slot.QueueFree();
 
-		var recipeKey = string.Join(",", currentRecipe);
-		var allItems = GetNode<GlobalData>("/root/GlobalData").allItems;
-		ResultData.itemData[0] = allItems.ContainsKey(recipeKey) ? (ItemData)allItems[recipeKey] : null;
+		var globalData = GetNodeOrNull<GlobalData>("/root/GlobalData");
+		var allItems = globalData?.allItems;
+		ResultData.itemData[0] = null;
+		if (allItems != null)
+		{
+			foreach (var key in GetRecipeKeys(currentRecipe))
+			{
+				if (allItems.TryGetValue(key, out var result))
+				{
+					ResultData.itemData[0] = MakeStack(result, 1);
+					break;
+				}
+			}
+		}
 
 		var newSlot = GD.Load<PackedScene>("res://Inventory/Slot.tscn").Instantiate<Slot>();
 		newSlot.currentItem = ResultData.itemData[0];
@@ -98,8 +126,58 @@ public partial class InventoryWindow : Control
 
 	public void deleteCraftingItem()
 	{
+		if (CraftingData == null)
+			return;
+
+		CraftingData.itemData ??= new Godot.Collections.Array<ItemData>();
 		for (var i = 0; i < CraftingData.itemData.Count; i++)
 			CraftingData.itemData[i] = null;
+	}
+
+	public bool TryDropItemOnCraftingSlot(Control hoveredControl, ItemData item)
+	{
+		if (item == null || CraftingData == null)
+			return false;
+
+		var hoveredSlot = FindSlot(hoveredControl);
+		var craftingSlotGroup = GetCraftingSlotGroup();
+		if (hoveredSlot == null || craftingSlotGroup == null || hoveredSlot.GetParent() != craftingSlotGroup)
+			return false;
+
+		var targetIndex = hoveredSlot.GetIndex();
+		EnsureItemDataSize(CraftingData, targetIndex + 1);
+		var targetItem = CraftingData.itemData[targetIndex];
+		if (targetItem == null)
+		{
+			CraftingData.itemData[targetIndex] = item;
+			updateCraftingArea();
+			return true;
+		}
+
+		if (!IsSameItem(targetItem, item))
+			return false;
+
+		targetItem.ItemCount = GetStackCount(targetItem) + GetStackCount(item);
+		updateCraftingArea();
+		return true;
+	}
+
+	public bool TryDropItemOnCraftingAtPosition(Vector2 globalPosition, ItemData item)
+	{
+		if (item == null || CraftingData == null)
+			return false;
+
+		var craftingSlotGroup = GetCraftingSlotGroup();
+		if (craftingSlotGroup == null)
+			return false;
+
+		foreach (var child in craftingSlotGroup.GetChildren())
+		{
+			if (child is Slot slot && slot.GetGlobalRect().HasPoint(globalPosition))
+				return TryDropItemOnCraftingSlot(slot, item);
+		}
+
+		return false;
 	}
 
 	public override void _Input(InputEvent @event)
@@ -111,39 +189,38 @@ public partial class InventoryWindow : Control
 		{
 			if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
 			{
-				var hoveredNode = GetViewport().GuiGetHoveredControl();
-				if (hoveredNode is Slot)
+				var hoveredNode = FindSlotAtPosition(GetGlobalMousePosition()) ?? FindSlot(GetViewport().GuiGetHoveredControl());
+				if (hoveredNode == null)
+					return;
+
+				var currentIndex = hoveredNode.GetIndex();
+				var inventorySlotGroup = GetInventorySlotGroup();
+				var craftingSlotGroup = GetCraftingSlotGroup();
+				var resultSlot = GetResultSlot();
+
+				if (inventorySlotGroup != null && hoveredNode.GetParent() == inventorySlotGroup)
 				{
-					var currentIndex = hoveredNode.GetIndex();
-
-					if (hoveredNode.GetParent().Name == "SlotGroup")
-					{
-						if (InventoryData.itemData[currentIndex] == null) return;
-						createDragItem(currentIndex, InventoryData);
-						InventoryData.itemData[currentIndex] = null;
-						updateInventoryData();
+					if (!CreateDragItem(currentIndex, InventoryData, IsSplitModifierPressed(mouseEvent), "Inventory"))
 						return;
-					}
 
-					if (hoveredNode.GetParent().Name == "CraftingSlotGroup")
-					{
-						if (CraftingData.itemData[currentIndex] == null) return;
-						createDragItem(currentIndex, CraftingData);
-						CraftingData.itemData[currentIndex] = null;
-						updateCraftingArea();
-						return;
-					}
+					updateInventoryData();
+					return;
+				}
 
-					if (hoveredNode.GetParent().Name == "ResultSlot")
-					{
-						if (ResultData.itemData[0] == null) return;
-						createDragItem(0, ResultData);
-						ResultData.itemData[0] = null;
-						deleteCraftingItem();
-						updateCraftingArea();
-						updateResultSlot([]);
+				if (craftingSlotGroup != null && hoveredNode.GetParent() == craftingSlotGroup)
+				{
+					if (!CreateDragItem(currentIndex, CraftingData, IsSplitModifierPressed(mouseEvent), "Crafting"))
 						return;
-					}
+
+					updateCraftingArea();
+					return;
+				}
+
+				if (resultSlot != null && hoveredNode.GetParent() == resultSlot)
+				{
+					if (!CreateDragItem(0, ResultData, false, "Result", true))
+						return;
+					return;
 				}
 			}
 
@@ -152,100 +229,345 @@ public partial class InventoryWindow : Control
 				if (HasNode("ItemDrag"))
 					deleteDragedItem();
 
-				if (currentDraggedItem == null)
+				if (currentDraggedItem == null || currentDraggedItem.Count == 0)
 					return;
 
-				var hoveredNode = GetViewport().GuiGetHoveredControl();
-				var inventory = hoveredNode?.GetParent();
 				var item = (ItemData)currentDraggedItem["Item"];
 				var index = (int)currentDraggedItem["Index"];
 				var sourceInventory = (InventoryDataNew)currentDraggedItem["InventoryDataType"];
+				var sourceName = (string)currentDraggedItem["SourceName"];
+				var fromSplit = (bool)currentDraggedItem["FromSplit"];
 
-				if (hoveredNode is not Slot)
+				if (TryDropDraggedItemToHudInventory(item))
 				{
-					// Failed drop — restore item to source
-					sourceInventory.itemData[index] = item;
-					currentDraggedItem.Clear();
+					if (sourceName == "Result")
+						ConsumeCraftingIngredients();
+
+					ClearDraggedItem();
 					updateInventoryData();
 					updateCraftingArea();
 					return;
 				}
 
-				var slotGroup = GetNode<GridContainer>("Inventory/MarginContainer/VBoxContainer/SlotGroup");
-				var craftingSlotGroup = GetNode<GridContainer>("Crafting/MarginContainer/VBoxContainer/HBoxContainer/CraftingSlotGroup");
-				var resultSlot = GetNode<PanelContainer>("Crafting/MarginContainer/VBoxContainer/HBoxContainer/ResultSlot");
-
-				// Bounce back if target slot occupied
-				if (inventory == slotGroup && InventoryData.itemData[hoveredNode.GetIndex()] != null)
+				if (sourceName == "Result")
 				{
-					sourceInventory.itemData[index] = item;
-					currentDraggedItem.Clear();
-					updateInventoryData();
-					return;
-				}
-
-				if (inventory == craftingSlotGroup && CraftingData.itemData[hoveredNode.GetIndex()] != null)
-				{
-					sourceInventory.itemData[index] = item;
-					currentDraggedItem.Clear();
+					ClearDraggedItem();
 					updateCraftingArea();
 					return;
 				}
 
-				// Can't drop into result slot
-				if (inventory == resultSlot)
+				var hoveredNode = FindSlotAtPosition(GetGlobalMousePosition()) ?? FindSlot(GetViewport().GuiGetHoveredControl());
+				if (hoveredNode == null)
 				{
-					sourceInventory.itemData[index] = item;
-					currentDraggedItem.Clear();
-					updateCraftingArea();
-					updateInventoryData();
+					RestoreDraggedItem(sourceInventory, index, item);
 					return;
 				}
 
-				if (inventory == slotGroup)
+				var inventory = hoveredNode.GetParent();
+				var slotGroup = GetInventorySlotGroup();
+				var craftingSlotGroup = GetCraftingSlotGroup();
+				var resultSlot = GetResultSlot();
+
+				if (resultSlot != null && inventory == resultSlot)
 				{
-					InventoryData.itemData[hoveredNode.GetIndex()] = item;
-					currentDraggedItem.Clear();
-					updateInventoryData();
+					RestoreDraggedItem(sourceInventory, index, item);
 					return;
 				}
 
-				if (inventory == craftingSlotGroup)
+				if (slotGroup != null && inventory == slotGroup && InventoryData != null)
 				{
-					CraftingData.itemData[hoveredNode.GetIndex()] = item;
-					currentDraggedItem.Clear();
-					updateCraftingArea();
+					if (TryPlaceDraggedItem(InventoryData, hoveredNode.GetIndex(), item, sourceInventory, index, fromSplit))
+					{
+						ClearDraggedItem();
+						updateInventoryData();
+						updateCraftingArea();
+					}
+					else
+					{
+						RestoreDraggedItem(sourceInventory, index, item);
+					}
 					return;
 				}
 
-				// Unrecognised drop target — restore
-				sourceInventory.itemData[index] = item;
-				currentDraggedItem.Clear();
-				updateInventoryData();
-				updateCraftingArea();
+				if (craftingSlotGroup != null && inventory == craftingSlotGroup && CraftingData != null)
+				{
+					if (TryPlaceDraggedItem(CraftingData, hoveredNode.GetIndex(), item, sourceInventory, index, fromSplit))
+					{
+						ClearDraggedItem();
+						updateInventoryData();
+						updateCraftingArea();
+					}
+					else
+					{
+						RestoreDraggedItem(sourceInventory, index, item);
+					}
+					return;
+				}
+
+				RestoreDraggedItem(sourceInventory, index, item);
 			}
 		}
 	}
 
-	public void createDragItem(int index, InventoryDataNew inventoryDataType)
+	public bool createDragItem(int index, InventoryDataNew inventoryDataType)
 	{
+		return CreateDragItem(index, inventoryDataType, false, "Inventory");
+	}
+
+	public bool CreateDragItem(int index, InventoryDataNew inventoryDataType, bool splitOne, string sourceName, bool keepSource = false)
+	{
+		if (inventoryDataType == null)
+			return false;
+
+		EnsureItemDataSize(inventoryDataType, index + 1);
+		var sourceItem = inventoryDataType.itemData[index];
+		if (sourceItem == null)
+			return false;
+
+		var sourceCount = GetStackCount(sourceItem);
+		var fromSplit = splitOne && sourceCount > 1;
+		var draggedItem = fromSplit ? MakeStack(sourceItem, 1) : sourceItem;
+
 		currentDraggedItem = new Dictionary
 		{
 			{ "InventoryDataType", inventoryDataType },
-			{ "Item", inventoryDataType.itemData[index] },
-			{ "Index", index }
+			{ "Item", draggedItem },
+			{ "Index", index },
+			{ "FromSplit", fromSplit },
+			{ "SourceName", sourceName }
 		};
+
+		if (!keepSource)
+		{
+			if (fromSplit)
+				sourceItem.ItemCount = sourceCount - 1;
+			else
+				inventoryDataType.itemData[index] = null;
+		}
+
 		var newDragItem = new TextureRect
 		{
-			Texture = inventoryDataType.itemData[index].Icon,
+			Texture = draggedItem.Icon,
 			MouseFilter = Control.MouseFilterEnum.Ignore,
 			Name = "ItemDrag"
 		};
 		AddChild(newDragItem);
+		return true;
 	}
 
 	public void deleteDragedItem()
 	{
-		GetNode("ItemDrag").QueueFree();
+		GetNodeOrNull("ItemDrag")?.QueueFree();
+	}
+
+	void RestoreDraggedItem(InventoryDataNew sourceInventory, int index, ItemData item)
+	{
+		EnsureItemDataSize(sourceInventory, index + 1);
+		if (sourceInventory != null)
+		{
+			var sourceItem = sourceInventory.itemData[index];
+			if (sourceItem == null)
+				sourceInventory.itemData[index] = item;
+			else if (sourceItem != item && IsSameItem(sourceItem, item))
+				sourceItem.ItemCount = GetStackCount(sourceItem) + GetStackCount(item);
+		}
+		ClearDraggedItem();
+		updateInventoryData();
+		updateCraftingArea();
+	}
+
+	bool TryDropDraggedItemToHudInventory(ItemData item)
+	{
+		var inventoryBar = FindVisibleInventoryBar(GetTree().Root);
+		return inventoryBar != null && inventoryBar.TryDropItemAtPosition(GetGlobalMousePosition(), item);
+	}
+
+	bool TryPlaceDraggedItem(InventoryDataNew targetInventory, int targetIndex, ItemData item, InventoryDataNew sourceInventory, int sourceIndex, bool fromSplit)
+	{
+		if (targetInventory == null || item == null)
+			return false;
+
+		EnsureItemDataSize(targetInventory, targetIndex + 1);
+		var targetItem = targetInventory.itemData[targetIndex];
+
+		if (targetItem == null)
+		{
+			targetInventory.itemData[targetIndex] = item;
+			return true;
+		}
+
+		if (IsSameItem(targetItem, item))
+		{
+			targetItem.ItemCount = GetStackCount(targetItem) + GetStackCount(item);
+			return true;
+		}
+
+		if (fromSplit)
+			return false;
+
+		targetInventory.itemData[targetIndex] = item;
+		EnsureItemDataSize(sourceInventory, sourceIndex + 1);
+		if (sourceInventory != null)
+			sourceInventory.itemData[sourceIndex] = targetItem;
+
+		return true;
+	}
+
+	void ConsumeCraftingIngredients()
+	{
+		if (CraftingData == null)
+			return;
+
+		EnsureItemDataSize(CraftingData, 0);
+		for (int i = 0; i < CraftingData.itemData.Count; i++)
+		{
+			var item = CraftingData.itemData[i];
+			if (item == null)
+				continue;
+
+			item.ItemCount = GetStackCount(item) - 1;
+			if (item.ItemCount <= 0)
+				CraftingData.itemData[i] = null;
+		}
+	}
+
+	void ClearDraggedItem()
+	{
+		currentDraggedItem = null;
+	}
+
+	void EnsureItemDataSize(InventoryDataNew data, int size)
+	{
+		if (data == null)
+			return;
+
+		data.itemData ??= new Godot.Collections.Array<ItemData>();
+		while (data.itemData.Count < size)
+			data.itemData.Add(null);
+	}
+
+	System.Collections.Generic.IEnumerable<string> GetRecipeKeys(Godot.Collections.Array<string> currentRecipe)
+	{
+		var exactKey = string.Join(",", currentRecipe);
+		yield return exactKey;
+
+		var compact = new System.Collections.Generic.List<string>();
+		foreach (var itemId in currentRecipe)
+		{
+			if (!string.IsNullOrEmpty(itemId) && itemId != "null")
+				compact.Add(itemId);
+		}
+
+		compact.Sort();
+		if (compact.Count > 0)
+			yield return string.Join(",", compact);
+	}
+
+	GridContainer GetInventorySlotGroup()
+	{
+		return GetNodeOrNull<GridContainer>("Inventory/MarginContainer/VBoxContainer/SlotGroup");
+	}
+
+	GridContainer GetCraftingSlotGroup()
+	{
+		return GetNodeOrNull<GridContainer>("Crafting/MarginContainer/VBoxContainer/HBoxContainer/CraftingSlotGroup");
+	}
+
+	PanelContainer GetResultSlot()
+	{
+		return GetNodeOrNull<PanelContainer>("Crafting/MarginContainer/VBoxContainer/HBoxContainer/ResultSlot");
+	}
+
+	Slot FindSlot(Control hovered)
+	{
+		while (hovered != null)
+		{
+			if (hovered is Slot slot)
+				return slot;
+
+			hovered = hovered.GetParent() as Control;
+		}
+
+		return null;
+	}
+
+	Slot FindSlotAtPosition(Vector2 globalPosition)
+	{
+		var craftingSlotGroup = GetCraftingSlotGroup();
+		if (craftingSlotGroup != null)
+		{
+			foreach (var child in craftingSlotGroup.GetChildren())
+			{
+				if (child is Slot slot && slot.GetGlobalRect().HasPoint(globalPosition))
+					return slot;
+			}
+		}
+
+		var resultSlot = GetResultSlot();
+		if (resultSlot != null)
+		{
+			foreach (var child in resultSlot.GetChildren())
+			{
+				if (child is Slot slot && slot.GetGlobalRect().HasPoint(globalPosition))
+					return slot;
+			}
+		}
+
+		var inventorySlotGroup = GetInventorySlotGroup();
+		if (inventorySlotGroup != null)
+		{
+			foreach (var child in inventorySlotGroup.GetChildren())
+			{
+				if (child is Slot slot && slot.GetGlobalRect().HasPoint(globalPosition))
+					return slot;
+			}
+		}
+
+		return null;
+	}
+
+	InventoryBar FindVisibleInventoryBar(Node node)
+	{
+		if (node == null)
+			return null;
+
+		if (node is InventoryBar bar && bar.Visible)
+			return bar;
+
+		foreach (var child in node.GetChildren())
+		{
+			var found = FindVisibleInventoryBar(child);
+			if (found != null)
+				return found;
+		}
+
+		return null;
+	}
+
+	static bool IsSameItem(ItemData a, ItemData b)
+	{
+		return a != null && b != null && a.ItemId == b.ItemId;
+	}
+
+	static int GetStackCount(ItemData item)
+	{
+		return item?.ItemCount > 0 ? item.ItemCount : 1;
+	}
+
+	static ItemData MakeStack(ItemData source, int count)
+	{
+		var stack = source.Duplicate() as ItemData ?? new ItemData
+		{
+			ItemId = source.ItemId,
+			Icon = source.Icon,
+			itemRecipe = source.itemRecipe
+		};
+		stack.ItemCount = count;
+		return stack;
+	}
+
+	static bool IsSplitModifierPressed(InputEventMouseButton mouseEvent)
+	{
+		return mouseEvent.CtrlPressed || mouseEvent.MetaPressed;
 	}
 }

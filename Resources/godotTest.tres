@@ -7,5 +7,5 @@
 script = ExtResource("2_w7ufo")
 ItemId = 2
 Icon = ExtResource("1_i61en")
-itemRecipe = null
+itemRecipe = Array[String](["1"])
 metadata/_custom_type_script = "uid://c1o4r7hkryrjo"

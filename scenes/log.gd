@@ -8,6 +8,8 @@ func _ready() -> void:
 	interactable.interact = _on_interact
 	
 func _on_interact():
-	InventoryData.AddItem(1,1)
-	print("The beaver picked up a log")
-	queue_free()
+	if InventoryData.AddItem(1,1):
+		print("The beaver picked up a log")
+		queue_free()
+	else:
+		print("The beaver tried to pick up a log, but the inventory is full")

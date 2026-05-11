@@ -1,6 +1,7 @@
 extends Node2D
 
 @onready var interact_text: Label = $"Interact Text"
+const UI_EVENTS = preload("res://ui/Core/UIEventBus.cs")
 #hold list of all the available interaction within the InteractRange
 var current_interactions := [] 
 var can_interact := true
@@ -11,6 +12,7 @@ func _input(event: InputEvent) -> void:
 		if current_interactions:
 			can_interact = false
 			interact_text.hide()
+			UI_EVENTS.HideInteractionPrompt()
 			
 			await current_interactions[0].interact.call()
 			
@@ -23,9 +25,14 @@ func _process(_delta: float) -> void:
 		current_interactions.sort_custom(_sort_by_closest)
 		if current_interactions[0].is_interactable:
 			interact_text.text = current_interactions[0].interact_name
-			interact_text.show()
+			interact_text.hide()
+			UI_EVENTS.ShowInteractionPromptForNode(current_interactions[0].interact_name, self)
 		else:
 			interact_text.hide()
+			UI_EVENTS.HideInteractionPrompt()
+	else:
+		interact_text.hide()
+		UI_EVENTS.HideInteractionPrompt()
 
 #sorts the array based on what is closest to the player
 func _sort_by_closest(area1, area2):
