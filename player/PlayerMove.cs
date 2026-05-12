@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 public partial class PlayerMove : CharacterBody2D
 {
-    public const float Speed = 300.0f;
+    public const float Speed = 210.0f;
     private AnimatedSprite2D _animSprite;
     private AudioStreamPlayer2D _audioRunPlayer;
     private AudioStreamPlayer2D _audioSwimmingPlayer;
@@ -29,7 +29,7 @@ public partial class PlayerMove : CharacterBody2D
     public override void _PhysicsProcess(double delta)
     {
         Vector2 direction = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
-        Velocity = direction * Speed;
+        Velocity = direction * (Speed * (float)(InWater ? 1.5 : 1.0));
 
         // 移动时更新最后方向
         if (direction != Vector2.Zero)
