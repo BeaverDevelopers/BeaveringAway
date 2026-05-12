@@ -102,7 +102,7 @@ public class WaterSimulation
         // And maybe soak water.
         for (int i = 0; i < 7350; i++)
         {
-            int idx = Math.Abs(i + tick * 7350) % terrain.ProcessingOrder.Length;
+            int idx = (int)(Math.Abs(((long)i + (long)tick * 7350)) % terrain.ProcessingOrder.Length);
             Godot.Vector2I pos = terrain.ProcessingOrder[idx];
 
             var currentDistance = terrain.WaterRandomTickData[pos.X, pos.Y].DistanceToSea;
