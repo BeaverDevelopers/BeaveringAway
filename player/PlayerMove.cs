@@ -16,8 +16,10 @@ public partial class PlayerMove : CharacterBody2D
     // 保存最后朝向（用于idle）
     private Vector2 _lastDirection = Vector2.Down;
 
+
     public override void _Ready()
     {
+        Debug.WriteLine("Camera Created");
         _animSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
         _audioRunPlayer = GetNode<AudioStreamPlayer2D>("AudioRunPlayer");
         _audioSwimmingPlayer = GetNode<AudioStreamPlayer2D>("AudioSwimmingPlayer");

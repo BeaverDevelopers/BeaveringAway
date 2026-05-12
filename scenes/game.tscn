@@ -22,11 +22,10 @@ ItemId = 1
 Icon = ExtResource("8_0tnpc")
 metadata/_custom_type_script = "uid://c1o4r7hkryrjo"
 
-[node name="Node2D" type="Node2D" unique_id=158556237 node_paths=PackedStringArray("MapNode", "hud", "Player")]
+[node name="Node2D" type="Node2D" unique_id=158556237 node_paths=PackedStringArray("MapNode", "hud")]
 script = ExtResource("1_yqjtg")
 MapNode = NodePath("world")
 hud = NodePath("GameHUD")
-Player = NodePath("Player")
 
 [node name="world" parent="." unique_id=321246523 instance=ExtResource("1_uwrxv")]
 position = Vector2(2, 0)
