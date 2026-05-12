@@ -12,7 +12,7 @@ public partial class FoxMovement : CharacterBody2D
 
     public override void _Ready()
     {
-        player = GetNode<CharacterBody2D>("../player");
+        player = GetNode<CharacterBody2D>("../Player");
 
         _animSprite = GetNode<AnimatedSprite2D>("Sprite2D/AnimatedSprite2D");
 

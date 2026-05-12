@@ -5,7 +5,7 @@ using System.Diagnostics;
 public partial class Game : Node
 {
     [Export] public Node MapNode;
-    [Export] public PlayerMove Player;
+    
     [Export(PropertyHint.Range, "1,500,1")] public int JunkSpawnInterval = 100;
     [Export(PropertyHint.Range, "1,50,1")] public int JunkMaxCount = 5;
     [Export(PropertyHint.Range, "0.05,2.0,0.05")] public float JunkDriftSpeed = 0.35f;
@@ -20,6 +20,7 @@ public partial class Game : Node
     TileMapLayer waterLayer;
     TileMapLayer obstructionLayer;
     TileMapLayer terrainLayer;
+    PlayerMove Player;
 
     Vector2I WATER_CENTER = new Vector2I(5, 17);
     Vector2I WATER_DANGEROUS = new Vector2I(15, 19);
@@ -30,7 +31,9 @@ public partial class Game : Node
 
     public override void _Ready()
     {
-        simulator.Load(MapNode);
+
+        Player = MapNode.GetNode<PlayerMove>("Player");
+
         waterLayer = MapNode.GetNode<TileMapLayer>("Level_0/Water");
         waterLayer.TextureFilter = CanvasItem.TextureFilterEnum.Nearest;
         junkSystem.Initialize(waterLayer);
@@ -39,9 +42,6 @@ public partial class Game : Node
         junkSystem.DriftSpeed = JunkDriftSpeed;
 
         var tileSize = waterLayer.TileSet.TileSize;
-        int mapW = simulator.Terrain.Columns * tileSize.X;
-        int mapH = simulator.Terrain.Rows * tileSize.Y;
-        hud.SetMapBounds(mapW, mapH);
 
         // Not needed for now.
         MapNode.GetNode<TileMapLayer>("Level_0/Water_Decoration").Visible = false;
@@ -49,7 +49,11 @@ public partial class Game : Node
         obstructionLayer = MapNode.GetNode<TileMapLayer>("Level_0/Obstructions");
         terrainLayer = MapNode.GetNode<TileMapLayer>("Level_0/Terrain");
 
+        simulator.Load(MapNode);
 
+        int mapW = simulator.Terrain.Columns * tileSize.X;
+        int mapH = simulator.Terrain.Rows * tileSize.Y;
+        hud.SetMapBounds(mapW, mapH);
     }
 
     void RenderWaterAndObstructions(Terrain terrain)
@@ -189,8 +193,13 @@ public partial class Game : Node
         float seasonProgress = (simulator.Tick % 14400) / 14400f;
         hud.UpdateTemperature(Mathf.Lerp(-10f, 35f, Mathf.Sin(seasonProgress * Mathf.Tau) * 0.5f + 0.5f));
 
-        var currentCell = obstructionLayer.LocalToMap(new Vector2I((int)Player.Position.X, (int)Player.Position.Y));
-        if (currentCell.X >= 0 && currentCell.Y >= 0 && currentCell.X < simulator.Terrain.Columns && currentCell.Y < simulator.Terrain.Rows)
-        Player.InWater = simulator.Terrain.Tiles[currentCell.X, currentCell.Y].WaterHeight > 0;
+        if (obstructionLayer != null && Player != null)
+        {
+            var currentCell = obstructionLayer.LocalToMap(new Vector2I((int)Player.Position.X, (int)Player.Position.Y));
+            if (currentCell.X >= 0 && currentCell.Y >= 0 && currentCell.X < simulator.Terrain.Columns && currentCell.Y < simulator.Terrain.Rows)
+            {
+                Player.InWater = simulator.Terrain.Tiles[currentCell.X, currentCell.Y].WaterHeight > 0;
+            }
+        }
     }
 }

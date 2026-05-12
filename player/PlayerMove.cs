@@ -7,9 +7,11 @@ public partial class PlayerMove : CharacterBody2D
     public const float Speed = 300.0f;
     private AnimatedSprite2D _animSprite;
     private AudioStreamPlayer2D _audioRunPlayer;
+    private AudioStreamPlayer2D _audioSwimmingPlayer;
+    private AudioStreamPlayer2D _jumpInWaterPlayer;
 
     public bool InWater = false;
-    public bool PlayedWaterJumpSound = false;
+    public double PlayNextWaterJumpSound = 0;
 
     // 保存最后朝向（用于idle）
     private Vector2 _lastDirection = Vector2.Down;
@@ -18,6 +20,8 @@ public partial class PlayerMove : CharacterBody2D
     {
         _animSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
         _audioRunPlayer = GetNode<AudioStreamPlayer2D>("AudioRunPlayer");
+        _audioSwimmingPlayer = GetNode<AudioStreamPlayer2D>("AudioSwimmingPlayer");
+        _jumpInWaterPlayer = GetNode<AudioStreamPlayer2D>("JumpInWaterPlayer");
 
         GetTree().Root.GetNode<Game>("Node2D").MainCamera = GetNode<Camera2D>("Camera2D");
     }
@@ -31,13 +35,25 @@ public partial class PlayerMove : CharacterBody2D
         if (direction != Vector2.Zero)
         {
             _lastDirection = direction;
-            if (!_audioRunPlayer.Playing)
+            if (InWater)
             {
-                _audioRunPlayer.Play();
+                if (!_audioSwimmingPlayer.Playing)
+                {
+                    _audioSwimmingPlayer.Play();
+                }
+                _audioRunPlayer.Stop();
+            }
+            else
+            {
+                if (!_audioRunPlayer.Playing)
+                {
+                    _audioRunPlayer.Play();
+                }
             }
         }
         else {
             _audioRunPlayer.Stop();
+            _audioSwimmingPlayer.Stop();
         }
 
         if (_animSprite.Material is ShaderMaterial asShaderMaterial)
@@ -45,7 +61,6 @@ public partial class PlayerMove : CharacterBody2D
             var cardinal = (int)(4.0 * _lastDirection.Angle() / Mathf.Tau) + 1;
             var goingUp = cardinal == 0;
             var goingDown = cardinal == 2;
-            Debug.WriteLine(cardinal);
 
             var waterLineIfInWater = goingDown ? 0.15 : goingUp ? 0.3 : 0.4;
             var waterLine = InWater ? waterLineIfInWater : 0;
@@ -53,9 +68,22 @@ public partial class PlayerMove : CharacterBody2D
             asShaderMaterial.SetShaderParameter("water_line", waterLine);
         }
 
-        if (InWater && !PlayedWaterJumpSound)
+        if (InWater)
         {
-            //
+            if (PlayNextWaterJumpSound <= 0)
+            {
+                
+
+                if (!_jumpInWaterPlayer.Playing)
+                { 
+                    _jumpInWaterPlayer.Play();
+                }
+            }
+            PlayNextWaterJumpSound = 1;
+        }
+        else
+        {
+            PlayNextWaterJumpSound = PlayNextWaterJumpSound - delta;
         }
 
         // 动画控制

@@ -211,8 +211,8 @@ public class Terrain
         WaterRandomTickData = new WaterRandomTickData[columns, rows];
         ProcessingOrder = new Vector2I[columns * rows];
 
-        var groundOverlay = fromTerrain.GetNode<TileMapLayer>("Level_0/Ground/Ground1");
-        Debug.Assert(groundOverlay != null);
+        //var groundOverlay = fromTerrain.GetNode<TileMapLayer>("Level_0/Ground/Ground1");
+        //Debug.Assert(groundOverlay != null);
 
         for (int y = 0; y < Rows; y++)
         {
