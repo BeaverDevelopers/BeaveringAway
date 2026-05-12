@@ -11,6 +11,7 @@ public partial class Game : Node
     [Export(PropertyHint.Range, "0.05,2.0,0.05")] public float JunkDriftSpeed = 0.35f;
 
     [Export] public GameHUD hud;
+    [Export] public PlayerMove Player;
 
     public Camera2D MainCamera;
 
@@ -20,7 +21,7 @@ public partial class Game : Node
     TileMapLayer waterLayer;
     TileMapLayer obstructionLayer;
     TileMapLayer terrainLayer;
-    PlayerMove Player;
+
 
     Vector2I WATER_CENTER = new Vector2I(5, 17);
     Vector2I WATER_DANGEROUS = new Vector2I(15, 19);
@@ -31,9 +32,6 @@ public partial class Game : Node
 
     public override void _Ready()
     {
-
-        Player = MapNode.GetNode<PlayerMove>("Player");
-
         waterLayer = MapNode.GetNode<TileMapLayer>("Level_0/Water");
         waterLayer.TextureFilter = CanvasItem.TextureFilterEnum.Nearest;
         junkSystem.Initialize(waterLayer);
@@ -54,6 +52,8 @@ public partial class Game : Node
         int mapW = simulator.Terrain.Columns * tileSize.X;
         int mapH = simulator.Terrain.Rows * tileSize.Y;
         hud.SetMapBounds(mapW, mapH);
+
+        MainCamera = Player.GetNode<Camera2D>("Camera2D");
     }
 
     void RenderWaterAndObstructions(Terrain terrain)

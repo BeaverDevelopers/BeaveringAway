@@ -22,21 +22,16 @@ ItemId = 1
 Icon = ExtResource("8_0tnpc")
 metadata/_custom_type_script = "uid://c1o4r7hkryrjo"
 
-[node name="Node2D" type="Node2D" unique_id=158556237 node_paths=PackedStringArray("MapNode", "Player", "hud")]
+[node name="Node2D" type="Node2D" unique_id=158556237 node_paths=PackedStringArray("MapNode", "hud", "Player")]
 script = ExtResource("1_yqjtg")
 MapNode = NodePath("world")
-Player = NodePath("world/Player")
 hud = NodePath("GameHUD")
+Player = NodePath("Player")
 
 [node name="world" parent="." unique_id=321246523 instance=ExtResource("1_uwrxv")]
 position = Vector2(2, 0)
 
 [node name="Clouds" parent="world" unique_id=514881015 instance=ExtResource("3_ir15t")]
-
-[node name="Player" parent="world" unique_id=2057284693 groups=["player"] instance=ExtResource("3_0tnpc")]
-
-[node name="AudioStreamPlayer2D" parent="world/Player" unique_id=1664354570 instance=ExtResource("2_kvpfn")]
-position = Vector2(-2, 0)
 
 [node name="Tree" parent="world" unique_id=73844678 instance=ExtResource("5_vtaks")]
 position = Vector2(415, 277)
@@ -112,6 +107,12 @@ position = Vector2(2144, 402)
 
 [node name="fox" parent="world" unique_id=203894665 instance=ExtResource("5_kvpfn")]
 position = Vector2(212, 74)
+
+[node name="Player" parent="." unique_id=2057284693 groups=["player"] instance=ExtResource("3_0tnpc")]
+position = Vector2(2, 0)
+
+[node name="AudioStreamPlayer2D" parent="Player" unique_id=1664354570 instance=ExtResource("2_kvpfn")]
+position = Vector2(-2, 0)
 
 [node name="GameHUD" parent="." unique_id=43781371 instance=ExtResource("5_iywne")]
 
