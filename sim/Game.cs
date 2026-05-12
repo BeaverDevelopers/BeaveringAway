@@ -18,6 +18,7 @@ public partial class Game : Node
 
     TileMapLayer waterLayer;
     TileMapLayer decorGroundLayer;
+    TileMapLayer terrainLayer;
 
     Vector2I WATER_CENTER = new Vector2I(5, 17);
     Vector2I WATER_DANGEROUS = new Vector2I(15, 19);
@@ -45,6 +46,8 @@ public partial class Game : Node
         MapNode.GetNode<TileMapLayer>("Level_0/Water_Decoration").Visible = false;
 
         decorGroundLayer = MapNode.GetNode<TileMapLayer>("Level_0/Decorations");
+        terrainLayer = MapNode.GetNode<TileMapLayer>("Level_0/Terrain");
+
 
     }
 
@@ -82,6 +85,13 @@ public partial class Game : Node
                     decorGroundLayer.SetCell(coords, -1, DAM_TILE);
 
                 }
+
+                var grass = terrain.GrassTiles[x, y];
+
+                var atlasCoords = terrainLayer.GetCellAtlasCoords(coords);
+                int sourceID = grass.HumidFor > 0 ? 77 : 40; 
+                terrainLayer.SetCell(coords, sourceID, atlasCoords);
+                
             }
         }
     }
@@ -120,6 +130,7 @@ public partial class Game : Node
             var mapPos = decorGroundLayer.LocalToMap(MainCamera.GetGlobalMousePosition());
             Debug.WriteLine(mapPos);
             simulator.Terrain.Tiles[mapPos.X, mapPos.Y].GroundHeight = Terrain.MUDFLOOR_TILE_HEIGHT;
+            terrainLayer.SetCell(mapPos, -1); // TODO: Fix this ugly hack.
         }
 
         if (Input.IsPhysicalKeyPressed(Key.N))
@@ -130,6 +141,9 @@ public partial class Game : Node
             Debug.WriteLine("Terrain height: " + simulator.Terrain.Tiles[mapPos.X, mapPos.Y].GroundHeight);
             Debug.WriteLine("Sea distance: " + simulator.Terrain.WaterRandomTickData[mapPos.X, mapPos.Y].DistanceToSea);
             Debug.WriteLine("Next soak: " + simulator.Terrain.WaterRandomTickData[mapPos.X, mapPos.Y].NextSoak);
+            Debug.WriteLine("Humid for: " + simulator.Terrain.GrassTiles[mapPos.X, mapPos.Y].HumidFor);
+            Debug.WriteLine("Next water check: " + simulator.Terrain.GrassTiles[mapPos.X, mapPos.Y].NextWateringCheck);
+            Debug.WriteLine("Water pos:" + GrassSimulation.TileCoordinate[simulator.Terrain.GrassTiles[mapPos.X, mapPos.Y].NextTileToCheck]);
         }
     }
 
@@ -146,11 +160,11 @@ public partial class Game : Node
         if (simulator.Tick % 5 == 0)
         {
             simulator.Terrain.Tiles[WATER_SOURCE_TILE.X, WATER_SOURCE_TILE.Y].WaterHeight =
-                Math.Max(simulator.Terrain.Tiles[WATER_SOURCE_TILE.X, WATER_SOURCE_TILE.Y].WaterHeight, (byte)8);
+                Math.Max(simulator.Terrain.Tiles[WATER_SOURCE_TILE.X, WATER_SOURCE_TILE.Y].WaterHeight, (byte)12);
             simulator.Terrain.Tiles[WATER_SOURCE_TILE.X - 1, WATER_SOURCE_TILE.Y].WaterHeight =
-                Math.Max(simulator.Terrain.Tiles[WATER_SOURCE_TILE.X - 1, WATER_SOURCE_TILE.Y].WaterHeight, (byte)8);
+                Math.Max(simulator.Terrain.Tiles[WATER_SOURCE_TILE.X - 1, WATER_SOURCE_TILE.Y].WaterHeight, (byte)12);
             simulator.Terrain.Tiles[WATER_SOURCE_TILE.X + 1, WATER_SOURCE_TILE.Y].WaterHeight =
-                Math.Max(simulator.Terrain.Tiles[WATER_SOURCE_TILE.X + 1, WATER_SOURCE_TILE.Y].WaterHeight, (byte)8);
+                Math.Max(simulator.Terrain.Tiles[WATER_SOURCE_TILE.X + 1, WATER_SOURCE_TILE.Y].WaterHeight, (byte)12);
             //simulator.Terrain.Tiles[WATER_SOURCE_TILE.X, WATER_SOURCE_TILE.Y].DangerLevel = 10;
         }
 

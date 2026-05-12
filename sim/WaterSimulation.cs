@@ -144,14 +144,14 @@ public class WaterSimulation
             }
             else
             {
-                terrain.Tiles[pos.X, pos.Y].WaterHeight = (byte)Math.Max(0, terrain.Tiles[pos.X, pos.Y].WaterHeight - 1);
+                terrain.Tiles[pos.X, pos.Y].WaterHeight = (byte)(terrain.Tiles[pos.X, pos.Y].WaterHeight > 0 ? terrain.Tiles[pos.X, pos.Y].WaterHeight - 1 : 0);
 
-                int nextSoakIn = 200;
+                int nextSoakIn = 400;
                 if (terrain.Tiles[pos.X, pos.Y].GroundHeight == Terrain.MUDFLOOR_TILE_HEIGHT)
                 {
-                    if (currentDistance < int.MaxValue / 2)
+                    if (currentDistance <= int.MaxValue / 2)
                     {
-                        nextSoakIn = 1600;
+                        nextSoakIn = 3200;
                     }
                     else
                     {

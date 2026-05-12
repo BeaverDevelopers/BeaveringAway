@@ -1,6 +1,5 @@
 using Godot;
 using System;
-using System.Data.Common;
 using System.Diagnostics;
 
 public enum WaterDirection : byte
@@ -32,6 +31,13 @@ public struct TerrainTile
     }
 }
 
+public struct GrassTile
+{
+    public int NextWateringCheck;
+    public int HumidFor;
+    public byte NextTileToCheck;
+}
+
 public struct WaterRandomTickData
 {
     public int DistanceToSea;
@@ -55,6 +61,7 @@ public class Terrain
     public WaterFlow[,] WaterTiles;
     public WaterRandomTickData[,] WaterRandomTickData;
     public Vector2I[] ProcessingOrder;
+    public GrassTile[,] GrassTiles;
 
     public const byte NORMAL_TILE_HEIGHT = 2;
     public const byte MUDFLOOR_TILE_HEIGHT = 1;
@@ -62,7 +69,7 @@ public class Terrain
 
     private byte atlasCoordsToHeight(Vector2I vec)
     {
-        if (vec.X >= 1 && vec.X <= 8 && vec.Y >= 6 && vec.Y < 10)
+        if (vec.X <= -1)
         {
             return MUDFLOOR_TILE_HEIGHT;
         }
@@ -70,7 +77,8 @@ public class Terrain
     }
 
     private bool atlasCoordsIsSeaTile(Vector2I vec) {
-        return (vec.X >= 13 && vec.Y <= 18 && vec.X >= 17 && vec.Y < 21);
+        return vec.X >= 0 && vec.X >= 0;
+        //return (vec.X >= 13 && vec.Y <= 18 && vec.X >= 17 && vec.Y < 21);
     }
 
     public WaterRandomTickData GetWaterRandomTickData(int x, int y)
@@ -187,9 +195,11 @@ public class Terrain
         BAD_WATER_RANDOM_TICK_DATA.DistanceToSea = int.MaxValue;
 
         var terrain = fromTerrain.GetNode<TileMapLayer>("Level_0/Terrain");
-        Debug.Assert(terrain != null);
+        var sea = fromTerrain.GetNode<TileMapLayer>("Level_0/Sea");
+        var clay = fromTerrain.GetNode<TileMapLayer>("Level_0/Clay");
+        Debug.Assert(clay != null);
 
-        var mapBounds = terrain.GetUsedRect();
+        var mapBounds = clay.GetUsedRect();
         var rows = mapBounds.Size.Y;
         var columns = mapBounds.Size.X;
         Debug.WriteLine($"Creating simulation tiles of size: {rows}, {columns}");
@@ -197,6 +207,7 @@ public class Terrain
         Rows = rows;
         Tiles = new TerrainTile[columns, rows];
         WaterTiles = new WaterFlow[columns, rows];
+        GrassTiles = new GrassTile[columns, rows];
         WaterRandomTickData = new WaterRandomTickData[columns, rows];
         ProcessingOrder = new Vector2I[columns * rows];
 
@@ -214,8 +225,10 @@ public class Terrain
                 var atlasCoords = terrain.GetCellAtlasCoords(coord);
                 byte height = atlasCoordsToHeight(atlasCoords);
                 Tiles[x, y].GroundHeight = height;
-                WaterRandomTickData[x, y].DistanceToSea = atlasCoordsIsSeaTile(atlasCoords) ? 0 : (height == MUDFLOOR_TILE_HEIGHT ? int.MaxValue / 2 : int.MaxValue);
-                WaterRandomTickData[x, y].NextSoak = Random.Shared.Next(0, 800);
+                WaterRandomTickData[x, y].DistanceToSea = atlasCoordsIsSeaTile(sea.GetCellAtlasCoords(coord)) ? 0 : (height == MUDFLOOR_TILE_HEIGHT ? int.MaxValue / 2 : int.MaxValue);
+                WaterRandomTickData[x, y].NextSoak = Random.Shared.Next(0, 1600);
+                GrassTiles[x, y].NextWateringCheck = Random.Shared.Next(0, 1600);
+                GrassTiles[x, y].NextTileToCheck = (byte)Random.Shared.Next(0, 255);
             }
         }
         Random.Shared.Shuffle(ProcessingOrder);

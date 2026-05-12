@@ -7,7 +7,8 @@ public struct Simulator
 
 	public void Load(Node mapNode)
 	{
-		Terrain = new Terrain();
+        GrassSimulation.Init();
+        Terrain = new Terrain();
 		Terrain.LoadTerrain(mapNode);
 		//Debugger.Launch();
 	}
@@ -16,5 +17,6 @@ public struct Simulator
 	{
 		Tick++;
 		WaterSimulation.Run(Terrain, Tick);
+		GrassSimulation.Run(Terrain, Tick);
 	}
 }
