@@ -122,7 +122,7 @@ shape = SubResource("RectangleShape2D_vplca")
 [node name="TreeAnim" type="AnimatedSprite2D" parent="." unique_id=313139479]
 material = ExtResource("3_18mvg")
 position = Vector2(63.000004, 3.9999962)
-scale = Vector2(1.993447, 1.993447)
+scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_528u0")
 animation = &"fall_right"
 

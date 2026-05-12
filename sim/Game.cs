@@ -5,6 +5,7 @@ using System.Diagnostics;
 public partial class Game : Node
 {
     [Export] public Node MapNode;
+    [Export] public PlayerMove Player;
     [Export(PropertyHint.Range, "1,500,1")] public int JunkSpawnInterval = 100;
     [Export(PropertyHint.Range, "1,50,1")] public int JunkMaxCount = 5;
     [Export(PropertyHint.Range, "0.05,2.0,0.05")] public float JunkDriftSpeed = 0.35f;
@@ -187,5 +188,9 @@ public partial class Game : Node
         hud.UpdateHunger(100 - (simulator.Tick % 6000) / 60f);
         float seasonProgress = (simulator.Tick % 14400) / 14400f;
         hud.UpdateTemperature(Mathf.Lerp(-10f, 35f, Mathf.Sin(seasonProgress * Mathf.Tau) * 0.5f + 0.5f));
+
+        var currentCell = obstructionLayer.LocalToMap(new Vector2I((int)Player.Position.X, (int)Player.Position.Y));
+        if (currentCell.X >= 0 && currentCell.Y >= 0 && currentCell.X < simulator.Terrain.Columns && currentCell.Y < simulator.Terrain.Rows)
+        Player.InWater = simulator.Terrain.Tiles[currentCell.X, currentCell.Y].WaterHeight > 0;
     }
 }

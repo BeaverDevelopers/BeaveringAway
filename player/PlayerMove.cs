@@ -1,10 +1,15 @@
 using Godot;
+using System;
+using System.Diagnostics;
 
 public partial class PlayerMove : CharacterBody2D
 {
     public const float Speed = 300.0f;
     private AnimatedSprite2D _animSprite;
     private AudioStreamPlayer2D _audioRunPlayer;
+
+    public bool InWater = false;
+    public bool PlayedWaterJumpSound = false;
 
     // 保存最后朝向（用于idle）
     private Vector2 _lastDirection = Vector2.Down;
@@ -13,6 +18,7 @@ public partial class PlayerMove : CharacterBody2D
     {
         _animSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
         _audioRunPlayer = GetNode<AudioStreamPlayer2D>("AudioRunPlayer");
+
         GetTree().Root.GetNode<Game>("Node2D").MainCamera = GetNode<Camera2D>("Camera2D");
     }
 
@@ -32,6 +38,24 @@ public partial class PlayerMove : CharacterBody2D
         }
         else {
             _audioRunPlayer.Stop();
+        }
+
+        if (_animSprite.Material is ShaderMaterial asShaderMaterial)
+        {
+            var cardinal = (int)(4.0 * _lastDirection.Angle() / Mathf.Tau) + 1;
+            var goingUp = cardinal == 0;
+            var goingDown = cardinal == 2;
+            Debug.WriteLine(cardinal);
+
+            var waterLineIfInWater = goingDown ? 0.15 : goingUp ? 0.3 : 0.4;
+            var waterLine = InWater ? waterLineIfInWater : 0;
+
+            asShaderMaterial.SetShaderParameter("water_line", waterLine);
+        }
+
+        if (InWater && !PlayedWaterJumpSound)
+        {
+            //
         }
 
         // 动画控制
