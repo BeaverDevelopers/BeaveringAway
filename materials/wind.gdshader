@@ -9,6 +9,7 @@ uniform float wind_end_threshold_2 : hint_range(0,2) = .1;
 uniform float wind_strength : hint_range(0,1.5) = .2;
 uniform float wind_speed  : hint_range(.2,5) = 1;
 uniform float scale = 2.0;
+uniform float wind_offset = 0.0;
 
 void vertex() {
 	VERTEX *= scale;
@@ -19,7 +20,7 @@ void fragment() {
 	uv -= (scale - 1.) / scale;
 	
 	float dist_amount = smoothstep(wind_start_threshold * pow((1.0 - uv.y), wind_end_threshold), wind_end_threshold_2, 1.-uv.y);
-    uv.x += sin(TIME * wind_speed) * pow((1.0 - uv.y), wind_end_threshold) * dist_amount  * wind_strength ;
+    uv.x += sin(TIME * wind_speed + wind_offset) * pow((1.0 - uv.y), wind_end_threshold) * dist_amount  * wind_strength ;
     
 	COLOR = texture(TEXTURE, uv * REGION_RECT.zw + REGION_RECT.xy);
     vec2 border = step(vec2(0.0), uv) * step(uv, vec2(1.0));

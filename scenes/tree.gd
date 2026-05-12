@@ -7,11 +7,19 @@ extends StaticBody2D
 @onready var collision_shape_2d: CollisionShape2D = $CollisionShape2D
 @onready var tree_falling_audio: AudioStreamPlayer2D = $FallingSoundPlayer
 
+static var rng = RandomNumberGenerator.new()
+
 func _ready() -> void:
 	# Setup interaction and default tree pose
 	interactable.interact = _on_interact
 	tree_anim.play("fall_right")
 	tree_anim.pause() # Stay on first frame (standing tree)
+
+
+	var newMaterial = tree_anim.material.duplicate()
+	tree_anim.material = newMaterial
+	if newMaterial is ShaderMaterial:
+		newMaterial.set_shader_parameter("wind_offset", rng.randf_range(-10.0, 10.0))
 
 func _on_interact():
 	# Prevent duplicate interactions

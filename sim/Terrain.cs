@@ -27,7 +27,7 @@ public struct TerrainTile
 
     public int TotalHeight()
     {
-        return (int)GroundHeight * 5 + ObstructionHeight * 2 + WaterHeight;
+        return (int)GroundHeight * 5 + ObstructionHeight * 10 + WaterHeight;
     }
 }
 

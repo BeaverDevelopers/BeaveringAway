@@ -17,7 +17,7 @@ public partial class Game : Node
     JunkSystem junkSystem = new();
 
     TileMapLayer waterLayer;
-    TileMapLayer decorGroundLayer;
+    TileMapLayer obstructionLayer;
     TileMapLayer terrainLayer;
 
     Vector2I WATER_CENTER = new Vector2I(5, 17);
@@ -45,7 +45,7 @@ public partial class Game : Node
         // Not needed for now.
         MapNode.GetNode<TileMapLayer>("Level_0/Water_Decoration").Visible = false;
 
-        decorGroundLayer = MapNode.GetNode<TileMapLayer>("Level_0/Decorations");
+        obstructionLayer = MapNode.GetNode<TileMapLayer>("Level_0/Obstructions");
         terrainLayer = MapNode.GetNode<TileMapLayer>("Level_0/Terrain");
 
 
@@ -78,11 +78,11 @@ public partial class Game : Node
 
                 if (tile.ObstructionHeight > 0)
                 {
-                    decorGroundLayer.SetCell(coords, 6, DAM_TILE);
+                    obstructionLayer.SetCell(coords, 6, DAM_TILE);
                 }
                 else
                 {
-                    decorGroundLayer.SetCell(coords, -1, DAM_TILE);
+                    obstructionLayer.SetCell(coords, -1, DAM_TILE);
 
                 }
 
@@ -101,7 +101,7 @@ public partial class Game : Node
         if (Input.IsPhysicalKeyPressed(Key.V))
         {
             Debug.WriteLine("Give us some water!");
-            var mapPos = decorGroundLayer.LocalToMap(MainCamera.GetGlobalMousePosition());
+            var mapPos = obstructionLayer.LocalToMap(MainCamera.GetGlobalMousePosition());
             simulator.Terrain.Tiles[mapPos.X, mapPos.Y].WaterHeight = Math.Max(simulator.Terrain.Tiles[mapPos.X, mapPos.Y].WaterHeight, (byte)15);
         }
         if (Input.IsPhysicalKeyPressed(Key.R))
@@ -119,7 +119,7 @@ public partial class Game : Node
 
         if (Input.IsPhysicalKeyPressed(Key.P))
         {
-            var mapPos = decorGroundLayer.LocalToMap(MainCamera.GetGlobalMousePosition());
+            var mapPos = obstructionLayer.LocalToMap(MainCamera.GetGlobalMousePosition());
             Debug.WriteLine(mapPos);
             simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight = (byte)Math.Min(simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight + 1, 4);
             simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHealth = 100;
@@ -127,15 +127,16 @@ public partial class Game : Node
 
         if (Input.IsPhysicalKeyPressed(Key.L))
         {
-            var mapPos = decorGroundLayer.LocalToMap(MainCamera.GetGlobalMousePosition());
+            var mapPos = obstructionLayer.LocalToMap(MainCamera.GetGlobalMousePosition());
             Debug.WriteLine(mapPos);
             simulator.Terrain.Tiles[mapPos.X, mapPos.Y].GroundHeight = Terrain.MUDFLOOR_TILE_HEIGHT;
+            simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight = 0;
             terrainLayer.SetCell(mapPos, -1); // TODO: Fix this ugly hack.
         }
 
         if (Input.IsPhysicalKeyPressed(Key.N))
         {
-            var mapPos = decorGroundLayer.LocalToMap(MainCamera.GetGlobalMousePosition());
+            var mapPos = obstructionLayer.LocalToMap(MainCamera.GetGlobalMousePosition());
             Debug.WriteLine(mapPos);
             Debug.WriteLine("Water height: " + simulator.Terrain.Tiles[mapPos.X, mapPos.Y].WaterHeight);
             Debug.WriteLine("Terrain height: " + simulator.Terrain.Tiles[mapPos.X, mapPos.Y].GroundHeight);
