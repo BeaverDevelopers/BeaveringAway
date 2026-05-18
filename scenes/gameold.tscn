@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://dudyuk5h11wbi"]
+[gd_scene format=3 uid="uid://d3ac13jvgv87k"]
 
 [ext_resource type="PackedScene" uid="uid://dcap6ci12uy2g" path="res://world/world.ldtk" id="1_uwrxv"]
 [ext_resource type="Script" uid="uid://7ckbrq7wcces" path="res://sim/Game.cs" id="1_yqjtg"]
@@ -22,9 +22,10 @@ ItemId = 1
 Icon = ExtResource("8_0tnpc")
 metadata/_custom_type_script = "uid://c1o4r7hkryrjo"
 
-[node name="Node2D" type="Node2D" unique_id=158556237 node_paths=PackedStringArray("MapNode", "hud")]
+[node name="Node2D" type="Node2D" unique_id=158556237 node_paths=PackedStringArray("MapNode", "Player", "hud")]
 script = ExtResource("1_yqjtg")
 MapNode = NodePath("world")
+Player = NodePath("world/Player")
 hud = NodePath("GameHUD")
 
 [node name="world" parent="." unique_id=321246523 instance=ExtResource("1_uwrxv")]

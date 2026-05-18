@@ -1,5 +1,7 @@
 using Godot;
 using Godot.Collections;
+using System;
+using System.Diagnostics;
 
 
 public partial class InventoryWindow : Control
@@ -9,6 +11,7 @@ public partial class InventoryWindow : Control
 	[Export] public InventoryDataNew ResultData;
 
 	public Dictionary currentDraggedItem;
+	
 
 	public override void _Ready()
 	{
@@ -16,15 +19,19 @@ public partial class InventoryWindow : Control
 		MouseFilter = MouseFilterEnum.Ignore;
 		updateInventoryData();
 		updateCraftingArea();
+		
+		
 	}
 
 	public override void _Process(double delta)
 	{
 		if (!HasNode("ItemDrag"))
+		{
 			return;
-
+		}
 		var itemDrag = GetNode<Control>("ItemDrag");
 		itemDrag.Position = GetGlobalMousePosition() - itemDrag.Size / 2;
+
 	}
 
 	public override void _UnhandledInput(InputEvent @event)
@@ -259,6 +266,14 @@ public partial class InventoryWindow : Control
 				var hoveredNode = FindSlotAtPosition(GetGlobalMousePosition()) ?? FindSlot(GetViewport().GuiGetHoveredControl());
 				if (hoveredNode == null)
 				{
+					//trying to place item in the world
+					if (TryPlaceItemInWorld(item))
+					{
+						ClearDraggedItem();
+						updateInventoryData();
+						updateCraftingArea();
+						return;
+					}
 					RestoreDraggedItem(sourceInventory, index, item);
 					return;
 				}
@@ -413,6 +428,43 @@ public partial class InventoryWindow : Control
 		return true;
 	}
 
+	public bool TryPlaceItemInWorld(ItemData item)
+	{
+
+		var world = GetTree().CurrentScene.GetNode("world"); //get access to the world
+		if (world == null)
+		{
+			Debug.WriteLine("No world");
+			return false;
+		}
+		//getting access to the camera through world and player
+		var player = world.GetNodeOrNull<CharacterBody2D>("Player");
+		if (player == null)
+		{
+			Debug.WriteLine("no player");
+			return false;
+		}
+		var camera = player.GetNodeOrNull<Camera2D>("Camera2D");
+		if (camera == null)
+		{
+			Debug.WriteLine("No camera");
+			return false;
+		}
+
+		//getting the position of where to drop items through camera and mouse
+		var mapPos = camera.GetGlobalMousePosition();
+		
+		for (int i = 0; i < item.ItemCount; i++)
+		{
+			var scene = GD.Load<PackedScene>(item.ItemScenePath); //load the scene mentioned in the items scene path
+			var itemScene = scene.Instantiate() as Node2D;
+			world.AddChild(itemScene);
+			itemScene.GlobalPosition = mapPos;
+		}
+		return true;
+		
+		
+	}
 	void ConsumeCraftingIngredients()
 	{
 		if (CraftingData == null)
