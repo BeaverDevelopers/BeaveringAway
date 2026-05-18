@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using Godot;
 
 [GlobalClass]
@@ -210,9 +211,55 @@ public partial class InventoryBar : PanelContainer
 		if (_draggedItem != null && TryDropDraggedItemIntoCrafting())
 			return;
 
+		
+		//Try to drag and drop into the world
+		if (_draggedItem != null && TryPlaceItemInWorld(_draggedItem))
+		{
+			Debug.WriteLine("entered metod");
+			ClearDragState();
+			return;
+		}
+
 		RestoreDraggedData();
 	}
 
+	//to be ableto drag and drop
+	public bool TryPlaceItemInWorld(ItemData item)
+	{
+
+		var world = GetTree().CurrentScene.GetNode("world"); //get access to the world
+		if (world == null)
+		{
+			Debug.WriteLine("No world");
+			return false;
+		}
+		//getting access to the camera through world and player
+		var player = world.GetNodeOrNull<CharacterBody2D>("Player");
+		if (player == null)
+		{
+			Debug.WriteLine("no player");
+			return false;
+		}
+		var camera = player.GetNodeOrNull<Camera2D>("Camera2D");
+		if (camera == null)
+		{
+			Debug.WriteLine("No camera");
+			return false;
+		}
+
+		//getting the position of where to drop items through camera and mouse
+		var mapPos = camera.GetGlobalMousePosition();
+		
+		for (int i = 0; i < item.ItemCount; i++)
+		{
+			var scene = GD.Load<PackedScene>(item.ItemScenePath); //load the scene mentioned in the items scene path
+			var itemScene = scene.Instantiate() as Node2D;
+			world.AddChild(itemScene);
+			itemScene.GlobalPosition = mapPos;
+		}
+		return true;
+
+	}
 	void MoveDraggedDataToSlot(int targetIndex)
 	{
 		var targetItem = GetItemAt(targetIndex);
