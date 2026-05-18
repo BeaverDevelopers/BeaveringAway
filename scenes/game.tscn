@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://dudyuk5h11wbi"]
+[gd_scene format=3 uid="uid://d3ac13jvgv87k"]
 
 [ext_resource type="PackedScene" uid="uid://dcap6ci12uy2g" path="res://world/world.ldtk" id="1_uwrxv"]
 [ext_resource type="Script" uid="uid://7ckbrq7wcces" path="res://sim/Game.cs" id="1_yqjtg"]
@@ -31,11 +31,6 @@ hud = NodePath("GameHUD")
 position = Vector2(2, 0)
 
 [node name="Clouds" parent="world" unique_id=514881015 instance=ExtResource("3_ir15t")]
-
-[node name="Player" parent="world" unique_id=2057284693 groups=["player"] instance=ExtResource("3_0tnpc")]
-
-[node name="AudioStreamPlayer2D" parent="world/Player" unique_id=1664354570 instance=ExtResource("2_kvpfn")]
-position = Vector2(-2, 0)
 
 [node name="Tree" parent="world" unique_id=73844678 instance=ExtResource("5_vtaks")]
 position = Vector2(415, 277)
@@ -111,6 +106,12 @@ position = Vector2(2144, 402)
 
 [node name="fox" parent="world" unique_id=203894665 instance=ExtResource("5_kvpfn")]
 position = Vector2(212, 74)
+
+[node name="Player" parent="." unique_id=2057284693 groups=["player"] instance=ExtResource("3_0tnpc")]
+position = Vector2(2, 0)
+
+[node name="AudioStreamPlayer2D" parent="Player" unique_id=1664354570 instance=ExtResource("2_kvpfn")]
+position = Vector2(-2, 0)
 
 [node name="GameHUD" parent="." unique_id=43781371 instance=ExtResource("5_iywne")]
 
