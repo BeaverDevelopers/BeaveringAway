@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 public partial class PlayerMove : CharacterBody2D
 {
-    public const float Speed = 210.0f;
+    public const float Speed = 300.0f;
     private AnimatedSprite2D _animSprite;
     private AudioStreamPlayer2D _audioRunPlayer;
     private AudioStreamPlayer2D _audioSwimmingPlayer;
@@ -16,22 +16,20 @@ public partial class PlayerMove : CharacterBody2D
     // 保存最后朝向（用于idle）
     private Vector2 _lastDirection = Vector2.Down;
 
-
     public override void _Ready()
     {
-        Debug.WriteLine("Camera Created");
         _animSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
         _audioRunPlayer = GetNode<AudioStreamPlayer2D>("AudioRunPlayer");
         _audioSwimmingPlayer = GetNode<AudioStreamPlayer2D>("AudioSwimmingPlayer");
         _jumpInWaterPlayer = GetNode<AudioStreamPlayer2D>("JumpInWaterPlayer");
 
-        //GetTree().Root.GetNode<Game>("Node2D").MainCamera = GetNode<Camera2D>("Camera2D");
+        GetTree().Root.GetNode<Game>("Node2D").MainCamera = GetNode<Camera2D>("Camera2D");
     }
 
     public override void _PhysicsProcess(double delta)
     {
         Vector2 direction = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
-        Velocity = direction * (Speed * (float)(InWater ? 1.5 : 1.0));
+        Velocity = direction * Speed;
 
         // 移动时更新最后方向
         if (direction != Vector2.Zero)

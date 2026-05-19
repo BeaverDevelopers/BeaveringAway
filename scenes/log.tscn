@@ -7,15 +7,17 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k0uux"]
 size = Vector2(30, 30)
 
-[node name="StaticBody2D" type="StaticBody2D" unique_id=1905285447]
+[node name="Node2D" type="Node2D" unique_id=2017998074]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=1905285447]
 script = ExtResource("1_k0uux")
 
-[node name="Log" type="Sprite2D" parent="." unique_id=1138922943]
+[node name="Log" type="Sprite2D" parent="StaticBody2D" unique_id=1138922943]
 position = Vector2(19, 12)
 texture = ExtResource("1_spugk")
 
-[node name="Interactable" parent="Log" unique_id=1712477042 instance=ExtResource("2_pt1ea")]
+[node name="Interactable" parent="StaticBody2D/Log" unique_id=1712477042 instance=ExtResource("2_pt1ea")]
 interact_name = "Pick up Log"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Log/Interactable" unique_id=360356777]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D/Log/Interactable" unique_id=360356777]
 shape = SubResource("RectangleShape2D_k0uux")

@@ -202,7 +202,7 @@ public class Terrain
         var mapBounds = clay.GetUsedRect();
         var rows = mapBounds.Size.Y;
         var columns = mapBounds.Size.X;
-        
+        Debug.WriteLine($"Creating simulation tiles of size: {rows}, {columns}");
         Columns = columns;
         Rows = rows;
         Tiles = new TerrainTile[columns, rows];
@@ -214,13 +214,11 @@ public class Terrain
         //var groundOverlay = fromTerrain.GetNode<TileMapLayer>("Level_0/Ground/Ground1");
         //Debug.Assert(groundOverlay != null);
 
-        //Debugger.Launch();
-        Debug.WriteLine($"Creating simulation tiles of size: Col {Columns}, Rows {Rows}");
         for (int y = 0; y < Rows; y++)
         {
             for (int x = 0; x < Columns; x++)
             {
-                int i = x + y * Columns;
+                int i = x + y * Rows;
                 var coord = new Vector2I(x, y);
                 ProcessingOrder[i] = coord;
                 

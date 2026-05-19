@@ -102,7 +102,7 @@ public class WaterSimulation
         // And maybe soak water.
         for (int i = 0; i < 7350; i++)
         {
-            int idx = (int)(((ulong)i + ((ulong)tick * 7350)) % (ulong)terrain.ProcessingOrder.Length);
+            int idx = (i + tick * 7350) % terrain.ProcessingOrder.Length;
             Godot.Vector2I pos = terrain.ProcessingOrder[idx];
 
             var currentDistance = terrain.WaterRandomTickData[pos.X, pos.Y].DistanceToSea;
@@ -193,7 +193,7 @@ public class WaterSimulation
             }
         }
 
-        if (tick % 1000 == 0)
+        if (tick % 100 == 0)
         {
             Debug.WriteLine("Total water: " + totalWater + " pacified: " + grandTotalPacified);
         }
