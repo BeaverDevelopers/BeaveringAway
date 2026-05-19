@@ -5,8 +5,8 @@
 
 [resource]
 script = ExtResource("2_w7ufo")
-ItemId = 2
+ItemId = 4
 Icon = ExtResource("1_i61en")
-itemRecipe = Array[String](["1"])
+itemRecipe = Array[String](["2"])
 ItemScenePath = "res://scenes/log.tscn"
 metadata/_custom_type_script = "uid://c1o4r7hkryrjo"

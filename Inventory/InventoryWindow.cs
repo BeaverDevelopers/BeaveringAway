@@ -255,6 +255,21 @@ public partial class InventoryWindow : Control
 
 				if (sourceName == "Result")
 				{
+					//trying to make placing dam count from inventory
+					if (item.ItemId == 2)
+					{
+						var game = GetTree().CurrentScene as Game;
+						for (int i = 0; i < item.ItemCount; i++)
+						{
+							game.PlaceDam();
+							ConsumeCraftingIngredients();
+							ClearDraggedItem();	
+						}
+						updateInventoryData();
+						updateCraftingArea();
+						return;
+					}
+					//other non-dam items
 					if (TryPlaceItemInWorld(item))
 					{
 					ConsumeCraftingIngredients();
@@ -267,6 +282,19 @@ public partial class InventoryWindow : Control
 				var hoveredNode = FindSlotAtPosition(GetGlobalMousePosition()) ?? FindSlot(GetViewport().GuiGetHoveredControl());
 				if (hoveredNode == null)
 				{
+					//trying to make placing dam count from inventory
+					if (item.ItemId == 2)
+					{
+						var game = GetTree().CurrentScene as Game;
+						for (int i = 0; i < item.ItemCount; i++)
+						{
+							game.PlaceDam();
+							ClearDraggedItem();	
+						}
+						updateInventoryData();
+						updateCraftingArea();
+						return;
+					}
 					//trying to place item in the world
 					if (TryPlaceItemInWorld(item))
 					{

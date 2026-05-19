@@ -163,6 +163,14 @@ public partial class Game : Node
         }
     }
 
+    public void PlaceDam()
+    {
+        Debug.WriteLine("placing dam");
+        var mapPos = obstructionLayer.LocalToMap(MainCamera.GetGlobalMousePosition());
+        Debug.WriteLine(mapPos);
+        simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight = (byte)Math.Min(simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight + 1, 4);
+        simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHealth = 100;
+    }
     public override void _PhysicsProcess(double delta)
     {
         if (MainCamera == null)
