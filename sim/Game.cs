@@ -18,6 +18,12 @@ public partial class Game : Node
     Simulator simulator;
     JunkSystem junkSystem = new();
 
+    // Deer spawning system
+    private PackedScene deerScene;
+    private float deerSpawnTimer = 0f;
+    [Export(PropertyHint.Range, "1,60,1")] public float DeerSpawnInterval = 20f; // 每20秒尝试生成一次
+    [Export(PropertyHint.Range, "0,10,1")] public int DeerMaxCount = 3; // 最多3只鹿
+
     TileMapLayer waterLayer;
     TileMapLayer obstructionLayer;
     TileMapLayer terrainLayer;
@@ -56,6 +62,18 @@ public partial class Game : Node
 
         Player = GetNode<PlayerMove>("Player");
         MainCamera = Player.GetNode<Camera2D>("Camera2D");
+
+        // Try to load Deer scene, but don't fail if it doesn't exist
+        deerScene = GD.Load<PackedScene>("res://deer/Deer.tscn");
+        if (deerScene == null)
+        {
+            Debug.WriteLine("Info: Deer.tscn not found. Please create the Deer scene and save it to res://deer/Deer.tscn");
+            Debug.WriteLine("      Or add a Deer prefab to your project for dynamic spawning.");
+        }
+        else
+        {
+            Debug.WriteLine("Successfully loaded Deer scene from res://deer/Deer.tscn");
+        }
     }
 
     void RenderWaterAndObstructions(Terrain terrain)
@@ -198,6 +216,8 @@ public partial class Game : Node
             RunDebugCommands();
         }
 
+        // Update Deer spawning
+        UpdateDeerSpawning((float)delta);
 
         simulator.Run();
         junkSystem.Spawn(simulator.Terrain, WATER_SOURCE_TILE, simulator.Tick);
@@ -219,5 +239,54 @@ public partial class Game : Node
                 Player.InWater = simulator.Terrain.Tiles[currentCell.X, currentCell.Y].WaterHeight > 0;
             }
         }
+    }
+
+    private void UpdateDeerSpawning(float delta)
+    {
+        if (deerScene == null) return;
+
+        deerSpawnTimer += delta;
+        if (deerSpawnTimer >= DeerSpawnInterval)
+        {
+            deerSpawnTimer = 0f;
+
+            // Check current number of deer in the scene
+            var existingDeer = GetTree().GetNodesInGroup("deer");
+            if (existingDeer.Count < DeerMaxCount)
+            {
+                SpawnDeer();
+            }
+        }
+    }
+
+    private void SpawnDeer()
+    {
+        if (deerScene == null || Player == null) return;
+
+        // Instantiate the deer from the scene
+        var deer = deerScene.Instantiate() as DeerMovement;
+        if (deer == null) return;
+
+        // Add to scene
+        MapNode.AddChild(deer);
+
+        // Spawn at a random position around the player (within a certain range)
+        float spawnDistance = 400f; // 距离玩家400像素范围内生成
+        float angle = (float)(GD.Randf() * Mathf.Tau); // 随机角度
+        Vector2 spawnOffset = Vector2.FromAngle(angle) * spawnDistance;
+        Vector2 spawnPos = Player.GlobalPosition + spawnOffset;
+
+        // Clamp to map bounds
+        var terrain = simulator.Terrain;
+        int mapW = terrain.Columns * 16; // 假设瓦片大小为16
+        int mapH = terrain.Rows * 16;
+
+        spawnPos.X = Mathf.Clamp(spawnPos.X, 0, mapW);
+        spawnPos.Y = Mathf.Clamp(spawnPos.Y, 0, mapH);
+
+        deer.GlobalPosition = spawnPos;
+        deer.AddToGroup("deer");
+
+        Debug.WriteLine($"Deer spawned at {spawnPos}");
     }
 }
