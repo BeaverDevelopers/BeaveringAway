@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://lqrn2i626md4" path="res://scenes/player.tscn" id="3_0tnpc"]
 [ext_resource type="PackedScene" uid="uid://g2fcng8hjdv0" path="res://scenes/clouds.tscn" id="3_ir15t"]
 [ext_resource type="PackedScene" uid="uid://dwxdlrvfoand2" path="res://ui/UILegacy/GameHUD.tscn" id="5_iywne"]
-[ext_resource type="PackedScene" uid="uid://5twt8odhns0b" path="res://fox/fox.tscn" id="5_kvpfn"]
 [ext_resource type="PackedScene" uid="uid://clxfw103c3bt1" path="res://scenes/tree.tscn" id="5_vtaks"]
 [ext_resource type="Texture2D" uid="uid://bg01ox1deq3h8" path="res://world/images/Snipaste_2026-04-07_22-18-05.png" id="6_p57ef"]
 [ext_resource type="Script" uid="uid://h8akq30mo7v2" path="res://player/InventoryUI.cs" id="6_u5sy4"]
@@ -103,9 +102,6 @@ position = Vector2(106, 816)
 
 [node name="Tree15" parent="world" unique_id=2070216785 instance=ExtResource("5_vtaks")]
 position = Vector2(2144, 402)
-
-[node name="fox" parent="world" unique_id=203894665 instance=ExtResource("5_kvpfn")]
-position = Vector2(212, 74)
 
 [node name="Player" parent="." unique_id=2057284693 groups=["player"] instance=ExtResource("3_0tnpc")]
 position = Vector2(2, 0)

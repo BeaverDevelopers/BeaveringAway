@@ -2,7 +2,6 @@ extends StaticBody2D
 
 @onready var interactable: Area2D = $Interactable
 @onready var tree_anim: AnimatedSprite2D = $TreeAnim
-@onready var FOX: PackedScene = preload("res://fox/fox.tscn")
 @onready var LOG: PackedScene = preload("res://scenes/log.tscn")
 @onready var collision_shape_2d: CollisionShape2D = $CollisionShape2D
 @onready var tree_falling_audio: AudioStreamPlayer2D = $FallingSoundPlayer
@@ -35,11 +34,6 @@ func _on_interact():
 	if not player:
 		print("Player not found! Add player to group: player")
 		return
-
-	# Spawn fox at tree position offset
-	var fox = FOX.instantiate()
-	fox.global_position = global_position + Vector2(60, 60)
-	get_parent().add_child(fox) # Spawn to world, not tree
 
 	# Check which side the player is on
 	var player_side = player.global_position.x - global_position.x
