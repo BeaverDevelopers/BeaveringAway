@@ -8,15 +8,20 @@ public partial class FoxMovement : CharacterBody2D
     {
         Chasing,
         Threatened,
+        WaitingAtShore,
         Escaping
     }
 
     public float speed = 220f;
     CharacterBody2D player;
+    private PlayerMove _playerMove;
+    private Game _game;
     private FoxState _foxState = FoxState.Chasing;
     private DeerMovement _interactingDeer; // The deer this fox is interacting with
     private float _threatTimer = 0f;
+    private float _shoreWaitTimer = 0f;
     private const float THREAT_DURATION = 2f;
+    [Export] public float ShoreWaitDuration = 3f;
     private Vector2 _lastDirection = Vector2.Down;
     private string _lastAnimationPlayed = ""; // Track last animation to prevent flickering
 
@@ -28,6 +33,8 @@ public partial class FoxMovement : CharacterBody2D
     public override void _Ready()
     {
         player = GetNode<CharacterBody2D>("../../Player");
+        _playerMove = player as PlayerMove;
+        _game = GetNode<Game>("../..");
 
         _animSprite = GetNode<AnimatedSprite2D>("Sprite2D/AnimatedSprite2D");
 
@@ -52,6 +59,9 @@ public partial class FoxMovement : CharacterBody2D
             case FoxState.Threatened:
                 HandleThreatened(delta);
                 break;
+            case FoxState.WaitingAtShore:
+                HandleWaitingAtShore(delta);
+                break;
             case FoxState.Escaping:
                 HandleEscaping(delta);
                 break;
@@ -63,18 +73,32 @@ public partial class FoxMovement : CharacterBody2D
     public void MoveTowardsPlayer(double delta)
     {
         Vector2 direction = (player.GlobalPosition - GlobalPosition).Normalized();
-        Velocity = direction * speed;
         _lastDirection = direction;
+
+        if (!CanReachPlayer())
+        {
+            BeginWaitingAtShore();
+            return;
+        }
+
+        Vector2 nextPosition = GlobalPosition + direction * speed * (float)delta;
+        if (IsInWater(nextPosition))
+        {
+            BeginWaitingAtShore();
+            return;
+        }
+
+        Velocity = direction * speed;
         var collision = MoveAndCollide(Velocity * (float)delta, false, (float)0.08, true);
         if (collision != null)
         {
             var collider = collision.GetCollider();
             if (collider == player)
             {
-                if (InventoryData.Count > 0)
-                {                
-                    InventoryData.AddItem(1, -1);
-                    GD.Print("Fox stole a stick!");
+                if (InventoryData.HasLogs())
+                {
+                    InventoryData.AddItem(InventoryData.LogItemId, -1);
+                    GD.Print("Fox stole a log!");
                     _foxState = FoxState.Escaping;
                 }
             }
@@ -147,7 +171,7 @@ public partial class FoxMovement : CharacterBody2D
         // Move away from deer slowly (retreat)
         Vector2 retreatDirection = -directionToDeer;
         Velocity = retreatDirection * (speed * 0.3f); // Slow retreat
-        MoveAndCollide(Velocity * (float)delta, false, (float)0.08, true);
+        TryMove(Velocity * (float)delta);
 
         // Update threat timer - stay in threatened state for THREAT_DURATION
         _threatTimer += (float)delta;
@@ -173,7 +197,7 @@ public partial class FoxMovement : CharacterBody2D
             _lastAnimationPlayed = ""; // Reset to force animation update
 
             Velocity = escapeDirection * speed; // Full speed escape
-            MoveAndCollide(Velocity * (float)delta, false, (float)0.08, true);
+            TryMove(Velocity * (float)delta);
         }
         else
         {
@@ -183,8 +207,78 @@ public partial class FoxMovement : CharacterBody2D
             _lastAnimationPlayed = ""; // Reset to force animation update
 
             Velocity = directionFromPlayer * (speed * 0.8f);
-            MoveAndCollide(Velocity * (float)delta, false, (float)0.08, true);
+            TryMove(Velocity * (float)delta);
         }
+    }
+
+    private void HandleWaitingAtShore(double delta)
+    {
+        if (CanReachPlayer())
+        {
+            _foxState = FoxState.Chasing;
+            _shoreWaitTimer = 0f;
+            GD.Print("Fox: Player is reachable again, resuming chase");
+            return;
+        }
+
+        _lastDirection = (player.GlobalPosition - GlobalPosition).Normalized();
+        _lastAnimationPlayed = "";
+        Velocity = Vector2.Zero;
+
+        _shoreWaitTimer += (float)delta;
+        if (_shoreWaitTimer >= ShoreWaitDuration)
+        {
+            _foxState = FoxState.Escaping;
+            GD.Print("Fox gave up waiting at shore, escaping");
+        }
+    }
+
+    private void BeginWaitingAtShore()
+    {
+        if (_foxState != FoxState.WaitingAtShore)
+        {
+            _shoreWaitTimer = 0f;
+            GD.Print("Fox stopped at shore, waiting for player");
+        }
+
+        _foxState = FoxState.WaitingAtShore;
+        Velocity = Vector2.Zero;
+        _lastDirection = (player.GlobalPosition - GlobalPosition).Normalized();
+    }
+
+    private bool CanReachPlayer()
+    {
+        Vector2 toPlayer = player.GlobalPosition - GlobalPosition;
+        if (toPlayer.LengthSquared() < 1f)
+            return true;
+
+        Vector2 direction = toPlayer.Normalized();
+        float checkDistance = Mathf.Min(toPlayer.Length(), 96f);
+        int steps = Mathf.Max(1, (int)(checkDistance / 16f));
+        for (int i = 1; i <= steps; i++)
+        {
+            float t = (float)i / steps;
+            if (IsInWater(GlobalPosition + direction * checkDistance * t))
+                return false;
+        }
+
+        return true;
+    }
+
+    private bool IsInWater(Vector2 globalPosition)
+    {
+        return _game != null && _game.IsPositionInWater(globalPosition);
+    }
+
+    private void TryMove(Vector2 motion)
+    {
+        if (IsInWater(GlobalPosition + motion))
+        {
+            Velocity = Vector2.Zero;
+            return;
+        }
+
+        MoveAndCollide(motion, false, 0.08f, true);
     }
 
     public void WalkAway(double delta)
@@ -223,7 +317,7 @@ public partial class FoxMovement : CharacterBody2D
 
     private void UpdateAnimation()
     {
-        if (Velocity.Length() < 1f && _foxState != FoxState.Threatened)
+        if (Velocity.Length() < 1f && _foxState != FoxState.Threatened && _foxState != FoxState.WaitingAtShore)
         {
             _animSprite.Stop();
             _lastAnimationPlayed = "";

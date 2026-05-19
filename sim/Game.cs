@@ -21,8 +21,15 @@ public partial class Game : Node
     // Deer spawning system
     private PackedScene deerScene;
     private float deerSpawnTimer = 0f;
-    [Export(PropertyHint.Range, "1,60,1")] public float DeerSpawnInterval = 20f; // 每20秒尝试生成一次
-    [Export(PropertyHint.Range, "0,10,1")] public int DeerMaxCount = 3; // 最多3只鹿
+    [Export(PropertyHint.Range, "1,60,1")] public float DeerSpawnInterval = 20f; // every 20 seconds spawn a deer
+    [Export(PropertyHint.Range, "0,10,1")] public int DeerMaxCount = 3; // 3deers max in scene
+
+    // Fox spawning system
+    private PackedScene foxScene;
+    private float foxSpawnTimer = 0f;
+    [Export(PropertyHint.Range, "1,60,1")] public float FoxSpawnInterval = 25f;
+    [Export(PropertyHint.Range, "0,10,1")] public int FoxMaxCount = 2;
+    [Export(PropertyHint.Range, "100,800,10")] public float FoxSpawnDistance = 400f;
 
     TileMapLayer waterLayer;
     TileMapLayer obstructionLayer;
@@ -74,6 +81,10 @@ public partial class Game : Node
         {
             Debug.WriteLine("Successfully loaded Deer scene from res://deer/Deer.tscn");
         }
+
+        foxScene = GD.Load<PackedScene>("res://fox/fox.tscn");
+        if (foxScene == null)
+            Debug.WriteLine("Info: fox.tscn not found.");
     }
 
     void RenderWaterAndObstructions(Terrain terrain)
@@ -218,6 +229,7 @@ public partial class Game : Node
 
         // Update Deer spawning
         UpdateDeerSpawning((float)delta);
+        UpdateFoxSpawning((float)delta);
 
         simulator.Run();
         junkSystem.Spawn(simulator.Terrain, WATER_SOURCE_TILE, simulator.Tick);
@@ -239,6 +251,18 @@ public partial class Game : Node
                 Player.InWater = simulator.Terrain.Tiles[currentCell.X, currentCell.Y].WaterHeight > 0;
             }
         }
+    }
+
+    public bool IsPositionInWater(Vector2 globalPosition)
+    {
+        if (obstructionLayer == null) return false;
+
+        var localPos = obstructionLayer.ToLocal(globalPosition);
+        var mapPos = obstructionLayer.LocalToMap(localPos);
+        if (mapPos.X < 0 || mapPos.Y < 0 || mapPos.X >= simulator.Terrain.Columns || mapPos.Y >= simulator.Terrain.Rows)
+            return false;
+
+        return simulator.Terrain.Tiles[mapPos.X, mapPos.Y].WaterHeight > 0;
     }
 
     private void UpdateDeerSpawning(float delta)
@@ -271,14 +295,14 @@ public partial class Game : Node
         MapNode.AddChild(deer);
 
         // Spawn at a random position around the player (within a certain range)
-        float spawnDistance = 400f; // 距离玩家400像素范围内生成
-        float angle = (float)(GD.Randf() * Mathf.Tau); // 随机角度
+        float spawnDistance = 400f; // Spawn within 400 pixels of the player
+        float angle = (float)(GD.Randf() * Mathf.Tau); // Random angle
         Vector2 spawnOffset = Vector2.FromAngle(angle) * spawnDistance;
         Vector2 spawnPos = Player.GlobalPosition + spawnOffset;
 
         // Clamp to map bounds
         var terrain = simulator.Terrain;
-        int mapW = terrain.Columns * 16; // 假设瓦片大小为16
+        int mapW = terrain.Columns * 16; // Assume the tile size is 16
         int mapH = terrain.Rows * 16;
 
         spawnPos.X = Mathf.Clamp(spawnPos.X, 0, mapW);
@@ -288,5 +312,67 @@ public partial class Game : Node
         deer.AddToGroup("deer");
 
         Debug.WriteLine($"Deer spawned at {spawnPos}");
+    }
+
+    private void UpdateFoxSpawning(float delta)
+    {
+        if (foxScene == null || Player == null)
+            return;
+
+        foxSpawnTimer += delta;
+        if (foxSpawnTimer < FoxSpawnInterval)
+            return;
+
+        foxSpawnTimer = 0f;
+
+        if (!InventoryData.HasLogs())
+            return;
+
+        var existingFoxes = GetTree().GetNodesInGroup("fox");
+        if (existingFoxes.Count >= FoxMaxCount)
+            return;
+
+        SpawnFox();
+    }
+
+    private void SpawnFox()
+    {
+        if (foxScene == null || Player == null || !InventoryData.HasLogs())
+            return;
+
+        if (!TryGetSpawnPositionAroundPlayer(FoxSpawnDistance, avoidWater: true, out var spawnPos))
+            return;
+
+        var fox = foxScene.Instantiate() as FoxMovement;
+        if (fox == null)
+            return;
+
+        MapNode.AddChild(fox);
+        fox.GlobalPosition = spawnPos;
+        Debug.WriteLine($"Fox spawned at {spawnPos}");
+    }
+
+    private bool TryGetSpawnPositionAroundPlayer(float spawnDistance, bool avoidWater, out Vector2 spawnPos)
+    {
+        var terrain = simulator.Terrain;
+        int mapW = terrain.Columns * 16;
+        int mapH = terrain.Rows * 16;
+
+        for (int attempt = 0; attempt < 8; attempt++)
+        {
+            float angle = (float)(GD.Randf() * Mathf.Tau);
+            Vector2 candidate = Player.GlobalPosition + Vector2.FromAngle(angle) * spawnDistance;
+            candidate.X = Mathf.Clamp(candidate.X, 0, mapW);
+            candidate.Y = Mathf.Clamp(candidate.Y, 0, mapH);
+
+            if (avoidWater && IsPositionInWater(candidate))
+                continue;
+
+            spawnPos = candidate;
+            return true;
+        }
+
+        spawnPos = default;
+        return false;
     }
 }

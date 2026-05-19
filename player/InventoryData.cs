@@ -5,13 +5,26 @@ public partial class InventoryData : Node
 {
 	const string ActiveInventoryPath = "res://Inventory/TestInventory.tres";
 
+	public const int LogItemId = 1;
+
 	public static int ItemId { get; set; } = -1; // -1 = 空
 	public static int Count { get; set; } = 0;
 
 	static readonly Dictionary<int, string> KnownItemPaths = new()
 	{
-		{ 1, "res://Resources/logs.tres" }
+		{ LogItemId, "res://Resources/logs.tres" }
 	};
+
+	public static bool HasLogs() => HasItem(LogItemId);
+
+	public static bool HasItem(int id)
+	{
+		var activeInventory = GetActiveInventory();
+		if (activeInventory != null)
+			return activeInventory.GetItemCount(id) > 0;
+
+		return ItemId == id && Count > 0;
+	}
 
 	public static bool AddItem(int id, int amount = 1)
 	{
