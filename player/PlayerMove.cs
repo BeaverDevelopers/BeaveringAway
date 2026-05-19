@@ -16,6 +16,8 @@ public partial class PlayerMove : CharacterBody2D
     // 保存最后朝向（用于idle）
     private Vector2 _lastDirection = Vector2.Down;
 
+    private Vector2 moveTarget = Vector2.Zero;
+
 
     public override void _Ready()
     {
@@ -30,8 +32,26 @@ public partial class PlayerMove : CharacterBody2D
 
     public override void _PhysicsProcess(double delta)
     {
+
+        if (Input.IsMouseButtonPressed(MouseButton.Left))
+        {
+            moveTarget = GetNode<Camera2D>("Camera2D").GetGlobalMousePosition();
+        }
+
         Vector2 direction = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
-        Velocity = direction * (Speed * (float)(InWater ? 1.5 : 1.0));
+        if (direction != Vector2.Zero)
+        {
+            moveTarget = Vector2.Zero;
+        }
+        else if (moveTarget != Vector2.Zero)
+        {
+            Vector2 moveDelta = moveTarget - Position;
+            direction = moveDelta.Normalized();
+            if (moveDelta.Length() < 1)
+            {
+                moveTarget = Vector2.Zero;
+            }
+        }
 
         // 移动时更新最后方向
         if (direction != Vector2.Zero)
@@ -91,6 +111,7 @@ public partial class PlayerMove : CharacterBody2D
         // 动画控制
         UpdateAnimation(direction);
 
+        Velocity = direction * (Speed * (float)(InWater ? 1.5 : 1.0));
         MoveAndSlide();
     }
 
