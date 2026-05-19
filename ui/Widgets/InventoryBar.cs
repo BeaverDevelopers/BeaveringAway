@@ -226,21 +226,25 @@ public partial class InventoryBar : PanelContainer
 	//to be ableto drag and drop
 	public bool TryPlaceItemInWorld(ItemData item)
 	{
-
-		var world = GetTree().CurrentScene.GetNode("world"); //get access to the world
-		if (world == null)
-		{
-			Debug.WriteLine("No world");
-			return false;
-		}
+		var world = GetTree().CurrentScene.GetNode("world");
+		var player = GetTree().CurrentScene.GetNode("Player"); //get access to the world
+		Debug.WriteLine(player.Name);
+		//if (world == null)
+		//{
+		//	Debug.WriteLine("No world");
+		//	return false;
+		//}
 		//getting access to the camera through world and player
-		var player = world.GetNodeOrNull<CharacterBody2D>("Player");
+		//var player = GetNode<PlayerMove>("Player");
+        
+		//var player = world.GetNodeOrNull<CharacterBody2D>("Player");
 		if (player == null)
 		{
 			Debug.WriteLine("no player");
 			return false;
 		}
 		var camera = player.GetNodeOrNull<Camera2D>("Camera2D");
+		//var camera = player.GetNodeOrNull<Camera2D>("Camera2D");
 		if (camera == null)
 		{
 			Debug.WriteLine("No camera");
