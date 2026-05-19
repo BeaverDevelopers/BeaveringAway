@@ -105,6 +105,7 @@ public partial class FoxMovement : CharacterBody2D
             }
 
             // If found a nearby deer and currently chasing player, switch to deer threat
+            // But NOT if we're already escaping (e.g., just stole something)
             if (nearestDeer != null && _foxState == FoxState.Chasing)
             {
                 _interactingDeer = nearestDeer;
@@ -115,36 +116,16 @@ public partial class FoxMovement : CharacterBody2D
             }
         }
 
-        // If already interacting with a deer, validate and update interaction
-        if (_interactingDeer != null)
+        // If already interacting with a deer, only check if it's deleted
+        if (_interactingDeer != null && _interactingDeer.IsQueuedForDeletion())
         {
-            // If deer was deleted, stop interaction
-            if (_interactingDeer.IsQueuedForDeletion())
+            _interactingDeer = null;
+            // Don't change state here - if in Escaping, continue escaping from player
+            // Only go back to Chasing if we're in Threatened state
+            if (_foxState == FoxState.Threatened)
             {
-                _interactingDeer = null;
                 _foxState = FoxState.Chasing;
                 GD.Print("Fox: Deer deleted, resuming player chase");
-                return;
-            }
-
-            float distance = GlobalPosition.DistanceTo(_interactingDeer.GlobalPosition);
-
-            // If in escaping state and far enough, resume chasing player
-            if (_foxState == FoxState.Escaping && distance > DeerEscapeDistance)
-            {
-                _interactingDeer = null;
-                _foxState = FoxState.Chasing;
-                GD.Print($"Fox escaped from deer (distance: {distance:F1}), resuming player chase");
-                return;
-            }
-
-            // If too far from deer in other states, stop interaction
-            if (distance > DeerDetectionDistance)
-            {
-                _interactingDeer = null;
-                _foxState = FoxState.Chasing;
-                GD.Print("Fox: Deer too far away, resuming player chase");
-                return;
             }
         }
     }
@@ -182,30 +163,27 @@ public partial class FoxMovement : CharacterBody2D
 
     private void HandleEscaping(double delta)
     {
-        if (_interactingDeer == null)
+        // If escaping because of deer, move away from deer
+        if (_interactingDeer != null && !_interactingDeer.IsQueuedForDeletion())
         {
-            _foxState = FoxState.Chasing;
-            GD.Print("Fox: Deer is null in escaping state, resuming chase");
-            return;
+            // Escape from deer - move away and animate in escape direction
+            Vector2 directionToDeer = (_interactingDeer.GlobalPosition - GlobalPosition).Normalized();
+            Vector2 escapeDirection = -directionToDeer;
+            _lastDirection = escapeDirection; // Animate in escape direction
+            _lastAnimationPlayed = ""; // Reset to force animation update
+
+            Velocity = escapeDirection * speed; // Full speed escape
+            MoveAndCollide(Velocity * (float)delta, false, (float)0.08, true);
         }
-
-        // Escape from deer - move away and animate in escape direction
-        Vector2 directionToDeer = (_interactingDeer.GlobalPosition - GlobalPosition).Normalized();
-        Vector2 escapeDirection = -directionToDeer;
-        _lastDirection = escapeDirection; // Animate in escape direction
-        _lastAnimationPlayed = ""; // Reset to force animation update
-
-        Velocity = escapeDirection * speed; // Full speed escape
-        MoveAndCollide(Velocity * (float)delta, false, (float)0.08, true);
-
-        float distance = GlobalPosition.DistanceTo(_interactingDeer.GlobalPosition);
-
-        // Check if far enough to resume chasing player
-        if (distance > DeerEscapeDistance)
+        else
         {
-            _interactingDeer = null;
-            _foxState = FoxState.Chasing;
-            GD.Print($"Fox escaped far enough (distance: {distance:F1}), resuming player chase");
+            // Escaping from player (stole something), move away from player
+            Vector2 directionFromPlayer = (GlobalPosition - player.GlobalPosition).Normalized();
+            _lastDirection = directionFromPlayer;
+            _lastAnimationPlayed = ""; // Reset to force animation update
+
+            Velocity = directionFromPlayer * (speed * 0.8f);
+            MoveAndCollide(Velocity * (float)delta, false, (float)0.08, true);
         }
     }
 
@@ -308,10 +286,8 @@ public partial class FoxMovement : CharacterBody2D
 
     public void Destroy()
     {
-        if (_foxState == FoxState.Escaping || _foxState == FoxState.Threatened)
-        {
-            QueueFree();
-            GD.Print("Fox destroyed.");
-        }
+        // Allow destruction in any state when going off-screen
+        QueueFree();
+        GD.Print($"Fox destroyed (was in {_foxState} state).");
     }
 }
