@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://50ggjtcs65ib"]
+
+[ext_resource type="Texture2D" uid="uid://blhgp8na0mfea" path="res://world/images/dam/dam.png" id="1_fhmnv"]
+[ext_resource type="Script" uid="uid://c1o4r7hkryrjo" path="res://player/ItemData.cs" id="2_wt8un"]
+
+[resource]
+script = ExtResource("2_wt8un")
+ItemId = 2
+Icon = ExtResource("1_fhmnv")
+itemRecipe = Array[String](["1"])
+metadata/_custom_type_script = "uid://c1o4r7hkryrjo"

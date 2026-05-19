@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using Godot;
 
 [GlobalClass]
@@ -24,6 +25,18 @@ public partial class InventoryBar : PanelContainer
 	bool _draggedFromSplit;
 	bool _built;
 
+	bool placingDam = false;
+	bool placementClick = false;
+
+	ItemData itemInfo;
+	int damStock = 0;
+
+	Vector2 lastPos;
+
+	TileMapLayer obstructionLayer;
+	
+	
+
 	public override void _Ready()
 	{
 		BindSceneNodes();
@@ -33,6 +46,10 @@ public partial class InventoryBar : PanelContainer
 		EnsureSlotDataCount();
 		SyncSlotDataFromInventory();
 		RefreshSlotViews();
+		var world = GetTree().CurrentScene.GetNode("world");
+		obstructionLayer = world.GetNode<TileMapLayer>("./Level_0/Obstructions");
+		Debug.WriteLine(obstructionLayer);
+		
 	}
 
 	public override void _Input(InputEvent @event)
@@ -59,6 +76,45 @@ public partial class InventoryBar : PanelContainer
 		{
 			SyncSlotDataFromInventory();
 			RefreshSlotViews();
+		}
+
+		if (placingDam) //places dam when holding left key
+		{
+			Debug.WriteLine("placingDam true");
+			if (placementClick)
+			{
+				if (itemInfo.ItemCount > 0)
+				{
+				Debug.WriteLine("placing click true");
+				Debug.WriteLine("before placing");
+				Debug.WriteLine(lastPos);
+				placingDamInWorld(itemInfo);
+				var player = GetTree().CurrentScene.GetNode("Player");
+				var camera = player.GetNodeOrNull<Camera2D>("Camera2D");
+				lastPos = obstructionLayer.LocalToMap(camera.GetGlobalMousePosition());
+				Debug.WriteLine("after placing");
+				Debug.WriteLine(lastPos);
+					if (Input.IsMouseButtonPressed(MouseButton.Left))
+					{
+					placementClick = false;
+					placingDam = false;
+					RestoreDraggedData();
+					ClearDragState();
+					}
+				}
+				else
+				{
+					Debug.WriteLine("ran out of damblocks");
+					placementClick = false;
+					placingDam = false;
+				}
+			}
+			else
+			{
+				Debug.WriteLine("placing dams is false");
+				placingDam = false;
+			}
+			
 		}
 	}
 
@@ -183,6 +239,12 @@ public partial class InventoryBar : PanelContainer
 		_draggedData = InventorySlotViewData.FromItem(_draggedItem);
 		_draggedSourceIndex = index;
 
+		if (_draggedItem != null && _draggedItem.ItemId == 2)
+		{
+			placingDam = true;
+			itemInfo = _draggedItem;
+		}
+
 		if (_draggedFromSplit)
 			sourceItem.ItemCount = sourceCount - 1;
 		else
@@ -209,17 +271,25 @@ public partial class InventoryBar : PanelContainer
 		}
 
 		if (_draggedItem != null && TryDropDraggedItemIntoCrafting())
+		{
+			return;
+		}
+		//trying to place dam blocks
+		if (_draggedItem != null && _draggedItem.ItemId == 2)
+		{
+			placingDam = true;
+			placementClick = true;
+			damStock = 0; //to count inventory
+			//ClearDragState();
 			return;
 
-		
+		}
 		//Try to drag and drop into the world
-		if (_draggedItem != null && TryPlaceItemInWorld(_draggedItem))
+		if (_draggedItem != null && TryPlaceItemInWorld(_draggedItem) && _draggedItem.ItemId != 2)
 		{
-			Debug.WriteLine("entered metod");
 			ClearDragState();
 			return;
 		}
-
 		RestoreDraggedData();
 	}
 
@@ -227,24 +297,14 @@ public partial class InventoryBar : PanelContainer
 	public bool TryPlaceItemInWorld(ItemData item)
 	{
 		var world = GetTree().CurrentScene.GetNode("world");
-		var player = GetTree().CurrentScene.GetNode("Player"); //get access to the world
-		Debug.WriteLine(player.Name);
-		//if (world == null)
-		//{
-		//	Debug.WriteLine("No world");
-		//	return false;
-		//}
 		//getting access to the camera through world and player
-		//var player = GetNode<PlayerMove>("Player");
-        
-		//var player = world.GetNodeOrNull<CharacterBody2D>("Player");
+		var player = GetTree().CurrentScene.GetNode("Player"); //get access to the world
 		if (player == null)
 		{
 			Debug.WriteLine("no player");
 			return false;
 		}
 		var camera = player.GetNodeOrNull<Camera2D>("Camera2D");
-		//var camera = player.GetNodeOrNull<Camera2D>("Camera2D");
 		if (camera == null)
 		{
 			Debug.WriteLine("No camera");
@@ -263,6 +323,27 @@ public partial class InventoryBar : PanelContainer
 		}
 		return true;
 
+	}
+
+	ItemData placingDamInWorld(ItemData item)
+	{
+		//trying to make placing dam count from inventory
+			var game = GetTree().CurrentScene as Game;
+			Debug.WriteLine(game.Name);
+			//accessing mapPos
+			var player = GetTree().CurrentScene.GetNode("Player");
+			var camera = player.GetNodeOrNull<Camera2D>("Camera2D");
+			var mapPos = obstructionLayer.LocalToMap(camera.GetGlobalMousePosition());
+			Debug.WriteLine($"From placing code: {mapPos}, last post: {lastPos}");
+			if (mapPos == lastPos)
+				return item;
+			
+			game.PlaceDam();
+			item.ItemCount = item.ItemCount -1;
+			//ClearDragState();
+			Debug.WriteLine("placed dam");
+			return item;
+				
 	}
 	void MoveDraggedDataToSlot(int targetIndex)
 	{

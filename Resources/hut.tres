@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://chjwrad7tfwbj"]
+
+[ext_resource type="Texture2D" uid="uid://dpewn1qwoslu3" path="res://world/images/hut/beaver-hut.png" id="1_gl7wa"]
+[ext_resource type="Script" uid="uid://c1o4r7hkryrjo" path="res://player/ItemData.cs" id="2_12210"]
+
+[resource]
+script = ExtResource("2_12210")
+ItemId = 3
+Icon = ExtResource("1_gl7wa")
+itemRecipe = Array[String](["1", "1", "1", "1"])
+ItemScenePath = "res://scenes/hut.tscn"
+metadata/_custom_type_script = "uid://c1o4r7hkryrjo"
