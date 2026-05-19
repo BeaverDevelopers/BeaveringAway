@@ -15,6 +15,10 @@ Hold M and then press:
 - Click to drag and drop items from inventory/crafting area into the world
 - To place dam from inventory into world drag and drop it to where you want the dam to start, then move the mouse where you want to place it. To stop: left-click
 
+# Recipes
+- Beaver dam block: 1 log
+- Beaver hut: 4 logs in different slots
+
 # Open Tasks
 - [x] Beaver Player Controller
 - [x] Tree Cutting
