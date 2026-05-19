@@ -47,7 +47,7 @@ public partial class PlayerMove : CharacterBody2D
         {
             Vector2 moveDelta = moveTarget - Position;
             direction = moveDelta.Normalized();
-            if (moveDelta.Length() < 1)
+            if (moveDelta.Length() < 10)
             {
                 moveTarget = Vector2.Zero;
             }
