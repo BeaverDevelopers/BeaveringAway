@@ -12,6 +12,8 @@ Hold M and then press:
 # Controls
 - WASD to move beaver
 - Use E to Chop Trees and pick up logs from trees
+- Click to drag and drop items from inventory/crafting area into the world
+- To place dam from inventory into world drag and drop it to where you want the dam to start, then move the mouse where you want to place it. To stop: left-click
 
 # Open Tasks
 - [x] Beaver Player Controller
