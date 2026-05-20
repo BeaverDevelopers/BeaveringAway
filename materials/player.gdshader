@@ -1,15 +1,17 @@
 shader_type canvas_item;
 
-uniform float water_line : hint_range(0,1) = 0;
-
+uniform float water_line_bottom : hint_range(0,1) = 1;
+uniform float water_line_top : hint_range(0,1) = 0;
+uniform vec4 underwater_color: source_color = vec4(0, 0, 1, 1);
 
 void vertex() {
 	// Called for every vertex the material is visible on.
 }
 
 void fragment() {
-	COLOR.a = (1.0 - UV.y) > water_line ? COLOR.a : 0.0;
-	// Called for every pixel the material is visible on.
+	vec4 underwater_rgb = mix(COLOR, underwater_color, 1);
+	underwater_rgb.a = COLOR.a;
+	COLOR = (UV.y > water_line_top && UV.y < water_line_bottom) ? COLOR : underwater_rgb;
 }
 
 //void light() {

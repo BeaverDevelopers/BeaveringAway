@@ -27,6 +27,7 @@ MapNode = NodePath("world")
 hud = NodePath("GameHUD")
 
 [node name="world" parent="." unique_id=321246523 instance=ExtResource("1_uwrxv")]
+y_sort_enabled = true
 position = Vector2(2, 0)
 
 [node name="Clouds" parent="world" unique_id=514881015 instance=ExtResource("3_ir15t")]
@@ -103,10 +104,9 @@ position = Vector2(106, 816)
 [node name="Tree15" parent="world" unique_id=2070216785 instance=ExtResource("5_vtaks")]
 position = Vector2(2144, 402)
 
-[node name="Player" parent="." unique_id=2057284693 groups=["player"] instance=ExtResource("3_0tnpc")]
-position = Vector2(2, 0)
+[node name="Player" parent="world" unique_id=2057284693 groups=["player"] instance=ExtResource("3_0tnpc")]
 
-[node name="AudioStreamPlayer2D" parent="Player" unique_id=1664354570 instance=ExtResource("2_kvpfn")]
+[node name="AudioStreamPlayer2D" parent="world/Player" unique_id=1664354570 instance=ExtResource("2_kvpfn")]
 position = Vector2(-2, 0)
 
 [node name="GameHUD" parent="." unique_id=43781371 instance=ExtResource("5_iywne")]

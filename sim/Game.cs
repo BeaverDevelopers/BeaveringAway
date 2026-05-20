@@ -76,7 +76,7 @@ public partial class Game : Node
         int mapH = simulator.Terrain.Rows * tileSize.Y;
         hud.SetMapBounds(mapW, mapH);
 
-        Player = GetNode<PlayerMove>("Player");
+        Player = GetNode<PlayerMove>("world/Player");
         MainCamera = Player.GetNode<Camera2D>("Camera2D");
 
         // Try to load Deer scene, but don't fail if it doesn't exist

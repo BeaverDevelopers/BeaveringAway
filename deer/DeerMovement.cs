@@ -43,7 +43,7 @@ public partial class DeerMovement : CharacterBody2D
 	public override void _Ready()
 	{
 		// Get references
-		_player = GetNode<CharacterBody2D>("../../Player");
+		_player = GetNode<CharacterBody2D>("../../world/Player");
 		_animSprite = GetNode<AnimatedSprite2D>("Sprite2D/AnimatedSprite2D");
 
 		// Randomize gender

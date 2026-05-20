@@ -83,10 +83,13 @@ public partial class PlayerMove : CharacterBody2D
             var goingUp = cardinal == 0;
             var goingDown = cardinal == 2;
 
-            var waterLineIfInWater = goingDown ? 0.15 : goingUp ? 0.3 : 0.4;
+            var waterLineIfInWater = goingDown ? 0.03 : goingUp ? 0.3 : 0.4;
             var waterLine = InWater ? waterLineIfInWater : 0;
 
-            asShaderMaterial.SetShaderParameter("water_line", waterLine);
+            var waterLineTop = InWater ? (goingDown ? 0.65 : 0) : 0;
+
+            asShaderMaterial.SetShaderParameter("water_line_bottom", 1 - waterLine);
+            asShaderMaterial.SetShaderParameter("water_line_top", waterLineTop);
         }
 
         if (InWater)

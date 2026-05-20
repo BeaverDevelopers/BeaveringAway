@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://lqrn2i626md4"]
 
 [ext_resource type="Script" uid="uid://bi52yo0sx1t4v" path="res://player/PlayerMove.cs" id="1_qhqgy"]
-[ext_resource type="Texture2D" uid="uid://c1e0w8t7sxwnw" path="res://icon.svg" id="2_dqkch"]
 [ext_resource type="PackedScene" uid="uid://bgyyy645ne8ei" path="res://interacting_component.tscn" id="3_qlg0r"]
 [ext_resource type="Texture2D" uid="uid://dwahj54aoif2t" path="res://world/images/player/Beaver down walk sprite sheet.png" id="4_qlg0r"]
 [ext_resource type="Material" uid="uid://dbcidiujc36s6" path="res://materials/player.tres" id="4_smehm"]
@@ -156,10 +155,6 @@ animations = [{
 [node name="player" type="CharacterBody2D" unique_id=2057284693]
 motion_mode = 1
 script = ExtResource("1_qhqgy")
-
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1997759231]
-visible = false
-texture = ExtResource("2_dqkch")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1693400612]
 shape = SubResource("CapsuleShape2D_p57ef")
