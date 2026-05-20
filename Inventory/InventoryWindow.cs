@@ -184,6 +184,170 @@ public partial class InventoryWindow : Control
 		return false;
 	}
 
+	bool inventoryMousePressed(InputEventMouseButton mouseEvent)
+	{
+        var hoveredNode = FindSlotAtPosition(GetGlobalMousePosition()) ?? FindSlot(GetViewport().GuiGetHoveredControl());
+        if (hoveredNode == null)
+            return false;
+
+        var currentIndex = hoveredNode.GetIndex();
+        var inventorySlotGroup = GetInventorySlotGroup();
+        var craftingSlotGroup = GetCraftingSlotGroup();
+        var resultSlot = GetResultSlot();
+
+        if (inventorySlotGroup != null && hoveredNode.GetParent() == inventorySlotGroup)
+        {
+            if (!CreateDragItem(currentIndex, InventoryData, IsSplitModifierPressed(mouseEvent), "Inventory"))
+                return false;
+
+            updateInventoryData();
+            return true;
+        }
+
+        if (craftingSlotGroup != null && hoveredNode.GetParent() == craftingSlotGroup)
+        {
+            if (!CreateDragItem(currentIndex, CraftingData, IsSplitModifierPressed(mouseEvent), "Crafting"))
+                return false;
+
+            updateCraftingArea();
+            return true;
+        }
+
+        if (resultSlot != null && hoveredNode.GetParent() == resultSlot)
+        {
+            if (!CreateDragItem(0, ResultData, false, "Result", true))
+                return false;
+            return true;
+        }
+
+		return false;
+    }
+
+	bool inventoryMouseReleased(InputEventMouseButton mouseEvent)
+	{
+        if (HasNode("ItemDrag"))
+            deleteDragedItem();
+
+        if (currentDraggedItem == null || currentDraggedItem.Count == 0)
+            return false;
+
+        var item = (ItemData)currentDraggedItem["Item"];
+        var index = (int)currentDraggedItem["Index"];
+        var sourceInventory = (InventoryDataNew)currentDraggedItem["InventoryDataType"];
+        var sourceName = (string)currentDraggedItem["SourceName"];
+        var fromSplit = (bool)currentDraggedItem["FromSplit"];
+
+        if (TryDropDraggedItemToHudInventory(item))
+        {
+            if (sourceName == "Result")
+                ConsumeCraftingIngredients();
+
+            ClearDraggedItem();
+            updateInventoryData();
+            updateCraftingArea();
+            return true;
+        }
+
+        if (sourceName == "Result")
+        {
+            //trying to make placing dam count from inventory
+            if (item.ItemId == 2)
+            {
+                var game = GetTree().CurrentScene as Game;
+                for (int i = 0; i < item.ItemCount; i++)
+                {
+                    game.PlaceDam();
+                    ConsumeCraftingIngredients();
+                    ClearDraggedItem();
+                }
+                updateInventoryData();
+                updateCraftingArea();
+                return true;
+            }
+            //other non-dam items
+            if (TryPlaceItemInWorld(item))
+            {
+                ConsumeCraftingIngredients();
+                ClearDraggedItem();
+                updateCraftingArea();
+            }
+            return true;
+        }
+
+        var hoveredNode = FindSlotAtPosition(GetGlobalMousePosition()) ?? FindSlot(GetViewport().GuiGetHoveredControl());
+        if (hoveredNode == null)
+        {
+            //trying to make placing dam count from inventory
+            if (item.ItemId == 2)
+            {
+                var game = GetTree().CurrentScene as Game;
+                for (int i = 0; i < item.ItemCount; i++)
+                {
+                    game.PlaceDam();
+                    ClearDraggedItem();
+                }
+                updateInventoryData();
+                updateCraftingArea();
+                return true;
+            }
+            //trying to place item in the world
+            if (TryPlaceItemInWorld(item))
+            {
+                ClearDraggedItem();
+                updateInventoryData();
+                updateCraftingArea();
+                return true;
+            }
+            RestoreDraggedItem(sourceInventory, index, item);
+            return true;
+        }
+
+        var inventory = hoveredNode.GetParent();
+        var slotGroup = GetInventorySlotGroup();
+        var craftingSlotGroup = GetCraftingSlotGroup();
+        var resultSlot = GetResultSlot();
+        Debug.WriteLine(resultSlot);
+
+        if (resultSlot != null && inventory == resultSlot)
+        {
+            RestoreDraggedItem(sourceInventory, index, item);
+            return true;
+        }
+
+        if (slotGroup != null && inventory == slotGroup && InventoryData != null)
+        {
+            if (TryPlaceDraggedItem(InventoryData, hoveredNode.GetIndex(), item, sourceInventory, index, fromSplit))
+            {
+                ClearDraggedItem();
+                updateInventoryData();
+                updateCraftingArea();
+            }
+            else
+            {
+                RestoreDraggedItem(sourceInventory, index, item);
+            }
+            return true;
+        }
+
+        if (craftingSlotGroup != null && inventory == craftingSlotGroup && CraftingData != null)
+        {
+            if (TryPlaceDraggedItem(CraftingData, hoveredNode.GetIndex(), item, sourceInventory, index, fromSplit))
+            {
+                ClearDraggedItem();
+                updateInventoryData();
+                updateCraftingArea();
+            }
+            else
+            {
+                RestoreDraggedItem(sourceInventory, index, item);
+            }
+            return true;
+        }
+
+        RestoreDraggedItem(sourceInventory, index, item);
+		return true;
+    }
+
 	public override void _Input(InputEvent @event)
 	{
 		if (!Visible)
@@ -193,164 +357,19 @@ public partial class InventoryWindow : Control
 		{
 			if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
 			{
-				var hoveredNode = FindSlotAtPosition(GetGlobalMousePosition()) ?? FindSlot(GetViewport().GuiGetHoveredControl());
-				if (hoveredNode == null)
-					return;
-
-				var currentIndex = hoveredNode.GetIndex();
-				var inventorySlotGroup = GetInventorySlotGroup();
-				var craftingSlotGroup = GetCraftingSlotGroup();
-				var resultSlot = GetResultSlot();
-
-				if (inventorySlotGroup != null && hoveredNode.GetParent() == inventorySlotGroup)
+				if (inventoryMousePressed(mouseEvent))
 				{
-					if (!CreateDragItem(currentIndex, InventoryData, IsSplitModifierPressed(mouseEvent), "Inventory"))
-						return;
-
-					updateInventoryData();
-					return;
-				}
-
-				if (craftingSlotGroup != null && hoveredNode.GetParent() == craftingSlotGroup)
-				{
-					if (!CreateDragItem(currentIndex, CraftingData, IsSplitModifierPressed(mouseEvent), "Crafting"))
-						return;
-
-					updateCraftingArea();
-					return;
-				}
-
-				if (resultSlot != null && hoveredNode.GetParent() == resultSlot)
-				{
-					if (!CreateDragItem(0, ResultData, false, "Result", true))
-						return;
-					return;
+					GetViewport().SetInputAsHandled();
 				}
 			}
 
 			if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.IsReleased())
 			{
-				if (HasNode("ItemDrag"))
-					deleteDragedItem();
-
-				if (currentDraggedItem == null || currentDraggedItem.Count == 0)
-					return;
-
-				var item = (ItemData)currentDraggedItem["Item"];
-				var index = (int)currentDraggedItem["Index"];
-				var sourceInventory = (InventoryDataNew)currentDraggedItem["InventoryDataType"];
-				var sourceName = (string)currentDraggedItem["SourceName"];
-				var fromSplit = (bool)currentDraggedItem["FromSplit"];
-
-				if (TryDropDraggedItemToHudInventory(item))
-				{
-					if (sourceName == "Result")
-						ConsumeCraftingIngredients();
-
-					ClearDraggedItem();
-					updateInventoryData();
-					updateCraftingArea();
-					return;
-				}
-
-				if (sourceName == "Result")
-				{
-					//trying to make placing dam count from inventory
-					if (item.ItemId == 2)
-					{
-						var game = GetTree().CurrentScene as Game;
-						for (int i = 0; i < item.ItemCount; i++)
-						{
-							game.PlaceDam();
-							ConsumeCraftingIngredients();
-							ClearDraggedItem();	
-						}
-						updateInventoryData();
-						updateCraftingArea();
-						return;
-					}
-					//other non-dam items
-					if (TryPlaceItemInWorld(item))
-					{
-					ConsumeCraftingIngredients();
-					ClearDraggedItem();
-					updateCraftingArea();
-					}
-					return;
-				}
-
-				var hoveredNode = FindSlotAtPosition(GetGlobalMousePosition()) ?? FindSlot(GetViewport().GuiGetHoveredControl());
-				if (hoveredNode == null)
-				{
-					//trying to make placing dam count from inventory
-					if (item.ItemId == 2)
-					{
-						var game = GetTree().CurrentScene as Game;
-						for (int i = 0; i < item.ItemCount; i++)
-						{
-							game.PlaceDam();
-							ClearDraggedItem();	
-						}
-						updateInventoryData();
-						updateCraftingArea();
-						return;
-					}
-					//trying to place item in the world
-					if (TryPlaceItemInWorld(item))
-					{
-						ClearDraggedItem();
-						updateInventoryData();
-						updateCraftingArea();
-						return;
-					}
-					RestoreDraggedItem(sourceInventory, index, item);
-					return;
-				}
-
-				var inventory = hoveredNode.GetParent();
-				var slotGroup = GetInventorySlotGroup();
-				var craftingSlotGroup = GetCraftingSlotGroup();
-				var resultSlot = GetResultSlot();
-				Debug.WriteLine(resultSlot);
-
-				if (resultSlot != null && inventory == resultSlot)
-				{
-					RestoreDraggedItem(sourceInventory, index, item);
-					return;
-				}
-
-				if (slotGroup != null && inventory == slotGroup && InventoryData != null)
-				{
-					if (TryPlaceDraggedItem(InventoryData, hoveredNode.GetIndex(), item, sourceInventory, index, fromSplit))
-					{
-						ClearDraggedItem();
-						updateInventoryData();
-						updateCraftingArea();
-					}
-					else
-					{
-						RestoreDraggedItem(sourceInventory, index, item);
-					}
-					return;
-				}
-
-				if (craftingSlotGroup != null && inventory == craftingSlotGroup && CraftingData != null)
-				{
-					if (TryPlaceDraggedItem(CraftingData, hoveredNode.GetIndex(), item, sourceInventory, index, fromSplit))
-					{
-						ClearDraggedItem();
-						updateInventoryData();
-						updateCraftingArea();
-					}
-					else
-					{
-						RestoreDraggedItem(sourceInventory, index, item);
-					}
-					return;
-				}
-
-				RestoreDraggedItem(sourceInventory, index, item);
-			}
+                if (inventoryMouseReleased(mouseEvent))
+                {
+                    GetViewport().SetInputAsHandled();
+                }
+            }
 		}
 	}
 
