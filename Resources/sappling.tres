@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://cqh6sm8klpb3f"]
+
+[ext_resource type="Texture2D" uid="uid://b1r6oepu6x16v" path="res://world/images/sappling/sappling.png" id="1_yrms6"]
+[ext_resource type="Script" uid="uid://c1o4r7hkryrjo" path="res://player/ItemData.cs" id="2_elbq5"]
+[ext_resource type="PackedScene" uid="uid://clxfw103c3bt1" path="res://scenes/tree.tscn" id="2_lkgev"]
+
+[resource]
+script = ExtResource("2_elbq5")
+ItemId = 5
+Icon = ExtResource("1_yrms6")
+ItemScenePath = "res://scenes/tree.tscn"
+ItemScene = ExtResource("2_lkgev")
+metadata/_custom_type_script = "uid://c1o4r7hkryrjo"

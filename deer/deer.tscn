@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://chyvxw8y28xi6"]
 
-[ext_resource type="Script" uid="uid://cif62mvhjull0" path="res://deer/DeerMovement.cs" id="1_ddg5q"]
+[ext_resource type="Script" uid="uid://cde2gav627cq7" path="res://deer/DeerMovement.cs" id="1_ddg5q"]
 [ext_resource type="Texture2D" uid="uid://b2ytts0amu725" path="res://world/images/deer/female-deer-down.png" id="2_68u04"]
 [ext_resource type="Texture2D" uid="uid://di42pap43gwaf" path="res://world/images/deer/male-deer-down.png" id="3_fe7vv"]
 [ext_resource type="Texture2D" uid="uid://b4ficuk3an1cp" path="res://world/images/deer/female-deer-sidewalk.png" id="4_0di73"]

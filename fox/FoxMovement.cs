@@ -32,7 +32,7 @@ public partial class FoxMovement : CharacterBody2D
 
     public override void _Ready()
     {
-        player = GetNode<CharacterBody2D>("../../Player");
+        player = GetNode<CharacterBody2D>("../../world/Player");
         _playerMove = player as PlayerMove;
         _game = GetNode<Game>("../..");
 

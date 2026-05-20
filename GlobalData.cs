@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 public partial class GlobalData : Node
 {
-	public Dictionary<string, ItemData> allItems = new();
+	public Dictionary<string, ItemData> AllItemsRecipes = new();
+	public Dictionary<int, ItemData> ItemByID = [];
 
 	public override void _Ready()
 	{
@@ -22,11 +23,16 @@ public partial class GlobalData : Node
 				continue;
 
 			var item = ResourceLoader.Load<ItemData>("res://Resources/" + file);
-			if (item == null || item.itemRecipe == null || item.itemRecipe.Count == 0)
+			if (item == null || item.itemRecipe == null)
+				continue;
+
+			ItemByID.Add(item.ItemId, item);
+
+			if (item.itemRecipe.Count == 0)
 				continue;
 
 			var exactKey = string.Join(",", item.itemRecipe);
-			allItems[exactKey] = item;
+			AllItemsRecipes[exactKey] = item;
 
 			var compactRecipe = new List<string>();
 			foreach (var itemId in item.itemRecipe)
@@ -37,7 +43,7 @@ public partial class GlobalData : Node
 
 			compactRecipe.Sort();
 			if (compactRecipe.Count > 0)
-				allItems[string.Join(",", compactRecipe)] = item;
+				AllItemsRecipes[string.Join(",", compactRecipe)] = item;
 		}
 	}
 }

@@ -9,6 +9,7 @@ public class JunkSystem
 	TileMapLayer _waterLayer;
 	float _tileSize;
 
+	public ItemData JunkToSpawn;
 	public int MaxItems = 5;
 	public int SpawnInterval = 100;
 	public float DriftSpeed = 0.35f;   // px/tick per depth unit. depth=20 → 7 px/tick
@@ -19,7 +20,7 @@ public class JunkSystem
 	public float GravityBias = 1.0f;
 	public int MaxLifetime = 3000;
 
-	static readonly PackedScene LogScene = GD.Load<PackedScene>("res://scenes/log.tscn");
+	static readonly PackedScene DroppedItemScene = GD.Load<PackedScene>("res://scenes/dropped_item.tscn");
 
 	public int Count => _items.Count;
 
@@ -35,8 +36,10 @@ public class JunkSystem
 		if (_items.Count >= MaxItems) return;
 		if (terrain.TileWater(spawnTile.X, spawnTile.Y) == 0) return;
 
-		var node = LogScene.Instantiate<Node2D>();
+		var node = DroppedItemScene.Instantiate<DroppedItem>();
 		node.ZIndex = 2;
+
+		node.ItemData = JunkToSpawn;
 
 		var offset = new Vector2((_rng.NextSingle() - 0.5f) * 8f, (_rng.NextSingle() - 0.5f) * 8f);
 		var worldPos = _waterLayer.MapToLocal(spawnTile) + offset;

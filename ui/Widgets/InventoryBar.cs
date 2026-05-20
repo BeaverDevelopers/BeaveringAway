@@ -308,7 +308,7 @@ public partial class InventoryBar : PanelContainer
 	{
 		var world = GetTree().CurrentScene.GetNode("world");
 		//getting access to the camera through world and player
-		var player = GetTree().CurrentScene.GetNode("Player"); //get access to the world
+		var player = world.GetNode("Player"); //get access to the world
 		if (player == null)
 		{
 			Debug.WriteLine("no player");
@@ -326,8 +326,11 @@ public partial class InventoryBar : PanelContainer
 		
 		for (int i = 0; i < item.ItemCount; i++)
 		{
-			var scene = GD.Load<PackedScene>(item.ItemScenePath); //load the scene mentioned in the items scene path
-			var itemScene = scene.Instantiate() as Node2D;
+			var itemScene = item.ItemScene.Instantiate<Node2D>();
+			if (itemScene is DroppedItem droppedItem)
+			{
+				droppedItem.ItemData = item.Duplicate() as ItemData;
+			}
 			world.AddChild(itemScene);
 			itemScene.GlobalPosition = mapPos;
 		}

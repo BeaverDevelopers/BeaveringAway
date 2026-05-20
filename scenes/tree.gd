@@ -2,10 +2,12 @@ extends StaticBody2D
 
 @onready var interactable: Interactable = $Interactable
 @onready var tree_anim: AnimatedSprite2D = $TreeAnim
-@onready var LOG: PackedScene = preload("res://scenes/log.tscn")
+@onready var LOG: PackedScene = preload("res://scenes/dropped_item.tscn")
 @onready var collision_shape_2d: CollisionShape2D = $CollisionShape2D
 @onready var tree_falling_audio: AudioStreamPlayer2D = $FallingSoundPlayer
 @onready var tree_chomp_audio: AudioStreamPlayer2D = $ChompSoundPlayer
+
+@export var item_drop: ItemData
 
 static var rng = RandomNumberGenerator.new()
 static var max_health = 6
@@ -74,9 +76,10 @@ func _on_interact():
 
 	# Spawn 3 logs into the world (not as tree children)
 	for i in range(3):
-		var log = LOG.instantiate()
-		log.global_position = global_position + Vector2(randi_range(-40, 40), randi_range(-40, 40))
-		get_parent().add_child(log)
+		var dropped_item = LOG.instantiate()
+		dropped_item.ItemData = item_drop
+		dropped_item.global_position = global_position + Vector2(randi_range(-40, 40), randi_range(-40, 40))
+		get_parent().add_child(dropped_item)
 
 	# Delete the tree after everything is spawned
 	queue_free()

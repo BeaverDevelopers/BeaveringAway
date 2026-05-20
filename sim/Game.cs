@@ -9,6 +9,7 @@ public partial class Game : Node
     [Export(PropertyHint.Range, "1,500,1")] public int JunkSpawnInterval = 100;
     [Export(PropertyHint.Range, "1,50,1")] public int JunkMaxCount = 5;
     [Export(PropertyHint.Range, "0.05,2.0,0.05")] public float JunkDriftSpeed = 0.35f;
+    [Export] public ItemData JunkToSpawn;
 
     [Export] public GameHUD hud;
     public PlayerMove Player;
@@ -61,6 +62,7 @@ public partial class Game : Node
         junkSystem.SpawnInterval = JunkSpawnInterval;
         junkSystem.MaxItems = JunkMaxCount;
         junkSystem.DriftSpeed = JunkDriftSpeed;
+        junkSystem.JunkToSpawn = JunkToSpawn;
 
         var tileSize = waterLayer.TileSet.TileSize;
 

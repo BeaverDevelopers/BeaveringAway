@@ -109,7 +109,7 @@ public partial class InventoryWindow : Control
 			slot.QueueFree();
 
 		var globalData = GetNodeOrNull<GlobalData>("/root/GlobalData");
-		var allItems = globalData?.allItems;
+		var allItems = globalData?.AllItemsRecipes;
 		ResultData.itemData[0] = null;
 		if (allItems != null)
 		{
@@ -467,7 +467,7 @@ public partial class InventoryWindow : Control
 			return false;
 		}
 		//getting access to the camera through world and player
-		var player = GetTree().CurrentScene.GetNode("Player");
+		var player = world.GetNode("Player");
 		if (player == null)
 		{
 			Debug.WriteLine("no player");
@@ -485,8 +485,7 @@ public partial class InventoryWindow : Control
 		
 		for (int i = 0; i < item.ItemCount; i++)
 		{
-			var scene = GD.Load<PackedScene>(item.ItemScenePath); //load the scene mentioned in the items scene path
-			var itemScene = scene.Instantiate() as Node2D;
+			var itemScene = item.ItemScene.Instantiate() as Node2D;
 			world.AddChild(itemScene);
 			itemScene.GlobalPosition = mapPos;
 		}
