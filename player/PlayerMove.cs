@@ -5,19 +5,16 @@ using System.Diagnostics;
 public partial class PlayerMove : CharacterBody2D
 {
     public const float Speed = 210.0f;
+    public Vector2 MoveTarget = Vector2.Zero;
+    public bool InWater = false;
+
+    private double _playNextWaterJumpSound = 0;
+    private Vector2 _lastDirection = Vector2.Down;
+
     private AnimatedSprite2D _animSprite;
     private AudioStreamPlayer2D _audioRunPlayer;
     private AudioStreamPlayer2D _audioSwimmingPlayer;
     private AudioStreamPlayer2D _jumpInWaterPlayer;
-
-    public bool InWater = false;
-    public double PlayNextWaterJumpSound = 0;
-
-    // 保存最后朝向（用于idle）
-    private Vector2 _lastDirection = Vector2.Down;
-
-    public Vector2 MoveTarget = Vector2.Zero;
-
 
     public override void _Ready()
     {
@@ -26,16 +23,10 @@ public partial class PlayerMove : CharacterBody2D
         _audioRunPlayer = GetNode<AudioStreamPlayer2D>("AudioRunPlayer");
         _audioSwimmingPlayer = GetNode<AudioStreamPlayer2D>("AudioSwimmingPlayer");
         _jumpInWaterPlayer = GetNode<AudioStreamPlayer2D>("JumpInWaterPlayer");
-
-        //GetTree().Root.GetNode<Game>("Node2D").MainCamera = GetNode<Camera2D>("Camera2D");
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        /*if (Input.IsMouseButtonPressed(MouseButton.Left))
-        {
-            MoveTarget = GetNode<Camera2D>("Camera2D").GetGlobalMousePosition();
-        }*/
 
         Vector2 direction = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
         if (direction != Vector2.Zero)
@@ -52,7 +43,6 @@ public partial class PlayerMove : CharacterBody2D
             }
         }
 
-        // 移动时更新最后方向
         if (direction != Vector2.Zero)
         {
             _lastDirection = direction;
@@ -94,7 +84,7 @@ public partial class PlayerMove : CharacterBody2D
 
         if (InWater)
         {
-            if (PlayNextWaterJumpSound <= 0)
+            if (_playNextWaterJumpSound <= 0)
             {
                 
 
@@ -103,14 +93,13 @@ public partial class PlayerMove : CharacterBody2D
                     _jumpInWaterPlayer.Play();
                 }
             }
-            PlayNextWaterJumpSound = 1;
+            _playNextWaterJumpSound = 1;
         }
         else
         {
-            PlayNextWaterJumpSound = PlayNextWaterJumpSound - delta;
+            _playNextWaterJumpSound = _playNextWaterJumpSound - delta;
         }
 
-        // 动画控制
         UpdateAnimation(direction);
 
         Velocity = direction * (Speed * (float)(InWater ? 1.5 : 1.0));
@@ -119,40 +108,29 @@ public partial class PlayerMove : CharacterBody2D
 
     private void UpdateAnimation(Vector2 direction)
     {
-        // 重置翻转
         _animSprite.FlipH = false;
         _animSprite.FlipV = false;
 
         bool isIdle = direction == Vector2.Zero;
         Vector2 currentDir = isIdle ? _lastDirection : direction;
 
-        // 上下方向优先
-        if (Mathf.Abs(currentDir.Y) > Mathf.Abs(currentDir.X))
+        var cardinal = (int)(4.0 * _lastDirection.Angle() / Mathf.Tau) + 1;
+        if (cardinal == 0)
         {
-            if (currentDir.Y < 0)
-            {
-                // 上 ↑（独立动画，不翻转）
-                _animSprite.Play(isIdle ? "idle_up" : "walk_up");
-            }
-            else
-            {
-                // 下 ↓（独立动画）
-                _animSprite.Play(isIdle ? "idle_down" : "walk_down");
-            }
+            _animSprite.Play(isIdle ? "idle_up" : "walk_up");
         }
-        else
+        else if (cardinal == 1)
         {
-            if (currentDir.X < 0)
-            {
-                // 左 ←
-                _animSprite.Play(isIdle ? "idle_left" : "walk_left");
-            }
-            else
-            {
-                // 右 → 用左动画 + 水平翻转
-                _animSprite.Play(isIdle ? "idle_left" : "walk_left");
-                _animSprite.FlipH = true;
-            }
+            _animSprite.Play(isIdle ? "idle_left" : "walk_left");
+            _animSprite.FlipH = true;
+        }
+        else if (cardinal == 2)
+        {
+            _animSprite.Play(isIdle ? "idle_down" : "walk_down");
+        }
+        else if (cardinal == 3)
+        {
+            _animSprite.Play(isIdle ? "idle_left" : "walk_left");
         }
     }
 }
