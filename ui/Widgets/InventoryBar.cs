@@ -63,9 +63,16 @@ public partial class InventoryBar : PanelContainer
 			return;
 
 		if (mouseEvent.Pressed)
+		{
 			TryStartDrag(IsSplitModifierPressed(mouseEvent));
+		}
 		else if (mouseEvent.IsReleased())
-			FinishDrag();
+		{
+			if (FinishDrag())
+			{
+                GetViewport().SetInputAsHandled();
+            }
+        }
 	}
 
 	public override void _Process(double delta)
@@ -252,12 +259,13 @@ public partial class InventoryBar : PanelContainer
 
 		CreateDragPreview(_draggedData);
 		RefreshSlotViews();
-	}
+        GetViewport().SetInputAsHandled();
+    }
 
-	void FinishDrag()
+	bool FinishDrag()
 	{
 		if (_draggedData == null)
-			return;
+			return false;
 
 		DeleteDragPreview();
 
@@ -267,12 +275,12 @@ public partial class InventoryBar : PanelContainer
 		if (targetIndex >= 0 && targetIndex < _slotData.Count)
 		{
 			MoveDraggedDataToSlot(targetIndex);
-			return;
+			return true;
 		}
 
 		if (_draggedItem != null && TryDropDraggedItemIntoCrafting())
 		{
-			return;
+			return true;
 		}
 		//trying to place dam blocks
 		if (_draggedItem != null && _draggedItem.ItemId == 2)
@@ -281,16 +289,18 @@ public partial class InventoryBar : PanelContainer
 			placementClick = true;
 			damStock = 0; //to count inventory
 			//ClearDragState();
-			return;
+			return true;
 
 		}
 		//Try to drag and drop into the world
 		if (_draggedItem != null && TryPlaceItemInWorld(_draggedItem) && _draggedItem.ItemId != 2)
 		{
 			ClearDragState();
-			return;
+			return true;
 		}
+
 		RestoreDraggedData();
+		return false;
 	}
 
 	//to be ableto drag and drop
@@ -408,7 +418,6 @@ public partial class InventoryBar : PanelContainer
 		if (visibleWindow != null && visibleWindow.TryDropItemOnCraftingAtPosition(GetGlobalMousePosition(), _draggedItem))
 		{
 			ClearDragState();
-			GetViewport().SetInputAsHandled();
 			return true;
 		}
 
@@ -425,7 +434,6 @@ public partial class InventoryBar : PanelContainer
 			return false;
 
 		ClearDragState();
-		GetViewport().SetInputAsHandled();
 		return true;
 	}
 

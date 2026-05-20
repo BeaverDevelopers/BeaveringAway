@@ -43,6 +43,15 @@ public partial class Game : Node
     const int WATER_SOURCE_ID = 2;
     static readonly Vector2I WATER_SOURCE_TILE = new(71, 0);
 
+    public override void _Input(InputEvent @event)
+    {
+        if (@event is InputEventMouseButton mouseButton && mouseButton.ButtonIndex == MouseButton.Left && mouseButton.Pressed)
+        {
+            // alternatively: Player.MoveTarget = MainCamera.GetCanvasTransform().AffineInverse() * mouseButton.GlobalPosition;
+            Player.MoveTarget = MainCamera.GetGlobalMousePosition();
+        }
+    }
+
     public override void _Ready()
     {
         Debug.WriteLine("Loading Game");

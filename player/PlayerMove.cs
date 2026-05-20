@@ -16,7 +16,7 @@ public partial class PlayerMove : CharacterBody2D
     // 保存最后朝向（用于idle）
     private Vector2 _lastDirection = Vector2.Down;
 
-    private Vector2 moveTarget = Vector2.Zero;
+    public Vector2 MoveTarget = Vector2.Zero;
 
 
     public override void _Ready()
@@ -32,24 +32,23 @@ public partial class PlayerMove : CharacterBody2D
 
     public override void _PhysicsProcess(double delta)
     {
-
-        if (Input.IsMouseButtonPressed(MouseButton.Left))
+        /*if (Input.IsMouseButtonPressed(MouseButton.Left))
         {
-            moveTarget = GetNode<Camera2D>("Camera2D").GetGlobalMousePosition();
-        }
+            MoveTarget = GetNode<Camera2D>("Camera2D").GetGlobalMousePosition();
+        }*/
 
         Vector2 direction = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
         if (direction != Vector2.Zero)
         {
-            moveTarget = Vector2.Zero;
+            MoveTarget = Vector2.Zero;
         }
-        else if (moveTarget != Vector2.Zero)
+        else if (MoveTarget != Vector2.Zero)
         {
-            Vector2 moveDelta = moveTarget - Position;
+            Vector2 moveDelta = MoveTarget - Position;
             direction = moveDelta.Normalized();
             if (moveDelta.Length() < 10)
             {
-                moveTarget = Vector2.Zero;
+                MoveTarget = Vector2.Zero;
             }
         }
 
