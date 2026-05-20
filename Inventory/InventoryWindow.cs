@@ -516,7 +516,11 @@ public partial class InventoryWindow : Control
 		for (int i = 0; i < item.ItemCount; i++)
 		{
 			var itemScene = item.ItemScene.Instantiate() as Node2D;
-			world.AddChild(itemScene);
+            if (itemScene is DroppedItem droppedItem)
+            {
+                droppedItem.ItemData = item.Duplicate() as ItemData;
+            }
+            world.AddChild(itemScene);
 			itemScene.GlobalPosition = mapPos;
 		}
 		return true;
