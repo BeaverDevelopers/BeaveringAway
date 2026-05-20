@@ -1,12 +1,15 @@
 extends StaticBody2D
 
-@onready var interactable: Area2D = $Interactable
+@onready var interactable: Interactable = $Interactable
 @onready var tree_anim: AnimatedSprite2D = $TreeAnim
 @onready var LOG: PackedScene = preload("res://scenes/log.tscn")
 @onready var collision_shape_2d: CollisionShape2D = $CollisionShape2D
 @onready var tree_falling_audio: AudioStreamPlayer2D = $FallingSoundPlayer
+@onready var tree_chomp_audio: AudioStreamPlayer2D = $ChompSoundPlayer
 
 static var rng = RandomNumberGenerator.new()
+static var max_health = 6
+var health = max_health
 
 func _ready() -> void:
 	# Setup interaction and default tree pose
@@ -23,6 +26,16 @@ func _ready() -> void:
 func _on_interact():
 	# Prevent duplicate interactions
 	if not is_inside_tree():
+		return
+		
+	tree_chomp_audio.play()
+
+	# Check if we should just chomp the tree instead.
+	if health > 1:
+		interactable.interact_name = "Chomp Tree (%d/%d)" % [health - 1, max_health]
+		await get_tree().create_timer(0.5).timeout
+		
+		health -= 1
 		return
 
 	# Get player from group
@@ -41,11 +54,15 @@ func _on_interact():
 	tree_falling_audio.play()
 	await get_tree().create_timer(1).timeout
 	
-	# Play fall animation based on player position
+	# If we are on the left hand side, we want it to fall.
 	if player_side > 0:
-		tree_anim.play("fall_right") # Player on right → fall left
+		tree_anim.play("fall_right") 
 	else:
-		tree_anim.play("fall_right") # Player on left → fall right
+		tree_anim.play("fall_left")
+		tree_anim.position = Vector2(-42, 4)
+
+	
+
 
 	# Wait for fall animation to finish
 	await tree_anim.animation_finished

@@ -109,8 +109,7 @@ position = Vector2(2, 0)
 [node name="AudioStreamPlayer2D" parent="Player" unique_id=1664354570 instance=ExtResource("2_kvpfn")]
 position = Vector2(-2, 0)
 
-[node name="GameHUD" parent="." unique_id=43781371 node_paths=PackedStringArray("PlayerMove") instance=ExtResource("5_iywne")]
-PlayerMove = NodePath("../Player")
+[node name="GameHUD" parent="." unique_id=43781371 instance=ExtResource("5_iywne")]
 
 [node name="InventoryUI" type="CanvasLayer" parent="GameHUD" unique_id=1715666977 node_paths=PackedStringArray("itemIcon", "itemIdLabel", "countLabel")]
 script = ExtResource("6_u5sy4")
