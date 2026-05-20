@@ -29,7 +29,6 @@ public partial class InventoryBar : PanelContainer
 	bool placementClick = false;
 
 	ItemData itemInfo;
-	int damStock = 0;
 
 	Vector2 lastPos;
 
@@ -87,20 +86,16 @@ public partial class InventoryBar : PanelContainer
 
 		if (placingDam) //places dam when holding left key
 		{
-			Debug.WriteLine("placingDam true");
+
 			if (placementClick)
 			{
 				if (itemInfo.ItemCount > 0)
 				{
-				Debug.WriteLine("placing click true");
-				Debug.WriteLine("before placing");
-				Debug.WriteLine(lastPos);
 				placingDamInWorld(itemInfo);
-				var player = GetTree().CurrentScene.GetNode("Player");
+				var world = GetTree().CurrentScene.GetNode("world");
+				var player = world.GetNode("Player");
 				var camera = player.GetNodeOrNull<Camera2D>("Camera2D");
 				lastPos = obstructionLayer.LocalToMap(camera.GetGlobalMousePosition());
-				Debug.WriteLine("after placing");
-				Debug.WriteLine(lastPos);
 					if (Input.IsMouseButtonPressed(MouseButton.Left))
 					{
 					placementClick = false;
@@ -287,7 +282,6 @@ public partial class InventoryBar : PanelContainer
 		{
 			placingDam = true;
 			placementClick = true;
-			damStock = 0; //to count inventory
 			//ClearDragState();
 			return true;
 
@@ -323,6 +317,17 @@ public partial class InventoryBar : PanelContainer
 
 		//getting the position of where to drop items through camera and mouse
 		var mapPos = camera.GetGlobalMousePosition();
+
+		//if the item is a hut it should only be placed in water
+		if (item.ItemId == 3)
+		{
+			var game = GetTree().CurrentScene as Game;
+			if(!game.IsPositionInWater(mapPos))
+			{
+				return false;
+			}
+				
+		}
 		
 		for (int i = 0; i < item.ItemCount; i++)
 		{
@@ -344,7 +349,8 @@ public partial class InventoryBar : PanelContainer
 			var game = GetTree().CurrentScene as Game;
 			Debug.WriteLine(game.Name);
 			//accessing mapPos
-			var player = GetTree().CurrentScene.GetNode("Player");
+			var world = GetTree().CurrentScene.GetNode("world");
+			var player = world.GetNode("Player");
 			var camera = player.GetNodeOrNull<Camera2D>("Camera2D");
 			var mapPos = obstructionLayer.LocalToMap(camera.GetGlobalMousePosition());
 			Debug.WriteLine($"From placing code: {mapPos}, last post: {lastPos}");

@@ -501,6 +501,17 @@ public partial class InventoryWindow : Control
 
 		//getting the position of where to drop items through camera and mouse
 		var mapPos = camera.GetGlobalMousePosition();
+
+		//if the item is a hut it should only be placed in water
+		if (item.ItemId == 3)
+		{
+			var game = GetTree().CurrentScene as Game;
+			if(!game.IsPositionInWater(mapPos))
+			{
+				return false;
+			}
+				
+		}
 		
 		for (int i = 0; i < item.ItemCount; i++)
 		{
