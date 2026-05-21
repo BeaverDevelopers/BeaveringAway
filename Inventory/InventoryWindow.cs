@@ -113,11 +113,31 @@ public partial class InventoryWindow : Control
 		ResultData.itemData[0] = null;
 		if (allItems != null)
 		{
+			// check how many things we could craft to make a stack
+			//work under progress
+			int possibleCraftCount = int.MaxValue;
+			// foreach (var ingredient in CraftingData.itemData)
+			// {
+			// 	//skip if it is nothing
+			// 	if (ingredient == null)
+			// 		continue;
+				
+			// 	// try to get the smallest value
+			// 	int count = GetStackCount(ingredient);
+			// 	if (count < possibleCraftCount)
+			// 	 possibleCraftCount = count;
+
+			// }
+			// for work under progress
+			if (possibleCraftCount == int.MaxValue)
+				possibleCraftCount = 1;
+				Debug.WriteLine("No ingredients, possibleCraftCount set to 1");
+
 			foreach (var key in GetRecipeKeys(currentRecipe))
 			{
 				if (allItems.TryGetValue(key, out var result))
 				{
-					ResultData.itemData[0] = MakeStack(result, 1);
+					ResultData.itemData[0] = MakeStack(result, possibleCraftCount);
 					break;
 				}
 			}
@@ -215,7 +235,7 @@ public partial class InventoryWindow : Control
 
         if (resultSlot != null && hoveredNode.GetParent() == resultSlot)
         {
-            if (!CreateDragItem(0, ResultData, false, "Result", true))
+            if (!CreateDragItem(0, ResultData, false, "Result", true)) 
                 return false;
             return true;
         }

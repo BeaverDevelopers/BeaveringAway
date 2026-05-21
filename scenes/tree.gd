@@ -8,6 +8,7 @@ extends StaticBody2D
 @onready var tree_chomp_audio: AudioStreamPlayer2D = $ChompSoundPlayer
 
 @export var item_drop: ItemData
+@export var sappling_drop: ItemData 
 
 static var rng = RandomNumberGenerator.new()
 static var max_health = 6
@@ -80,6 +81,15 @@ func _on_interact():
 		dropped_item.ItemData = item_drop
 		dropped_item.global_position = global_position + Vector2(randi_range(-40, 40), randi_range(-40, 40))
 		get_parent().add_child(dropped_item)
+	
+	#if you are lucky spawn a sappling
+	var random_sappling = randi_range(1, 10)
+	if random_sappling < 4:
+		print("You got lucky and got a sappling!")
+		var sappling = LOG.instantiate()
+		sappling.ItemData = sappling_drop
+		sappling.global_position = global_position + Vector2(randi_range(-40, 40), randi_range(-40, 40))
+		get_parent().add_child(sappling)
 
 	# Delete the tree after everything is spawned
 	queue_free()

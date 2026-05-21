@@ -1,19 +1,22 @@
 [gd_scene format=3 uid="uid://cj7khti6elsl0"]
 
 [ext_resource type="Texture2D" uid="uid://bq1hfhtcw605k" path="res://world/images/leaf.png" id="1_4r3pj"]
-[ext_resource type="Script" uid="uid://d2cfb6jmqkwqo" path="res://Interaction/interactable.gd" id="2_r6846"]
+[ext_resource type="Script" uid="uid://dr1if0jqq3nbm" path="res://DroppedItem.cs" id="1_r6846"]
+[ext_resource type="PackedScene" uid="uid://hu6w6rnkn2r5" path="res://Interaction/interactable.tscn" id="2_4r3pj"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_y2xad"]
-size = Vector2(14, 10)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_r6846"]
+size = Vector2(20, 22)
 
 [node name="StaticBody2D" type="StaticBody2D" unique_id=681638823]
+script = ExtResource("1_r6846")
 
 [node name="Leaf" type="Sprite2D" parent="." unique_id=323498236]
 texture = ExtResource("1_4r3pj")
 
-[node name="Interactable" type="Area2D" parent="Leaf" unique_id=777903343]
-script = ExtResource("2_r6846")
-metadata/_custom_type_script = "uid://d2cfb6jmqkwqo"
+[node name="Interactable" parent="Leaf" unique_id=1712477042 instance=ExtResource("2_4r3pj")]
+interact_name = "Pick up"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Leaf/Interactable" unique_id=1846950507]
-shape = SubResource("RectangleShape2D_y2xad")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Leaf/Interactable" unique_id=212608539]
+shape = SubResource("RectangleShape2D_r6846")
+
+[node name="Node2D" type="Node2D" parent="." unique_id=1597371809]

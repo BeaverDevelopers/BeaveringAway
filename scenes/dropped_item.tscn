@@ -15,7 +15,7 @@ position = Vector2(19, 12)
 texture = ExtResource("2_eyay6")
 
 [node name="Interactable" parent="Log" unique_id=1712477042 instance=ExtResource("3_v3g0x")]
-interact_name = "Pick up Log"
+interact_name = "Pick up"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Log/Interactable" unique_id=360356777]
 shape = SubResource("RectangleShape2D_k0uux")

@@ -8,6 +8,5 @@
 script = ExtResource("2_20o2x")
 ItemId = 1
 Icon = ExtResource("1_kmn7u")
-ItemScenePath = "res://scenes/log.tscn"
 ItemScene = ExtResource("2_3c5qy")
 metadata/_custom_type_script = "uid://c1o4r7hkryrjo"

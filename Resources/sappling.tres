@@ -8,6 +8,5 @@
 script = ExtResource("2_elbq5")
 ItemId = 5
 Icon = ExtResource("1_yrms6")
-ItemScenePath = "res://scenes/tree.tscn"
 ItemScene = ExtResource("2_lkgev")
 metadata/_custom_type_script = "uid://c1o4r7hkryrjo"
