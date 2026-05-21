@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://cj7khti6elsl0"]
+
+[ext_resource type="Texture2D" uid="uid://bq1hfhtcw605k" path="res://world/images/leaf.png" id="1_4r3pj"]
+[ext_resource type="Script" uid="uid://d2cfb6jmqkwqo" path="res://Interaction/interactable.gd" id="2_r6846"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_y2xad"]
+size = Vector2(14, 10)
+
+[node name="StaticBody2D" type="StaticBody2D" unique_id=681638823]
+
+[node name="Leaf" type="Sprite2D" parent="." unique_id=323498236]
+texture = ExtResource("1_4r3pj")
+
+[node name="Interactable" type="Area2D" parent="Leaf" unique_id=777903343]
+script = ExtResource("2_r6846")
+metadata/_custom_type_script = "uid://d2cfb6jmqkwqo"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Leaf/Interactable" unique_id=1846950507]
+shape = SubResource("RectangleShape2D_y2xad")

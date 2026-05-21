@@ -1,5 +1,7 @@
 using Godot;
 using System;
+using System.Diagnostics;
+using System.Runtime.Serialization;
 
 public partial class FoxMovement : CharacterBody2D
 {
@@ -30,6 +32,10 @@ public partial class FoxMovement : CharacterBody2D
 
     private AnimatedSprite2D _animSprite;
 
+    //for hut as safe place
+    bool hutPlaced = false;
+    bool playerIsSafe = false;
+
     public override void _Ready()
     {
         player = GetNode<CharacterBody2D>("../../world/Player");
@@ -44,6 +50,24 @@ public partial class FoxMovement : CharacterBody2D
         var onscreen = GetNode<VisibleOnScreenNotifier2D>("VisibleOnScreenNotifier2D");
         onscreen.ScreenExited += Destroy;
     }
+
+    public override void _Process(double delta)
+    {
+        //To know when the hut is placed so we can start waiting for the signal
+        if (!hutPlaced)
+        {
+            var world = GetTree().CurrentScene.GetNode("world");
+            var safeArea = world.GetNodeOrNull<SafeArea>("hut/SafeArea");
+            if (safeArea != null)
+            {
+            Debug.WriteLine("Hut is placed, beaver has a safe area");
+            hutPlaced = true;
+            safeArea.PlayerEnteredSafeArea += PlayerEnteredSafeArea;
+            }
+        }
+
+    }
+
 
     public override void _PhysicsProcess(double delta)
     {
@@ -238,7 +262,7 @@ public partial class FoxMovement : CharacterBody2D
         if (_foxState != FoxState.WaitingAtShore)
         {
             _shoreWaitTimer = 0f;
-            GD.Print("Fox stopped at shore, waiting for player");
+            GD.Print("Fox stopped at shore or hut, waiting for player");
         }
 
         _foxState = FoxState.WaitingAtShore;
@@ -259,6 +283,9 @@ public partial class FoxMovement : CharacterBody2D
         {
             float t = (float)i / steps;
             if (IsInWater(GlobalPosition + direction * checkDistance * t))
+                return false;
+
+            if (playerIsSafe) // if player is in hut/safe area
                 return false;
         }
 
@@ -288,6 +315,13 @@ public partial class FoxMovement : CharacterBody2D
         Velocity = direction * (speed * 0.8f);
         _lastDirection = direction;
         MoveAndCollide(Velocity * (float)delta, false, (float)0.08, true);
+    }
+
+    //Signal from Area2d from hut that the player has entered hut area
+    private void PlayerEnteredSafeArea()
+    {
+        Debug.WriteLine("Beaver is safe close to the hut");
+        playerIsSafe = true;
     }
 
     // Called by DeerMovement when deer is threatening
