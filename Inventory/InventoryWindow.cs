@@ -271,7 +271,7 @@ public partial class InventoryWindow : Control
         if (sourceName == "Result")
         {
             //trying to make placing dam count from inventory
-            if (item.ItemId == 2)
+            /*if (item.ItemId == 2)
             {
                 var game = GetTree().CurrentScene as Game;
                 for (int i = 0; i < item.ItemCount; i++)
@@ -283,12 +283,14 @@ public partial class InventoryWindow : Control
                 updateInventoryData();
                 updateCraftingArea();
                 return true;
-            }
+            }*/
             //other non-dam items
             if (TryPlaceItemInWorld(item))
             {
+
                 ConsumeCraftingIngredients();
-                ClearDraggedItem();
+                RestoreDraggedItem(sourceInventory, index, item);
+                //ClearDraggedItem();
                 updateCraftingArea();
             }
             return true;
@@ -313,7 +315,8 @@ public partial class InventoryWindow : Control
             //trying to place item in the world
             if (TryPlaceItemInWorld(item))
             {
-                ClearDraggedItem();
+                //ClearDraggedItem();
+                RestoreDraggedItem(sourceInventory, index, item);
                 updateInventoryData();
                 updateCraftingArea();
                 return true;
@@ -506,7 +509,7 @@ public partial class InventoryWindow : Control
 			return false;
 		}
 		//getting access to the camera through world and player
-		var player = world.GetNode("Player");
+		var player = world.GetNode<PlayerMove>("Player");
 		if (player == null)
 		{
 			Debug.WriteLine("no player");
@@ -522,6 +525,9 @@ public partial class InventoryWindow : Control
 		//getting the position of where to drop items through camera and mouse
 		var mapPos = camera.GetGlobalMousePosition();
 
+        player.MoveAndPlaceItem(mapPos, item);
+
+        /*
 		//if the item is a hut it should only be placed in water
 		if (item.ItemId == 3)
 		{
@@ -543,7 +549,10 @@ public partial class InventoryWindow : Control
             world.AddChild(itemScene);
 			itemScene.GlobalPosition = mapPos;
 		}
-		return true;
+		*/
+
+
+        return true;
 	
 	}
 

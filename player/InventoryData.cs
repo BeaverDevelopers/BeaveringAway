@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public partial class InventoryData : Node
 {
-	const string ActiveInventoryPath = "res://Inventory/TestInventory.tres";
+	const string ActiveInventoryPath = "res://Inventory/MainInventory.tres";
 
 	public const int LogItemId = 1;
 

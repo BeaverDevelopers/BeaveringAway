@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://dcap6ci12uy2g" path="res://world/world.ldtk" id="1_uwrxv"]
 [ext_resource type="Script" uid="uid://7ckbrq7wcces" path="res://sim/Game.cs" id="1_yqjtg"]
-[ext_resource type="Resource" uid="uid://cqh6sm8klpb3f" path="res://Resources/sappling.tres" id="2_ir15t"]
+[ext_resource type="Resource" uid="uid://dupwcnvi2wslk" path="res://Resources/logs.tres" id="2_ir15t"]
 [ext_resource type="PackedScene" uid="uid://d2l4ew4d5dbh2" path="res://scenes/ambience.tscn" id="2_kvpfn"]
 [ext_resource type="PackedScene" uid="uid://lqrn2i626md4" path="res://scenes/player.tscn" id="3_0tnpc"]
 [ext_resource type="PackedScene" uid="uid://g2fcng8hjdv0" path="res://scenes/clouds.tscn" id="3_ir15t"]
@@ -12,9 +12,9 @@
 [ext_resource type="Script" uid="uid://csffcwef02br8" path="res://ui/Core/LegacyInventoryAdapter.cs" id="13_trtic"]
 [ext_resource type="PackedScene" uid="uid://dxyrnkjl5io8n" path="res://Inventory/InventoryWindow.tscn" id="14_invwn"]
 
-[node name="Node2D" type="Node2D" unique_id=158556237 node_paths=PackedStringArray("MapNode", "hud")]
+[node name="Node2D" type="Node2D" unique_id=158556237 node_paths=PackedStringArray("WorldNode", "hud")]
 script = ExtResource("1_yqjtg")
-MapNode = NodePath("world")
+WorldNode = NodePath("world")
 JunkToSpawn = ExtResource("2_ir15t")
 hud = NodePath("GameHUD")
 

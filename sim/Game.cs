@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 public partial class Game : Node
 {
-    [Export] public Node MapNode;
+    [Export] public Node2D WorldNode;
     
     [Export(PropertyHint.Range, "1,500,1")] public int JunkSpawnInterval = 100;
     [Export(PropertyHint.Range, "1,50,1")] public int JunkMaxCount = 5;
@@ -56,7 +56,7 @@ public partial class Game : Node
     public override void _Ready()
     {
         Debug.WriteLine("Loading Game");
-        waterLayer = MapNode.GetNode<TileMapLayer>("Level_0/Water");
+        waterLayer = WorldNode.GetNode<TileMapLayer>("Level_0/Water");
         waterLayer.TextureFilter = CanvasItem.TextureFilterEnum.Nearest;
         junkSystem.Initialize(waterLayer);
         junkSystem.SpawnInterval = JunkSpawnInterval;
@@ -67,12 +67,12 @@ public partial class Game : Node
         var tileSize = waterLayer.TileSet.TileSize;
 
         // Not needed for now.
-        MapNode.GetNode<TileMapLayer>("Level_0/Water_Decoration").Visible = false;
+        WorldNode.GetNode<TileMapLayer>("Level_0/Water_Decoration").Visible = false;
 
-        obstructionLayer = MapNode.GetNode<TileMapLayer>("Level_0/Obstructions");
-        terrainLayer = MapNode.GetNode<TileMapLayer>("Level_0/Terrain");
+        obstructionLayer = WorldNode.GetNode<TileMapLayer>("Level_0/Obstructions");
+        terrainLayer = WorldNode.GetNode<TileMapLayer>("Level_0/Terrain");
 
-        simulator.Load(MapNode);
+        simulator.Load(WorldNode);
 
         int mapW = simulator.Terrain.Columns * tileSize.X;
         int mapH = simulator.Terrain.Rows * tileSize.Y;
@@ -211,6 +211,49 @@ public partial class Game : Node
         simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight = (byte)Math.Min(simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight + 1, 4);
         simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHealth = 100;
     }
+
+    public int PlaceItemUnderPlayer(ItemData item)
+    {
+
+        if (item.ItemId == 2)
+        {
+            var mapPos = obstructionLayer.LocalToMap(Player.Position);
+            Debug.WriteLine(mapPos);
+            simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight = (byte)Math.Min(simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight + 1, 4);
+            simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHealth = 100;
+            return 1;
+        }
+
+
+        //if the item is a hut it should only be placed in water
+        if (item.ItemId == 3)
+        {
+            var mapPos = Player.Position;
+            var game = GetTree().CurrentScene as Game;
+            if (!game.IsPositionInWater(mapPos))
+            {
+                return 1;
+            }
+
+        }
+
+        var playerPos = Player.Position;
+        for (int i = 0; i < item.ItemCount; i++)
+        {
+            var itemScene = item.ItemScene.Instantiate<Node2D>();
+            if (itemScene is DroppedItem droppedItem)
+            {
+                droppedItem.ItemData = item.Duplicate() as ItemData;
+                droppedItem.ItemData.ItemCount = 1;
+            }
+            WorldNode.AddChild(itemScene);
+            itemScene.GlobalPosition = playerPos;
+
+        }
+
+        return item.ItemCount;
+    }
+
     public override void _PhysicsProcess(double delta)
     {
         if (MainCamera == null)
@@ -262,6 +305,24 @@ public partial class Game : Node
                 Player.InWater = simulator.Terrain.Tiles[currentCell.X, currentCell.Y].WaterHeight > 0;
             }
         }
+
+        var itemToPlace = Player.ItemToPlace;
+        if (itemToPlace != null && Player.MoveTarget == Vector2.Zero)
+        {
+            if (itemToPlace.ItemCount > 0)
+            {
+                var itemsUsed = PlaceItemUnderPlayer(itemToPlace);
+                itemToPlace.ItemCount -= itemsUsed;
+                var inventory = InventoryDataNew.GetActiveMainInventory();
+                if (itemToPlace.ItemCount < 0)
+                {
+                    inventory.TryRemoveItem(itemToPlace.ItemId, -itemToPlace.ItemCount);
+                    itemToPlace.ItemCount = 0;
+                }
+                inventory.PurgeEmptyStacks();
+            }
+            Player.ItemToPlace = null;
+        }
     }
 
     public bool IsPositionInWater(Vector2 globalPosition)
@@ -303,7 +364,7 @@ public partial class Game : Node
         if (deer == null) return;
 
         // Add to scene
-        MapNode.AddChild(deer);
+        WorldNode.AddChild(deer);
 
         // Spawn at a random position around the player (within a certain range)
         float spawnDistance = 400f; // Spawn within 400 pixels of the player
@@ -358,7 +419,7 @@ public partial class Game : Node
         if (fox == null)
             return;
 
-        MapNode.AddChild(fox);
+        WorldNode.AddChild(fox);
         fox.GlobalPosition = spawnPos;
         Debug.WriteLine($"Fox spawned at {spawnPos}");
     }

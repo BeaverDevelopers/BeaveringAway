@@ -63,6 +63,18 @@ public partial class InventoryDataNew : Resource
 		return true;
 	}
 
+	public void PurgeEmptyStacks()
+	{
+		for (int i = itemData.Count - 1; i >= 0; i--)
+		{
+			if (itemData[i] != null && itemData[i].ItemCount <= 0)
+			{
+				itemData[i] = null;
+			}
+		}
+
+    }
+
 	public int GetItemCount(int itemId)
 	{
 		EnsureItems();
@@ -110,4 +122,9 @@ public partial class InventoryDataNew : Resource
 		stack.ItemCount = count;
 		return stack;
 	}
+
+    public static InventoryDataNew GetActiveMainInventory()
+    {
+        return ResourceLoader.Load<InventoryDataNew>("res://Inventory/MainInventory.tres");
+    }
 }

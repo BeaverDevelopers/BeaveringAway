@@ -16,7 +16,7 @@
 [ext_resource type="Texture2D" uid="uid://clli34sa1uarl" path="res://ui/Resources/Assets/Raw/HUD/inventory_Light_example_2.png" id="12_1krav"]
 [ext_resource type="Script" uid="uid://7uyieomxfeh0" path="res://ui/Widgets/DialogueBox.cs" id="12_dkxse"]
 [ext_resource type="Script" uid="uid://b8ybbkgeuieqk" path="res://ui/Screens/PauseMenu.cs" id="13_axpph"]
-[ext_resource type="Resource" uid="uid://b554re5vahbbf" path="res://Inventory/TestInventory.tres" id="14_s0qbv"]
+[ext_resource type="Resource" uid="uid://b554re5vahbbf" path="res://Inventory/MainInventory.tres" id="14_s0qbv"]
 [ext_resource type="Texture2D" uid="uid://dnf4cshk3dhbw" path="res://ui/Resources/Assets/Raw/HUD/Inventory_Blocks_Spritesheet.png" id="15_134uf"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r3msw"]

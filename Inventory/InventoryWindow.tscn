@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dxyrnkjl5io8n"]
 
 [ext_resource type="Script" uid="uid://r5lcotjbwuq5" path="res://Inventory/InventoryWindow.cs" id="1_crlts"]
-[ext_resource type="Resource" uid="uid://b554re5vahbbf" path="res://Inventory/TestInventory.tres" id="2_v6bil"]
+[ext_resource type="Resource" uid="uid://b554re5vahbbf" path="res://Inventory/MainInventory.tres" id="2_v6bil"]
 [ext_resource type="PackedScene" uid="uid://bl6c7gylq4tfe" path="res://Inventory/slot.tscn" id="3_kwfqg"]
 [ext_resource type="Resource" uid="uid://b5nn53d36fxwf" path="res://Inventory/CraftingAreaInventoryData.tres" id="3_yxvqn"]
 [ext_resource type="Resource" uid="uid://caro8oda7wmki" path="res://Inventory/ResultData.tres" id="4_goe2n"]

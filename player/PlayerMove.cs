@@ -7,6 +7,7 @@ public partial class PlayerMove : CharacterBody2D
     public const float Speed = 210.0f;
     public Vector2 MoveTarget = Vector2.Zero;
     public bool InWater = false;
+    public ItemData ItemToPlace = null;
 
     private double _playNextWaterJumpSound = 0;
     private Vector2 _lastDirection = Vector2.Down;
@@ -32,6 +33,7 @@ public partial class PlayerMove : CharacterBody2D
         if (direction != Vector2.Zero)
         {
             MoveTarget = Vector2.Zero;
+            ItemToPlace = null;
         }
         else if (MoveTarget != Vector2.Zero)
         {
@@ -40,6 +42,7 @@ public partial class PlayerMove : CharacterBody2D
             if (moveDelta.Length() < 10)
             {
                 MoveTarget = Vector2.Zero;
+                // Don't reset ItemToPlace here, the game will take care of that.
             }
         }
 
@@ -69,7 +72,7 @@ public partial class PlayerMove : CharacterBody2D
 
         if (_animSprite.Material is ShaderMaterial asShaderMaterial)
         {
-            var cardinal = (int)(4.0 * _lastDirection.Angle() / Mathf.Tau) + 1;
+            var cardinal = Mathf.PosMod(Mathf.Round(_lastDirection.Angle() / (Mathf.Tau / 4)) + 1, 4);
             var goingUp = cardinal == 0;
             var goingDown = cardinal == 2;
 
@@ -106,6 +109,12 @@ public partial class PlayerMove : CharacterBody2D
         MoveAndSlide();
     }
 
+    public void MoveAndPlaceItem(Vector2 where, ItemData item)
+    {
+        MoveTarget = where;
+        ItemToPlace = item;
+    }
+
     private void UpdateAnimation(Vector2 direction)
     {
         _animSprite.FlipH = false;
@@ -114,7 +123,7 @@ public partial class PlayerMove : CharacterBody2D
         bool isIdle = direction == Vector2.Zero;
         Vector2 currentDir = isIdle ? _lastDirection : direction;
 
-        var cardinal = (int)(4.0 * _lastDirection.Angle() / Mathf.Tau) + 1;
+        var cardinal = Mathf.PosMod(Mathf.Round(_lastDirection.Angle() / (Mathf.Tau / 4)) + 1, 4);
         if (cardinal == 0)
         {
             _animSprite.Play(isIdle ? "idle_up" : "walk_up");
