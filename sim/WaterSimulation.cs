@@ -34,7 +34,7 @@ public class WaterSimulation
 
     public static int Pacify(Terrain terrain, int x, int y)
     {
-        if (x < 0 || y < 0 || x >= terrain.Columns || y >= terrain.Rows)
+        if (x < 0 || y < 0 || x >= terrain.Columns || y >= terrain.Rows || terrain.Tiles[x, y].DangerLevel <= 0)
         {
             return 0;
         }
