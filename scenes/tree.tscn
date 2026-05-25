@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://dwygavprd6bdf" path="res://world/images/tree/tree-fall-left-2.png" id="4_m26wl"]
 [ext_resource type="AudioStream" uid="uid://c6vlftid66ey4" path="res://sounds/tree_falling.mp3" id="6_18mvg"]
 [ext_resource type="AudioStream" uid="uid://b7pxere623fwo" path="res://sounds/eating.mp3" id="7_dmmp0"]
+[ext_resource type="Texture2D" uid="uid://baem6bb1sn8w3" path="res://world/images/tree/dry-tree.png" id="10_r7adx"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vplca"]
 size = Vector2(23, 22)
@@ -194,6 +195,7 @@ position = Vector2(-1, 39)
 shape = SubResource("RectangleShape2D_vplca")
 
 [node name="TreeAnim" type="AnimatedSprite2D" parent="." unique_id=313139479]
+visible = false
 material = ExtResource("3_18mvg")
 position = Vector2(63.000004, 3.9999962)
 scale = Vector2(2, 2)
@@ -213,3 +215,6 @@ stream = ExtResource("6_18mvg")
 
 [node name="ChompSoundPlayer" type="AudioStreamPlayer2D" parent="." unique_id=2106868115]
 stream = ExtResource("7_dmmp0")
+
+[node name="DryTree" type="Sprite2D" parent="." unique_id=568214879]
+texture = ExtResource("10_r7adx")
