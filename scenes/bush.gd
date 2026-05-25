@@ -16,11 +16,12 @@ func _ready() -> void:
 	dry_bush.show()
 
 func set_alive(alive: bool):
-	is_alive = alive
 	
 	#so we only spawn berries when they are created 
 	if is_alive == alive:
 		return is_alive
+		
+	is_alive = alive
 
 	if alive:
 		dry_bush.hide()
