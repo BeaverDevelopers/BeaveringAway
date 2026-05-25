@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://exxrk8on8c5q"]
+
+[ext_resource type="Texture2D" uid="uid://bldlfm5bwh3tw" path="res://world/images/bush/bush.png" id="1_ehqem"]
+[ext_resource type="Script" uid="uid://bkvos0ambhrd" path="res://scenes/bush.gd" id="1_tu87o"]
+[ext_resource type="Resource" uid="uid://bm0pg32ncpnhr" path="res://Resources/berry.tres" id="2_6ftm5"]
+[ext_resource type="Texture2D" uid="uid://cx5sjqugck0rx" path="res://world/images/bush/dry-bush.png" id="2_tu87o"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_6ftm5"]
+
+[node name="bush" type="StaticBody2D" unique_id=183363945]
+script = ExtResource("1_tu87o")
+berry_drop = ExtResource("2_6ftm5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=320401684]
+shape = SubResource("CircleShape2D_6ftm5")
+
+[node name="GoodBush" type="Sprite2D" parent="." unique_id=608573279]
+visible = false
+texture = ExtResource("1_ehqem")
+
+[node name="DryBush" type="Sprite2D" parent="." unique_id=1485286622]
+texture = ExtResource("2_tu87o")

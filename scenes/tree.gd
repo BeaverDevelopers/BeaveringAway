@@ -8,6 +8,7 @@ extends StaticBody2D
 @onready var tree_chomp_audio: AudioStreamPlayer2D = $ChompSoundPlayer
 @onready var dry_tree: Sprite2D = $DryTree
 @onready var leaf_tree_sprite: Sprite2D = $LeafTree #if we add animation then we should just export tree animation and set it in inspector
+@onready var dry_tree_audio: AudioStreamPlayer2D = $DryTreeSoundPlayer
 
 @export var item_drop: ItemData
 @export var sappling_drop: ItemData 
@@ -101,8 +102,10 @@ func _on_interact():
 			await tree_anim.animation_finished
 		
 	else:
-		#could add sound
-		print("dead tree")
+		dry_tree_audio.play()
+		print("You chopped down a dead tree, nothing here for you")
+		await get_tree().create_timer(1.5).timeout
+		
 
 	# Remove collision and interaction after falling
 	remove_child(collision_shape_2d)
@@ -138,12 +141,6 @@ func _on_interact():
 			sappling.global_position = global_position + Vector2(randi_range(-40, 40), randi_range(-40, 40))
 			get_parent().add_child(sappling)
 			
-		
-			
-	else:
-		#play a sound that sounds like cracking
-		print("You chopped down a dead tree, nothing here for you")
 
 	# Delete the tree after everything is spawned
 	queue_free()
-	print(is_queued_for_deletion())

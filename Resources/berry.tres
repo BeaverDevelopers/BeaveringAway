@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://bm0pg32ncpnhr"]
+
+[ext_resource type="Texture2D" uid="uid://dl35j8wnq8gix" path="res://world/images/food/berry.png" id="1_fr2l2"]
+[ext_resource type="PackedScene" uid="uid://dweg84hk31t73" path="res://scenes/dropped_item.tscn" id="2_dahgm"]
+[ext_resource type="Script" uid="uid://c1o4r7hkryrjo" path="res://player/ItemData.cs" id="2_kes2i"]
+
+[resource]
+script = ExtResource("2_kes2i")
+ItemId = 6
+Icon = ExtResource("1_fr2l2")
+ItemScene = ExtResource("2_dahgm")
+metadata/_custom_type_script = "uid://c1o4r7hkryrjo"

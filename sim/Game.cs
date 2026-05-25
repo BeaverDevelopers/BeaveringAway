@@ -324,6 +324,7 @@ public partial class Game : Node
             Player.ItemToPlace = null;
         }
 
+        //Switching trees from dead to alive
         var trees = GetTree().GetNodesInGroup("trees");
         foreach (var node in trees)
         {
@@ -332,6 +333,19 @@ public partial class Game : Node
                 var treePos = obstructionLayer.LocalToMap(obstructionLayer.ToLocal(tree.GlobalTransform.Origin));
                 bool alive = simulator.Terrain.GrassTiles[treePos.X, treePos.Y].HumidFor > 0;
                 tree.Call("set_alive", alive);
+
+            }        
+        }
+
+        //switching berry bushes from dead to alive
+        var bushes = GetTree().GetNodesInGroup("bush");
+        foreach (var node in bushes)
+        {
+            if (node is StaticBody2D bush)
+            {
+                var bushPos = obstructionLayer.LocalToMap(obstructionLayer.ToLocal(bush.GlobalTransform.Origin));
+                bool alive = simulator.Terrain.GrassTiles[bushPos.X, bushPos.Y].HumidFor > 0;
+                bush.Call("set_alive", alive);
 
             }        
         }
