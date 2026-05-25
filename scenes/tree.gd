@@ -84,7 +84,7 @@ func _on_interact():
 	
 	#if you are lucky spawn a sappling
 	var random_sappling = randi_range(1, 10)
-	if random_sappling < 4:
+	if random_sappling < 5:
 		print("You got lucky and got a sappling!")
 		var sappling = LOG.instantiate()
 		sappling.ItemData = sappling_drop

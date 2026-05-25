@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://b1r6oepu6x16v" path="res://world/images/sappling/sappling.png" id="1_yrms6"]
 [ext_resource type="Script" uid="uid://c1o4r7hkryrjo" path="res://player/ItemData.cs" id="2_elbq5"]
-[ext_resource type="PackedScene" uid="uid://g2fcng8hjdv0" path="res://scenes/clouds.tscn" id="2_lkgev"]
+[ext_resource type="PackedScene" uid="uid://dweg84hk31t73" path="res://scenes/dropped_item.tscn" id="2_lkgev"]
 
 [resource]
 script = ExtResource("2_elbq5")
