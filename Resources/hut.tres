@@ -8,7 +8,6 @@
 script = ExtResource("2_12210")
 ItemId = 3
 Icon = ExtResource("1_gl7wa")
-itemRecipe = Array[String](["1", "1", "1", "1"])
-ItemScenePath = "res://scenes/hut.tscn"
+itemRecipe = Array[String](["1", "1", "1", "1", "4", "4", "4"])
 ItemScene = ExtResource("2_low2q")
 metadata/_custom_type_script = "uid://c1o4r7hkryrjo"

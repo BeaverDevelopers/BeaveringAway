@@ -323,6 +323,18 @@ public partial class Game : Node
             }
             Player.ItemToPlace = null;
         }
+
+        var trees = GetTree().GetNodesInGroup("trees");
+        foreach (var node in trees)
+        {
+            if (node is StaticBody2D tree)
+            {
+                var treePos = obstructionLayer.LocalToMap(obstructionLayer.ToLocal(tree.GlobalTransform.Origin));
+                bool alive = simulator.Terrain.GrassTiles[treePos.X, treePos.Y].HumidFor > 0;
+                tree.Call("set_alive", alive);
+
+            }        
+        }
     }
 
     public bool IsPositionInWater(Vector2 globalPosition)
