@@ -8,6 +8,8 @@
 [ext_resource type="PackedScene" uid="uid://g2fcng8hjdv0" path="res://scenes/clouds.tscn" id="3_ir15t"]
 [ext_resource type="PackedScene" uid="uid://dwxdlrvfoand2" path="res://ui/UILegacy/GameHUD.tscn" id="5_iywne"]
 [ext_resource type="PackedScene" uid="uid://clxfw103c3bt1" path="res://scenes/tree.tscn" id="5_vtaks"]
+[ext_resource type="PackedScene" uid="uid://cqpub2mcdvkd0" path="res://scenes/leafTree.tscn" id="8_dinhu"]
+[ext_resource type="PackedScene" uid="uid://exxrk8on8c5q" path="res://scenes/bush.tscn" id="9_kvuet"]
 [ext_resource type="Script" uid="uid://bellygsignteq" path="res://ui/Core/UIRoot.cs" id="12_kvuet"]
 [ext_resource type="Script" uid="uid://csffcwef02br8" path="res://ui/Core/LegacyInventoryAdapter.cs" id="13_trtic"]
 [ext_resource type="PackedScene" uid="uid://dxyrnkjl5io8n" path="res://Inventory/InventoryWindow.tscn" id="14_invwn"]
@@ -48,12 +50,6 @@ position = Vector2(774, 1581)
 [node name="Tree8" parent="world" unique_id=1085044415 instance=ExtResource("5_vtaks")]
 position = Vector2(1444, 314)
 
-[node name="Tree9" parent="world" unique_id=1778543167 instance=ExtResource("5_vtaks")]
-position = Vector2(1935, 171)
-
-[node name="Tree10" parent="world" unique_id=1842531734 instance=ExtResource("5_vtaks")]
-position = Vector2(1832, 448)
-
 [node name="Tree11" parent="world" unique_id=350774651 instance=ExtResource("5_vtaks")]
 position = Vector2(2097, 1404)
 
@@ -63,43 +59,73 @@ position = Vector2(188, 1153)
 [node name="Tree13" parent="world" unique_id=205939502 instance=ExtResource("5_vtaks")]
 position = Vector2(416, 739)
 
-[node name="Tree14" parent="world" unique_id=1325589169 instance=ExtResource("5_vtaks")]
-position = Vector2(385, 1826)
-
 [node name="Tree16" parent="world" unique_id=1600581194 instance=ExtResource("5_vtaks")]
 position = Vector2(190, 359)
 
 [node name="Tree18" parent="world" unique_id=366341232 instance=ExtResource("5_vtaks")]
 position = Vector2(1509, 576)
 
-[node name="Tree19" parent="world" unique_id=279079147 instance=ExtResource("5_vtaks")]
-position = Vector2(1440, 880)
-
 [node name="Tree20" parent="world" unique_id=1417666419 instance=ExtResource("5_vtaks")]
 position = Vector2(998, 504)
 
-[node name="Tree21" parent="world" unique_id=1115379311 instance=ExtResource("5_vtaks")]
-position = Vector2(881, 162)
-
-[node name="Tree22" parent="world" unique_id=1054842276 instance=ExtResource("5_vtaks")]
-position = Vector2(822, 808)
-
-[node name="Tree23" parent="world" unique_id=1930814695 instance=ExtResource("5_vtaks")]
-position = Vector2(1316, 1471)
-
-[node name="Tree24" parent="world" unique_id=96345325 instance=ExtResource("5_vtaks")]
-position = Vector2(498, 1288)
-
-[node name="Tree17" parent="world" unique_id=833315584 instance=ExtResource("5_vtaks")]
-position = Vector2(106, 816)
-
 [node name="Tree15" parent="world" unique_id=2070216785 instance=ExtResource("5_vtaks")]
 position = Vector2(2144, 402)
+
+[node name="leafTree" parent="world" unique_id=1626220172 instance=ExtResource("8_dinhu")]
+position = Vector2(1356, 95)
 
 [node name="Player" parent="world" unique_id=2057284693 groups=["player"] instance=ExtResource("3_0tnpc")]
 
 [node name="AudioStreamPlayer2D" parent="world/Player" unique_id=1664354570 instance=ExtResource("2_kvpfn")]
 position = Vector2(-2, 0)
+
+[node name="leafTree2" parent="world" unique_id=2090224491 instance=ExtResource("8_dinhu")]
+position = Vector2(1319, 1469)
+
+[node name="leafTree3" parent="world" unique_id=1825036777 instance=ExtResource("8_dinhu")]
+position = Vector2(1941, 172)
+
+[node name="leafTree4" parent="world" unique_id=162016880 instance=ExtResource("8_dinhu")]
+position = Vector2(932, 175)
+
+[node name="leafTree5" parent="world" unique_id=208838915 instance=ExtResource("8_dinhu")]
+position = Vector2(96, 808)
+
+[node name="leafTree6" parent="world" unique_id=1148245034 instance=ExtResource("8_dinhu")]
+position = Vector2(1825, 447)
+
+[node name="leafTree7" parent="world" unique_id=792703473 instance=ExtResource("8_dinhu")]
+position = Vector2(374, 1821)
+
+[node name="leafTree8" parent="world" unique_id=1694909685 instance=ExtResource("8_dinhu")]
+position = Vector2(881, 809)
+
+[node name="leafTree9" parent="world" unique_id=2034808006 instance=ExtResource("8_dinhu")]
+position = Vector2(496, 1302)
+
+[node name="leafTree10" parent="world" unique_id=81538291 instance=ExtResource("8_dinhu")]
+position = Vector2(1433, 886)
+
+[node name="bush" parent="world" unique_id=183363945 instance=ExtResource("9_kvuet")]
+position = Vector2(1104, 739)
+
+[node name="bush2" parent="world" unique_id=1719855527 instance=ExtResource("9_kvuet")]
+position = Vector2(1138, 696)
+
+[node name="bush3" parent="world" unique_id=1904607579 instance=ExtResource("9_kvuet")]
+position = Vector2(1175, 656)
+
+[node name="bush4" parent="world" unique_id=2015772960 instance=ExtResource("9_kvuet")]
+position = Vector2(1051, 760)
+
+[node name="bush5" parent="world" unique_id=746709261 instance=ExtResource("9_kvuet")]
+position = Vector2(1280, 683)
+
+[node name="bush6" parent="world" unique_id=595344975 instance=ExtResource("9_kvuet")]
+position = Vector2(1243, 733)
+
+[node name="bush7" parent="world" unique_id=641711795 instance=ExtResource("9_kvuet")]
+position = Vector2(1215, 773)
 
 [node name="GameHUD" parent="." unique_id=43781371 instance=ExtResource("5_iywne")]
 
