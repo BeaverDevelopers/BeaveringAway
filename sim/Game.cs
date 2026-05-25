@@ -23,7 +23,12 @@ public partial class Game : Node
     private PackedScene deerScene;
     private float deerSpawnTimer = 0f;
     [Export(PropertyHint.Range, "1,60,1")] public float DeerSpawnInterval = 20f; // every 20 seconds spawn a deer
-    [Export(PropertyHint.Range, "0,10,1")] public int DeerMaxCount = 3; // 3deers max in scene
+    [Export(PropertyHint.Range, "0,2,1")] public int DeerMaxHerds = 2;
+    [Export(PropertyHint.Range, "1,3,1")] public int HerdMinFemales = 1;
+    [Export(PropertyHint.Range, "1,3,1")] public int HerdMaxFemales = 3;
+    [Export(PropertyHint.Range, "100,800,10")] public float DeerSpawnDistance = 400f;
+    [Export(PropertyHint.Range, "20,150,5")] public float HerdFemaleSpawnRadius = 70f;
+    private int _nextHerdId = 0;
 
     // Fox spawning system
     private PackedScene foxScene;
@@ -82,16 +87,13 @@ public partial class Game : Node
         MainCamera = Player.GetNode<Camera2D>("Camera2D");
 
         // Try to load Deer scene, but don't fail if it doesn't exist
-        deerScene = GD.Load<PackedScene>("res://deer/Deer.tscn");
+        deerScene = GD.Load<PackedScene>("res://deer/deer.tscn");
         if (deerScene == null)
-        {
-            Debug.WriteLine("Info: Deer.tscn not found. Please create the Deer scene and save it to res://deer/Deer.tscn");
-            Debug.WriteLine("      Or add a Deer prefab to your project for dynamic spawning.");
-        }
+            deerScene = GD.Load<PackedScene>("res://deer/Deer.tscn");
+        if (deerScene == null)
+            Debug.WriteLine("Info: deer.tscn not found under res://deer/");
         else
-        {
-            Debug.WriteLine("Successfully loaded Deer scene from res://deer/Deer.tscn");
-        }
+            Debug.WriteLine("Successfully loaded deer scene");
 
         foxScene = GD.Load<PackedScene>("res://fox/fox.tscn");
         if (foxScene == null)
@@ -261,6 +263,9 @@ public partial class Game : Node
             Debug.WriteLine("Waiting for MainCamera to appear");
             return;
         }
+
+
+
         // TODO: This is all crap code that I added to debug the water sim.
 
         //simulator.Terrain.Tiles[9, 0].WaterHeight = 2;
@@ -349,53 +354,173 @@ public partial class Game : Node
         return simulator.Terrain.Tiles[mapPos.X, mapPos.Y].WaterHeight > 0;
     }
 
+    public bool IsPositionOnGrass(Vector2 globalPosition)
+    {
+        if (obstructionLayer == null) return false;
+
+        var localPos = obstructionLayer.ToLocal(globalPosition);
+        var mapPos = obstructionLayer.LocalToMap(localPos);
+        if (mapPos.X < 0 || mapPos.Y < 0 || mapPos.X >= simulator.Terrain.Columns || mapPos.Y >= simulator.Terrain.Rows)
+            return false;
+
+        // Check if there's grass at this location
+        // Grass tiles exist when HumidFor > 0 (grass is still alive/visible)
+        var grassTile = simulator.Terrain.GrassTiles[mapPos.X, mapPos.Y];
+        return grassTile.HumidFor > 0;
+    }
+
     private void UpdateDeerSpawning(float delta)
     {
         if (deerScene == null) return;
 
         deerSpawnTimer += delta;
-        if (deerSpawnTimer >= DeerSpawnInterval)
-        {
-            deerSpawnTimer = 0f;
+        if (deerSpawnTimer < DeerSpawnInterval)
+            return;
 
-            // Check current number of deer in the scene
-            var existingDeer = GetTree().GetNodesInGroup("deer");
-            if (existingDeer.Count < DeerMaxCount)
-            {
-                SpawnDeer();
-            }
+        deerSpawnTimer = 0f;
+
+        TryCompleteIncompleteHerds();
+
+        if (CountDeerHerds() < DeerMaxHerds)
+            SpawnDeerHerd();
+    }
+
+    private int CountDeerHerds()
+    {
+        var count = 0;
+        foreach (var node in GetTree().GetNodesInGroup("deer"))
+        {
+            if (node is DeerMovement deer && deer.IsHerdMale)
+                count++;
+        }
+
+        return count;
+    }
+
+    private void TryCompleteIncompleteHerds()
+    {
+        if (deerScene == null)
+            return;
+
+        foreach (var node in GetTree().GetNodesInGroup("deer"))
+        {
+            if (node is not DeerMovement male || !male.IsHerdMale)
+                continue;
+
+            if (male.HerdFemaleCount >= HerdMinFemales)
+                continue;
+
+            int femalesToAdd = HerdMinFemales - male.HerdFemaleCount;
+            for (int i = 0; i < femalesToAdd; i++)
+                TryAddFemaleToHerd(male);
         }
     }
 
-    private void SpawnDeer()
+    private void SpawnDeerHerd()
     {
-        if (deerScene == null || Player == null) return;
+        if (deerScene == null || Player == null)
+            return;
 
-        // Instantiate the deer from the scene
+        int herdId = _nextHerdId++;
+        var maleDeer = TrySpawnDeer(DeerMovement.Gender.Male, herdId, Player.GlobalPosition, DeerSpawnDistance);
+        if (maleDeer == null)
+        {
+            Debug.WriteLine($"Failed to spawn male deer for herd {herdId}");
+            return;
+        }
+
+        var rng = new RandomNumberGenerator();
+        int targetFemales = rng.RandiRange(HerdMinFemales, HerdMaxFemales);
+        int spawnedFemales = 0;
+
+        for (int i = 0; i < targetFemales; i++)
+        {
+            if (TryAddFemaleToHerd(maleDeer))
+                spawnedFemales++;
+        }
+
+        for (int attempt = 0; attempt < 30 && spawnedFemales < HerdMinFemales; attempt++)
+        {
+            if (TryAddFemaleToHerd(maleDeer))
+                spawnedFemales++;
+        }
+
+        if (spawnedFemales < HerdMinFemales)
+            Debug.WriteLine($"Herd {herdId}: male spawned, still need {HerdMinFemales - spawnedFemales} more females");
+        else
+            Debug.WriteLine($"Deer herd {herdId} spawned: 1 male + {spawnedFemales} females");
+    }
+
+    private bool TryAddFemaleToHerd(DeerMovement maleDeer)
+    {
+        if (maleDeer == null || maleDeer.HerdFemaleCount >= HerdMaxFemales)
+            return false;
+
+        var femaleDeer = TrySpawnDeer(
+            DeerMovement.Gender.Female,
+            maleDeer.HerdId,
+            maleDeer.GlobalPosition,
+            HerdFemaleSpawnRadius,
+            maleDeer);
+
+        if (femaleDeer == null)
+            return false;
+
+        maleDeer.AddFemaleToHerd(femaleDeer);
+        return true;
+    }
+
+    private DeerMovement TrySpawnDeer(
+        DeerMovement.Gender gender,
+        int herdId,
+        Vector2 center,
+        float radius,
+        DeerMovement herdMale = null)
+    {
+        if (deerScene == null)
+            return null;
+
+        if (gender == DeerMovement.Gender.Female && herdMale == null)
+            return null;
+
+        if (!TryFindGrassSpawnPosition(center, radius, out var spawnPos))
+            return null;
+
         var deer = deerScene.Instantiate() as DeerMovement;
-        if (deer == null) return;
+        if (deer == null)
+            return null;
 
-        // Add to scene
+        if (gender == DeerMovement.Gender.Male)
+            deer.ConfigureHerdMale(herdId);
+        else
+            deer.ConfigureHerdFemale(herdId, herdMale);
+
         WorldNode.AddChild(deer);
-
-        // Spawn at a random position around the player (within a certain range)
-        float spawnDistance = 400f; // Spawn within 400 pixels of the player
-        float angle = (float)(GD.Randf() * Mathf.Tau); // Random angle
-        Vector2 spawnOffset = Vector2.FromAngle(angle) * spawnDistance;
-        Vector2 spawnPos = Player.GlobalPosition + spawnOffset;
-
-        // Clamp to map bounds
-        var terrain = simulator.Terrain;
-        int mapW = terrain.Columns * 16; // Assume the tile size is 16
-        int mapH = terrain.Rows * 16;
-
-        spawnPos.X = Mathf.Clamp(spawnPos.X, 0, mapW);
-        spawnPos.Y = Mathf.Clamp(spawnPos.Y, 0, mapH);
-
         deer.GlobalPosition = spawnPos;
         deer.AddToGroup("deer");
+        return deer;
+    }
 
-        Debug.WriteLine($"Deer spawned at {spawnPos}");
+    private bool TryFindGrassSpawnPosition(Vector2 center, float radius, out Vector2 spawnPos)
+    {
+        var terrain = simulator.Terrain;
+        int mapW = terrain.Columns * 16;
+        int mapH = terrain.Rows * 16;
+
+        for (int attempt = 0; attempt < 20; attempt++)
+        {
+            float angle = (float)(GD.Randf() * Mathf.Tau);
+            float distance = radius <= 0f ? 0f : (float)GD.Randf() * radius;
+            spawnPos = center + Vector2.FromAngle(angle) * distance;
+            spawnPos.X = Mathf.Clamp(spawnPos.X, 0, mapW);
+            spawnPos.Y = Mathf.Clamp(spawnPos.Y, 0, mapH);
+
+            if (!IsPositionInWater(spawnPos) && IsPositionOnGrass(spawnPos))
+                return true;
+        }
+
+        spawnPos = default;
+        return false;
     }
 
     private void UpdateFoxSpawning(float delta)
