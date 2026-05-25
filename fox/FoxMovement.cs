@@ -117,16 +117,20 @@ public partial class FoxMovement : CharacterBody2D
         if (collision != null)
         {
             var collider = collision.GetCollider();
-            if (collider == player)
-            {
-                if (InventoryData.HasLogs())
-                {
-                    InventoryData.AddItem(InventoryData.LogItemId, -1);
-                    GD.Print("Fox stole a log!");
-                    _foxState = FoxState.Escaping;
-                }
-            }
+            if (collider == player && TryStealFromPlayer())
+                _foxState = FoxState.Escaping;
         }
+    }
+
+    private bool TryStealFromPlayer()
+    {
+        if (!InventoryData.TryStealRandomItem(out var stolen))
+            return false;
+
+        GD.Print($"Fox stole {stolen.DisplayName} (id {stolen.ItemId})");
+        _playerMove?.PlayFoxStealFeedback(stolen.Icon);
+        UIEventBus.ShowToast($"Fox stole {stolen.DisplayName}!", ToastKind.Warning);
+        return true;
     }
 
     private void UpdateDeerInteraction()

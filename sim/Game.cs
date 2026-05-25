@@ -548,7 +548,7 @@ public partial class Game : Node
 
         foxSpawnTimer = 0f;
 
-        if (!InventoryData.HasLogs())
+        if (!InventoryData.HasAnyItems())
             return;
 
         var existingFoxes = GetTree().GetNodesInGroup("fox");
@@ -560,7 +560,7 @@ public partial class Game : Node
 
     private void SpawnFox()
     {
-        if (foxScene == null || Player == null || !InventoryData.HasLogs())
+        if (foxScene == null || Player == null || !InventoryData.HasAnyItems())
             return;
 
         if (!TryGetSpawnPositionAroundPlayer(FoxSpawnDistance, avoidWater: true, out var spawnPos))
