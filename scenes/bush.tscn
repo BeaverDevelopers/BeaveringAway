@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://cx5sjqugck0rx" path="res://world/images/bush/dry-bush.png" id="2_tu87o"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_6ftm5"]
+radius = 18.0
 
 [node name="bush" type="StaticBody2D" unique_id=183363945]
 script = ExtResource("1_tu87o")
