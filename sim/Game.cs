@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 public partial class Game : Node
@@ -28,6 +29,8 @@ public partial class Game : Node
     [Export(PropertyHint.Range, "1,3,1")] public int HerdMaxFemales = 3;
     [Export(PropertyHint.Range, "100,800,10")] public float DeerSpawnDistance = 400f;
     [Export(PropertyHint.Range, "20,150,5")] public float HerdFemaleSpawnRadius = 70f;
+    [Export(PropertyHint.Range, "40,200,5")] public float BerryBushDeerSpawnRadius = 100f;
+    [Export(PropertyHint.Range, "60,300,10")] public float BerryBushNearDistance = 180f;
     private int _nextHerdId = 0;
 
     // Fox spawning system
@@ -436,10 +439,16 @@ public partial class Game : Node
             return;
 
         int herdId = _nextHerdId++;
-        var maleDeer = TrySpawnDeer(DeerMovement.Gender.Male, herdId, Player.GlobalPosition, DeerSpawnDistance);
+        if (!TryPickAliveBerryBushCenter(Player.GlobalPosition, DeerSpawnDistance, out var bushCenter))
+        {
+            Debug.WriteLine($"No alive berry bushes near player for deer herd {herdId}");
+            return;
+        }
+
+        var maleDeer = TrySpawnDeer(DeerMovement.Gender.Male, herdId, bushCenter, BerryBushDeerSpawnRadius);
         if (maleDeer == null)
         {
-            Debug.WriteLine($"Failed to spawn male deer for herd {herdId}");
+            Debug.WriteLine($"Failed to spawn male deer near berry bush for herd {herdId}");
             return;
         }
 
@@ -497,7 +506,7 @@ public partial class Game : Node
         if (gender == DeerMovement.Gender.Female && herdMale == null)
             return null;
 
-        if (!TryFindGrassSpawnPosition(center, radius, out var spawnPos))
+        if (!TryFindGrassNearBerryBushPosition(center, radius, out var spawnPos))
             return null;
 
         var deer = deerScene.Instantiate() as DeerMovement;
@@ -515,13 +524,75 @@ public partial class Game : Node
         return deer;
     }
 
-    private bool TryFindGrassSpawnPosition(Vector2 center, float radius, out Vector2 spawnPos)
+    private List<Vector2> CollectAliveBerryBushPositions()
     {
+        var positions = new List<Vector2>();
+        if (obstructionLayer == null)
+            return positions;
+
+        foreach (var node in GetTree().GetNodesInGroup("bush"))
+        {
+            if (node is not Node2D bush)
+                continue;
+
+            var mapPos = obstructionLayer.LocalToMap(obstructionLayer.ToLocal(bush.GlobalPosition));
+            if (mapPos.X < 0 || mapPos.Y < 0
+                || mapPos.X >= simulator.Terrain.Columns
+                || mapPos.Y >= simulator.Terrain.Rows)
+                continue;
+
+            if (simulator.Terrain.GrassTiles[mapPos.X, mapPos.Y].HumidFor > 0)
+                positions.Add(bush.GlobalPosition);
+        }
+
+        return positions;
+    }
+
+    private bool TryPickAliveBerryBushCenter(Vector2 nearPoint, float searchRadius, out Vector2 bushCenter)
+    {
+        bushCenter = default;
+        var aliveBushes = CollectAliveBerryBushPositions();
+        if (aliveBushes.Count == 0)
+            return false;
+
+        var inRange = new List<Vector2>();
+        foreach (var position in aliveBushes)
+        {
+            if (nearPoint.DistanceTo(position) <= searchRadius)
+                inRange.Add(position);
+        }
+
+        var pool = inRange.Count > 0 ? inRange : aliveBushes;
+        var rng = new RandomNumberGenerator();
+        bushCenter = pool[rng.RandiRange(0, pool.Count - 1)];
+        return true;
+    }
+
+    private bool IsNearAliveBerryBush(Vector2 globalPosition, IReadOnlyList<Vector2> aliveBushes)
+    {
+        foreach (var bushPosition in aliveBushes)
+        {
+            if (globalPosition.DistanceTo(bushPosition) <= BerryBushNearDistance)
+                return true;
+        }
+
+        return false;
+    }
+
+    private bool TryFindGrassNearBerryBushPosition(Vector2 center, float radius, out Vector2 spawnPos)
+    {
+        var aliveBushes = CollectAliveBerryBushPositions();
+        if (aliveBushes.Count == 0)
+        {
+            spawnPos = default;
+            return false;
+        }
+
         var terrain = simulator.Terrain;
         int mapW = terrain.Columns * 16;
         int mapH = terrain.Rows * 16;
 
-        for (int attempt = 0; attempt < 20; attempt++)
+        for (int attempt = 0; attempt < 30; attempt++)
         {
             float angle = (float)(GD.Randf() * Mathf.Tau);
             float distance = radius <= 0f ? 0f : (float)GD.Randf() * radius;
@@ -529,7 +600,9 @@ public partial class Game : Node
             spawnPos.X = Mathf.Clamp(spawnPos.X, 0, mapW);
             spawnPos.Y = Mathf.Clamp(spawnPos.Y, 0, mapH);
 
-            if (!IsPositionInWater(spawnPos) && IsPositionOnGrass(spawnPos))
+            if (!IsPositionInWater(spawnPos)
+                && IsPositionOnGrass(spawnPos)
+                && IsNearAliveBerryBush(spawnPos, aliveBushes))
                 return true;
         }
 
