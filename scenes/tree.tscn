@@ -9,7 +9,9 @@
 [ext_resource type="Texture2D" uid="uid://dwygavprd6bdf" path="res://world/images/tree/tree-fall-left-2.png" id="4_m26wl"]
 [ext_resource type="AudioStream" uid="uid://c6vlftid66ey4" path="res://sounds/tree_falling.mp3" id="6_18mvg"]
 [ext_resource type="AudioStream" uid="uid://b7pxere623fwo" path="res://sounds/eating.mp3" id="7_dmmp0"]
+[ext_resource type="Texture2D" uid="uid://djur0qua5ihkl" path="res://world/images/tree/leaf-tree.png" id="10_2bmcu"]
 [ext_resource type="Texture2D" uid="uid://baem6bb1sn8w3" path="res://world/images/tree/dry-tree.png" id="10_r7adx"]
+[ext_resource type="AudioStream" uid="uid://mms1sr0127ji" path="res://sounds/dry_wood_breaking.mp3" id="11_xprpn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vplca"]
 size = Vector2(23, 22)
@@ -218,3 +220,10 @@ stream = ExtResource("7_dmmp0")
 
 [node name="DryTree" type="Sprite2D" parent="." unique_id=568214879]
 texture = ExtResource("10_r7adx")
+
+[node name="DryTreeSoundPlayer" type="AudioStreamPlayer2D" parent="." unique_id=102814397]
+stream = ExtResource("11_xprpn")
+
+[node name="LeafTree" type="Sprite2D" parent="." unique_id=1596001293]
+visible = false
+texture = ExtResource("10_2bmcu")
