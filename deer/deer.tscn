@@ -266,6 +266,9 @@ radius = 23.086792
 
 [node name="Deer" type="CharacterBody2D" unique_id=1771496701]
 script = ExtResource("1_ddg5q")
+RestMinDuration = 2.0
+RestMaxDuration = 6.0
+HerdFreeRange = 200.0
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=928552520]
 

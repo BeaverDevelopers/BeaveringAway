@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public partial class DeerMovement : CharacterBody2D
 {
@@ -23,8 +24,10 @@ public partial class DeerMovement : CharacterBody2D
 	[Export] public float WanderRange = 200f;
 	[Export] public float FoxDetectionDistance = 300f;
 	[Export] public float FoxThreatenedDistance = 150f;
-	[Export] public float DespawnDistance = 600f;
-	[Export] public float WanderChangeInterval = 3f;
+	[Export] public float RestMinDuration = 5f;
+	[Export] public float RestMaxDuration = 14f;
+	[Export] public float MoveMinDuration = 0.8f;
+	[Export] public float MoveMaxDuration = 2.5f;
 
 	// State variables
 	private DeerState _currentState = DeerState.Wandering;
@@ -32,43 +35,42 @@ public partial class DeerMovement : CharacterBody2D
 	private AnimatedSprite2D _animSprite;
 	private CharacterBody2D _player;
 	private FoxMovement _targetFox;
+	private Game _game;
 	private Vector2 _startPosition;
 	private Vector2 _wanderDirection = Vector2.Right;
-	private float _wanderChangeTimer = 0f;
+	private bool _isResting = true;
+	private float _phaseTimer;
 	private float _threatTimer = 0f;
 	private const float THREAT_DURATION = 2f;
 	private Vector2 _lastDirection = Vector2.Down;
 	private string _lastAnimationPlayed = ""; // Track last animation to prevent flickering
 
+	// Herd-related variables
+	private int _herdId = -1; // -1 means not part of a herd
+	private DeerMovement _herdMale; // Reference to the male in the herd (for females)
+	private List<DeerMovement> _herdFemales = new(); // List of females in herd (for male)
+	[Export] public float HerdFreeRange = 100f;
+
 	public override void _Ready()
 	{
 		// Get references
-		_player = GetNode<CharacterBody2D>("../../world/Player");
+		_player = GetNode<CharacterBody2D>("../Player");
 		_animSprite = GetNode<AnimatedSprite2D>("Sprite2D/AnimatedSprite2D");
-
-		// Randomize gender
-		_gender = (Gender)(GD.Randi() % 2);
+		_game = GetParent()?.GetParent() as Game;
 
 		// Store starting position
 		_startPosition = GlobalPosition;
 
-		// Setup despawn detection
-		var onscreen = GetNode<VisibleOnScreenNotifier2D>("VisibleOnScreenNotifier2D");
-		onscreen.ScreenExited += OnScreenExited;
-
-		// Random initial wander direction
 		RandomizeWanderDirection();
+		_phaseTimer = (float)GD.RandRange(0f, RestMaxDuration);
+		_isResting = true;
+
+		if (IsInHerd)
+			ApplyGenderAnimation(_lastDirection, play: false);
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
-		// Check if player is too far away (despawn)
-		if (GlobalPosition.DistanceTo(_player.GlobalPosition) > DespawnDistance)
-		{
-			QueueFree();
-			return;
-		}
-
 		// Update state based on fox detection
 		UpdateFoxInteraction();
 
@@ -137,17 +139,94 @@ public partial class DeerMovement : CharacterBody2D
 
 	private void UpdateWandering(float delta)
 	{
-		// Update wander direction timer
-		_wanderChangeTimer += delta;
-		if (_wanderChangeTimer >= WanderChangeInterval)
+		if (!IsInHerd)
+			return;
+
+		// Females follow the herd male; males roam freely
+		if (IsHerdFemale)
 		{
-			RandomizeWanderDirection();
-			_wanderChangeTimer = 0f;
+			UpdateHerdFemaleWandering(delta);
+			return;
 		}
 
-		// Move in wander direction
-		Velocity = _wanderDirection * WanderSpeed;
-		_lastDirection = _wanderDirection;
+		UpdateActivityPhase(delta);
+		if (_isResting)
+		{
+			Velocity = Vector2.Zero;
+			return;
+		}
+
+		TryMoveInDirection(_wanderDirection, WanderSpeed, delta);
+
+		if (IsHerdMale)
+			_herdFemales.RemoveAll(f => f == null);
+	}
+
+	private void UpdateHerdFemaleWandering(float delta)
+	{
+		if (_herdMale == null)
+		{
+			Velocity = Vector2.Zero;
+			return;
+		}
+
+		Vector2 directionToMale = (_herdMale.GlobalPosition - GlobalPosition).Normalized();
+		float distanceToMale = GlobalPosition.DistanceTo(_herdMale.GlobalPosition);
+
+		if (distanceToMale > HerdFreeRange)
+		{
+			TryMoveInDirection(directionToMale, WanderSpeed, delta);
+			return;
+		}
+
+		UpdateActivityPhase(delta);
+		if (_isResting)
+		{
+			Velocity = Vector2.Zero;
+			return;
+		}
+
+		TryMoveInDirection(_wanderDirection, WanderSpeed * 0.55f, delta);
+	}
+
+	private void UpdateActivityPhase(float delta)
+	{
+		_phaseTimer -= delta;
+		if (_phaseTimer > 0f)
+			return;
+
+		if (_isResting)
+			BeginMovePhase();
+		else
+			BeginRestPhase();
+	}
+
+	private void BeginRestPhase()
+	{
+		_isResting = true;
+		_phaseTimer = (float)GD.RandRange(RestMinDuration, RestMaxDuration);
+		Velocity = Vector2.Zero;
+	}
+
+	private void BeginMovePhase()
+	{
+		_isResting = false;
+		_phaseTimer = (float)GD.RandRange(MoveMinDuration, MoveMaxDuration);
+		RandomizeWanderDirection();
+	}
+
+	private void TryMoveInDirection(Vector2 direction, float speed, float delta)
+	{
+		Vector2 nextPosition = GlobalPosition + direction * speed * delta;
+		if (_game != null && _game.IsPositionInWater(nextPosition))
+		{
+			RandomizeWanderDirection();
+			Velocity = Vector2.Zero;
+			return;
+		}
+
+		Velocity = direction * speed;
+		_lastDirection = direction;
 		MoveAndCollide(Velocity * delta, false, 0.08f, true);
 	}
 
@@ -159,13 +238,33 @@ public partial class DeerMovement : CharacterBody2D
 			return;
 		}
 
-		// Face the fox (stand still and face threat direction)
-		Vector2 directionToFox = (_targetFox.GlobalPosition - GlobalPosition).Normalized();
-		_lastDirection = directionToFox;
-		_lastAnimationPlayed = ""; // Reset to force animation update
+		if (IsHerdFemale && _herdMale != null)
+		{
+			float distanceToMale = GlobalPosition.DistanceTo(_herdMale.GlobalPosition);
 
-		// Stand still and face the fox
-		Velocity = Vector2.Zero;
+			if (distanceToMale > HerdFreeRange)
+			{
+				Vector2 directionToMale = (_herdMale.GlobalPosition - GlobalPosition).Normalized();
+				Velocity = directionToMale * WanderSpeed;
+				_lastDirection = directionToMale;
+				_lastAnimationPlayed = "";
+				MoveAndCollide(Velocity * delta, false, 0.08f, true);
+				return;
+			}
+
+			// Within safe distance, face the threat but stay ready to follow male
+			Vector2 directionToFox = (_targetFox.GlobalPosition - GlobalPosition).Normalized();
+			_lastDirection = directionToFox;
+			_lastAnimationPlayed = "";
+			Velocity = Vector2.Zero;
+		}
+		else
+		{
+			Vector2 directionToFox = (_targetFox.GlobalPosition - GlobalPosition).Normalized();
+			_lastDirection = directionToFox;
+			_lastAnimationPlayed = "";
+			Velocity = Vector2.Zero;
+		}
 
 		// Update threat timer
 		_threatTimer += (float)delta;
@@ -189,11 +288,35 @@ public partial class DeerMovement : CharacterBody2D
 			return;
 		}
 
-		// Chase the fox
-		Vector2 directionToFox = (_targetFox.GlobalPosition - GlobalPosition).Normalized();
-		Velocity = directionToFox * ChasingSpeed;
-		_lastDirection = directionToFox;
-		_lastAnimationPlayed = ""; // Reset to force animation update
+		if (IsHerdFemale && _herdMale != null)
+		{
+			float distanceToMale = GlobalPosition.DistanceTo(_herdMale.GlobalPosition);
+
+			if (distanceToMale > HerdFreeRange)
+			{
+				Vector2 directionToMale = (_herdMale.GlobalPosition - GlobalPosition).Normalized();
+				Velocity = directionToMale * ChasingSpeed;
+				_lastDirection = directionToMale;
+				_lastAnimationPlayed = "";
+			}
+			else
+			{
+				// Can chase the fox while staying near male
+				Vector2 directionToFox = (_targetFox.GlobalPosition - GlobalPosition).Normalized();
+				Velocity = directionToFox * ChasingSpeed;
+				_lastDirection = directionToFox;
+				_lastAnimationPlayed = "";
+			}
+		}
+		else
+		{
+			// Chase the fox
+			Vector2 directionToFox = (_targetFox.GlobalPosition - GlobalPosition).Normalized();
+			Velocity = directionToFox * ChasingSpeed;
+			_lastDirection = directionToFox;
+			_lastAnimationPlayed = "";
+		}
+
 		MoveAndCollide(Velocity * delta, false, 0.08f, true);
 
 		float distance = GlobalPosition.DistanceTo(_targetFox.GlobalPosition);
@@ -209,85 +332,71 @@ public partial class DeerMovement : CharacterBody2D
 
 	private void UpdateAnimation()
 	{
-		if (Velocity.Length() < 1f && _currentState != DeerState.Threatened)
+		if (Velocity.Length() < 1f)
 		{
-			_animSprite.Stop();
-			_lastAnimationPlayed = "";
+			ApplyGenderAnimation(_lastDirection, play: false);
 			return;
 		}
 
-		// Use last direction or current velocity for animation
-		Vector2 animDirection = Velocity.Length() > 1f ? Velocity : _lastDirection;
+		ApplyGenderAnimation(Velocity, play: true);
+	}
 
-		float x = animDirection.X;
-		float y = animDirection.Y;
-
-		// Determine animation based on direction
-		string baseAnimName = "";
-		bool flipH = false;
+	private string ResolveAnimName(Vector2 direction, out string baseAnimName, out bool flipH)
+	{
+		float x = direction.X;
+		float y = direction.Y;
+		flipH = false;
 
 		if (Mathf.Abs(x) > Mathf.Abs(y))
 		{
-			// Horizontal movement
-			if (x > 0)
-			{
-				baseAnimName = "walk_right";
-				flipH = false;
-			}
-			else
-			{
-				// Use walk_right but flip for left
-				baseAnimName = "walk_right";
+			baseAnimName = "walk_right";
+			if (x <= 0f)
 				flipH = true;
-			}
+		}
+		else
+			baseAnimName = y > 0f ? "walk_down" : "walk_up";
+
+		string genderSuffix = _gender == Gender.Male ? "male" : "female";
+		return $"{baseAnimName}_{genderSuffix}";
+	}
+
+	private void ApplyGenderAnimation(Vector2 direction, bool play)
+	{
+		if (direction.LengthSquared() < 0.0001f)
+			direction = _lastDirection;
+
+		string animName = ResolveAnimName(direction, out string baseAnimName, out bool flipH);
+		string animToUse = animName;
+
+		if (!_animSprite.SpriteFrames.HasAnimation(animName))
+		{
+			if (_animSprite.SpriteFrames.HasAnimation(baseAnimName))
+				animToUse = baseAnimName;
+			else
+				return;
+		}
+
+		if (play)
+		{
+			if (_animSprite.Animation != animToUse || !_animSprite.IsPlaying())
+				_animSprite.Play(animToUse);
 		}
 		else
 		{
-			// Vertical movement
-			baseAnimName = y > 0 ? "walk_down" : "walk_up";
-			flipH = false;
+			_animSprite.Animation = animToUse;
+			if (_animSprite.IsPlaying())
+				_animSprite.Stop();
+			_animSprite.SetFrameAndProgress(0, 0f);
 		}
 
-		// Try with gender suffix first
-		string animName = $"{baseAnimName}_{(_gender == Gender.Male ? "male" : "female")}";
-
-		// Only play animation if it's different from the last one (prevent flickering)
-		if (animName != _lastAnimationPlayed)
-		{
-			// Try gender-specific animation first
-			if (_animSprite.SpriteFrames.HasAnimation(animName))
-			{
-				_animSprite.Play(animName);
-			}
-			// Fall back to base animation name
-			else if (_animSprite.SpriteFrames.HasAnimation(baseAnimName))
-			{
-				_animSprite.Play(baseAnimName);
-			}
-			_lastAnimationPlayed = animName;
-		}
-
-		// Apply flip for left-facing animation (if using walk_right flipped)
-		if (baseAnimName == "walk_right")
-		{
-			_animSprite.FlipH = flipH;
-		}
-		else
-		{
-			_animSprite.FlipH = false;
-		}
+		_lastAnimationPlayed = animName;
+		_animSprite.FlipH = baseAnimName == "walk_right" && flipH;
 	}
 
 	private void RandomizeWanderDirection()
 	{
 		float angle = (float)(GD.Randf() * Mathf.Tau);
 		_wanderDirection = Vector2.FromAngle(angle);
-	}
-
-	private void OnScreenExited()
-	{
-		QueueFree();
-		GD.Print($"Deer despawned (off-screen, was in {_currentState} state).");
 	}
 
 	// Called by FoxMovement when fox is threatened
@@ -313,4 +422,64 @@ public partial class DeerMovement : CharacterBody2D
 
 	// Property to check if deer is chasing
 	public bool IsChasing => _currentState == DeerState.Chasing;
+
+	// Herd-related properties and methods
+	public int HerdId => _herdId;
+	public Gender DeerGender => _gender;
+	public bool IsHerdMale => _gender == Gender.Male && _herdId >= 0;
+	public bool IsHerdFemale => _gender == Gender.Female && _herdId >= 0;
+	public int HerdFemaleCount => _herdFemales.Count;
+
+	/// <summary>
+	/// Initialize this deer as a herd male
+	/// </summary>
+	public void ConfigureHerdMale(int herdId)
+	{
+		_herdId = herdId;
+		_gender = Gender.Male;
+		_herdMale = null;
+		_herdFemales.Clear();
+	}
+
+	public void ConfigureHerdFemale(int herdId, DeerMovement herdMale)
+	{
+		if (herdMale == null || herdMale.DeerGender != Gender.Male)
+			return;
+
+		_herdId = herdId;
+		_gender = Gender.Female;
+		_herdMale = herdMale;
+	}
+
+	public void InitializeAsHerdMale(int herdId) => ConfigureHerdMale(herdId);
+
+	public void InitializeAsHerdFemale(int herdId, DeerMovement herdMale) => ConfigureHerdFemale(herdId, herdMale);
+
+	/// <summary>
+	/// Add a female to this male's herd
+	/// </summary>
+	public void AddFemaleToHerd(DeerMovement female)
+	{
+		if (!_herdFemales.Contains(female))
+		{
+			_herdFemales.Add(female);
+		}
+	}
+
+	/// <summary>
+	/// Remove a female from this male's herd
+	/// </summary>
+	public void RemoveFemaleFromHerd(DeerMovement female)
+	{
+		_herdFemales.Remove(female);
+	}
+
+	/// <summary>
+	/// Get the herd male (for females to reference)
+	/// </summary>
+	public DeerMovement GetHerdMale() => _herdMale;
+
+	public Vector2 GetWanderDirection() => _wanderDirection;
+
+	public bool IsInHerd => _herdId >= 0;
 }
