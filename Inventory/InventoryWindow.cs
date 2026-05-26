@@ -291,7 +291,7 @@ public partial class InventoryWindow : Control
                 ConsumeCraftingIngredients();
                 RestoreDraggedItem(sourceInventory, index, item);
                 //ClearDraggedItem();
-                updateCraftingArea();
+                //updateCraftingArea();
             }
             return true;
         }
@@ -300,7 +300,7 @@ public partial class InventoryWindow : Control
         if (hoveredNode == null)
         {
             //trying to make placing dam count from inventory
-            if (item.ItemId == 2)
+            /*if (item.ItemId == 2)
             {
                 var game = GetTree().CurrentScene as Game;
                 for (int i = 0; i < item.ItemCount; i++)
@@ -309,14 +309,14 @@ public partial class InventoryWindow : Control
                     ClearDraggedItem();
                 }
                 updateInventoryData();
-                updateCraftingArea();
+                //updateCraftingArea();
                 return true;
-            }
+            }*/
             //trying to place item in the world
             if (TryPlaceItemInWorld(item))
             {
-                //ClearDraggedItem();
-                RestoreDraggedItem(sourceInventory, index, item);
+                ClearDraggedItem();
+                //RestoreDraggedItem(sourceInventory, index, item);
                 updateInventoryData();
                 updateCraftingArea();
                 return true;

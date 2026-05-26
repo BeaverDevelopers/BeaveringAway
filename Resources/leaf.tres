@@ -1,12 +1,12 @@
 [gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://dsxu7uv37oxho"]
 
 [ext_resource type="Texture2D" uid="uid://bq1hfhtcw605k" path="res://world/images/leaf.png" id="1_lr55a"]
-[ext_resource type="PackedScene" uid="uid://cj7khti6elsl0" path="res://scenes/leaf.tscn" id="2_e6gtd"]
+[ext_resource type="PackedScene" uid="uid://dweg84hk31t73" path="res://scenes/dropped_item.tscn" id="2_lr55a"]
 [ext_resource type="Script" uid="uid://c1o4r7hkryrjo" path="res://player/ItemData.cs" id="3_dxkik"]
 
 [resource]
 script = ExtResource("3_dxkik")
 ItemId = 4
 Icon = ExtResource("1_lr55a")
-ItemScene = ExtResource("2_e6gtd")
+ItemScene = ExtResource("2_lr55a")
 metadata/_custom_type_script = "uid://c1o4r7hkryrjo"
