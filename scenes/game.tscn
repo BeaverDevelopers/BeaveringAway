@@ -78,7 +78,7 @@ position = Vector2(2144, 402)
 position = Vector2(1356, 95)
 
 [node name="Player" parent="world" unique_id=2057284693 groups=["player"] instance=ExtResource("3_0tnpc")]
-position = Vector2(1112, 274)
+position = Vector2(1208, 233)
 
 [node name="AudioStreamPlayer2D" parent="world/Player" unique_id=1664354570 instance=ExtResource("2_kvpfn")]
 position = Vector2(-2, 0)
