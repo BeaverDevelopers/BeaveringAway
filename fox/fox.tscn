@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://desg8j4np3b1v" path="res://world/images/fox/fox-run-left.png" id="3_ls0ew"]
 [ext_resource type="Texture2D" uid="uid://b26v6u7niyfu4" path="res://world/images/fox/fox-run-right.png" id="4_rcdwv"]
 [ext_resource type="Texture2D" uid="uid://cu8o4kcddh61y" path="res://world/images/fox/fox-run-up.png" id="5_bcctc"]
+[ext_resource type="Texture2D" uid="uid://dp0qafu8lj6n0" path="res://world/shadow_player.png" id="6_ls0ew"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_e7v14"]
 atlas = ExtResource("2_8kbpf")
@@ -236,6 +237,7 @@ animations = [{
 size = Vector2(114, 78)
 
 [node name="fox" type="CharacterBody2D" unique_id=203894665]
+z_index = 1
 scale = Vector2(0.5, 0.5)
 script = ExtResource("1_y32pt")
 
@@ -247,6 +249,13 @@ scale = Vector2(2.263474, 2.263474)
 position = Vector2(-1.7671951, 0)
 sprite_frames = SubResource("SpriteFrames_7y2k7")
 animation = &"walk_up"
+
+[node name="shadow" type="Sprite2D" parent="Sprite2D" unique_id=1321827547]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-3.5343902, 14.137562)
+scale = Vector2(0.57680297, 0.57680297)
+texture = ExtResource("6_ls0ew")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2042222579]
 position = Vector2(1, -3)

@@ -8,8 +8,10 @@
 [ext_resource type="PackedScene" uid="uid://g2fcng8hjdv0" path="res://scenes/clouds.tscn" id="3_ir15t"]
 [ext_resource type="PackedScene" uid="uid://dwxdlrvfoand2" path="res://ui/UILegacy/GameHUD.tscn" id="5_iywne"]
 [ext_resource type="PackedScene" uid="uid://clxfw103c3bt1" path="res://scenes/tree.tscn" id="5_vtaks"]
+[ext_resource type="Texture2D" uid="uid://bpjt3txn42rka" path="res://world/shadow.png" id="6_trtic"]
 [ext_resource type="PackedScene" path="res://scenes/leafTree.tscn" id="8_dinhu"]
 [ext_resource type="PackedScene" path="res://scenes/bush.tscn" id="9_kvuet"]
+[ext_resource type="Texture2D" uid="uid://dp0qafu8lj6n0" path="res://world/shadow_player.png" id="10_ir15t"]
 [ext_resource type="Script" uid="uid://bellygsignteq" path="res://ui/Core/UIRoot.cs" id="12_kvuet"]
 [ext_resource type="Script" uid="uid://csffcwef02br8" path="res://ui/Core/LegacyInventoryAdapter.cs" id="13_trtic"]
 [ext_resource type="PackedScene" uid="uid://dxyrnkjl5io8n" path="res://Inventory/InventoryWindow.tscn" id="14_invwn"]
@@ -27,57 +29,177 @@ position = Vector2(2, 0)
 [node name="Clouds" parent="world" unique_id=514881015 instance=ExtResource("3_ir15t")]
 
 [node name="Tree" parent="world" unique_id=73844678 instance=ExtResource("5_vtaks")]
+z_index = 1
 position = Vector2(415, 277)
 
+[node name="shadow" type="Sprite2D" parent="world/Tree" unique_id=1803044763]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 40)
+texture = ExtResource("6_trtic")
+
 [node name="Tree2" parent="world" unique_id=862460062 instance=ExtResource("5_vtaks")]
+z_index = 1
 position = Vector2(663, 198)
 
+[node name="shadow" type="Sprite2D" parent="world/Tree2" unique_id=1323370104]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 40)
+texture = ExtResource("6_trtic")
+
 [node name="Tree3" parent="world" unique_id=396205008 instance=ExtResource("5_vtaks")]
+z_index = 1
 position = Vector2(501, 60)
 
+[node name="shadow" type="Sprite2D" parent="world/Tree3" unique_id=145125182]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 40)
+texture = ExtResource("6_trtic")
+
 [node name="Tree4" parent="world" unique_id=546086668 instance=ExtResource("5_vtaks")]
+z_index = 1
 position = Vector2(571, 583)
 
+[node name="shadow" type="Sprite2D" parent="world/Tree4" unique_id=1454749432]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 40)
+texture = ExtResource("6_trtic")
+
 [node name="Tree9" parent="world" unique_id=1643600123 instance=ExtResource("5_vtaks")]
+z_index = 1
 position = Vector2(1418, 1941)
 
+[node name="shadow" type="Sprite2D" parent="world/Tree9" unique_id=1701970018]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 40)
+texture = ExtResource("6_trtic")
+
 [node name="Tree5" parent="world" unique_id=1426982154 instance=ExtResource("5_vtaks")]
+z_index = 1
 position = Vector2(797, 1173)
 
+[node name="shadow" type="Sprite2D" parent="world/Tree5" unique_id=461760175]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 40)
+texture = ExtResource("6_trtic")
+
 [node name="Tree6" parent="world" unique_id=1318675715 instance=ExtResource("5_vtaks")]
+z_index = 1
 position = Vector2(1522, 1279)
 
+[node name="shadow" type="Sprite2D" parent="world/Tree6" unique_id=1349166857]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 40)
+texture = ExtResource("6_trtic")
+
 [node name="Tree7" parent="world" unique_id=426336408 instance=ExtResource("5_vtaks")]
+z_index = 1
 position = Vector2(774, 1581)
 
+[node name="shadow" type="Sprite2D" parent="world/Tree7" unique_id=1833094069]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 40)
+texture = ExtResource("6_trtic")
+
 [node name="Tree8" parent="world" unique_id=1085044415 instance=ExtResource("5_vtaks")]
+z_index = 1
 position = Vector2(1444, 314)
 
+[node name="shadow" type="Sprite2D" parent="world/Tree8" unique_id=1144684893]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 40)
+texture = ExtResource("6_trtic")
+
 [node name="Tree11" parent="world" unique_id=350774651 instance=ExtResource("5_vtaks")]
+z_index = 1
 position = Vector2(2097, 1404)
 
+[node name="shadow" type="Sprite2D" parent="world/Tree11" unique_id=295858605]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 40)
+texture = ExtResource("6_trtic")
+
 [node name="Tree12" parent="world" unique_id=1626884765 instance=ExtResource("5_vtaks")]
+z_index = 1
 position = Vector2(188, 1153)
 
+[node name="shadow" type="Sprite2D" parent="world/Tree12" unique_id=276621337]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 40)
+texture = ExtResource("6_trtic")
+
 [node name="Tree13" parent="world" unique_id=205939502 instance=ExtResource("5_vtaks")]
+z_index = 1
 position = Vector2(416, 739)
 
+[node name="shadow" type="Sprite2D" parent="world/Tree13" unique_id=1208875448]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 40)
+texture = ExtResource("6_trtic")
+
 [node name="Tree16" parent="world" unique_id=1600581194 instance=ExtResource("5_vtaks")]
+z_index = 1
 position = Vector2(190, 359)
 
+[node name="shadow" type="Sprite2D" parent="world/Tree16" unique_id=1253303342]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 40)
+texture = ExtResource("6_trtic")
+
 [node name="Tree18" parent="world" unique_id=366341232 instance=ExtResource("5_vtaks")]
+z_index = 1
 position = Vector2(1509, 576)
 
+[node name="shadow" type="Sprite2D" parent="world/Tree18" unique_id=819591277]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 40)
+texture = ExtResource("6_trtic")
+
 [node name="Tree20" parent="world" unique_id=1417666419 instance=ExtResource("5_vtaks")]
+z_index = 1
 position = Vector2(998, 504)
 
+[node name="shadow" type="Sprite2D" parent="world/Tree20" unique_id=93930565]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 40)
+texture = ExtResource("6_trtic")
+
 [node name="Tree15" parent="world" unique_id=2070216785 instance=ExtResource("5_vtaks")]
+z_index = 1
 position = Vector2(2144, 402)
 
+[node name="shadow" type="Sprite2D" parent="world/Tree15" unique_id=1710728641]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 40)
+texture = ExtResource("6_trtic")
+
 [node name="leafTree" parent="world" unique_id=1626220172 instance=ExtResource("8_dinhu")]
+z_index = 1
 position = Vector2(1356, 95)
 
+[node name="shadow" type="Sprite2D" parent="world/leafTree" unique_id=326268082]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-13, 64)
+texture = ExtResource("6_trtic")
+
 [node name="Player" parent="world" unique_id=2057284693 groups=["player"] instance=ExtResource("3_0tnpc")]
+z_index = 1
 position = Vector2(1208, 233)
 
 [node name="EnergyBar" type="CanvasLayer" parent="world/Player" unique_id=1263571094]
@@ -101,89 +223,292 @@ color = Color(0, 0.8862745, 0, 1)
 [node name="AudioStreamPlayer2D" parent="world/Player" unique_id=1664354570 instance=ExtResource("2_kvpfn")]
 position = Vector2(-2, 0)
 
+[node name="shadow" type="Sprite2D" parent="world/Player" unique_id=1356817342]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-1.0000005, 15.999999)
+scale = Vector2(0.739944, 0.739944)
+texture = ExtResource("10_ir15t")
+
 [node name="leafTree2" parent="world" unique_id=2090224491 instance=ExtResource("8_dinhu")]
+z_index = 1
 position = Vector2(1319, 1469)
 
+[node name="shadow" type="Sprite2D" parent="world/leafTree2" unique_id=1964763617]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-13, 64)
+texture = ExtResource("6_trtic")
+
 [node name="leafTree3" parent="world" unique_id=1825036777 instance=ExtResource("8_dinhu")]
+z_index = 1
 position = Vector2(1941, 172)
 
+[node name="shadow" type="Sprite2D" parent="world/leafTree3" unique_id=1731030373]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-13, 64)
+texture = ExtResource("6_trtic")
+
 [node name="leafTree4" parent="world" unique_id=162016880 instance=ExtResource("8_dinhu")]
+z_index = 1
 position = Vector2(932, 175)
 
+[node name="shadow" type="Sprite2D" parent="world/leafTree4" unique_id=667177955]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-13, 64)
+texture = ExtResource("6_trtic")
+
 [node name="leafTree5" parent="world" unique_id=208838915 instance=ExtResource("8_dinhu")]
+z_index = 1
 position = Vector2(96, 808)
 
+[node name="shadow" type="Sprite2D" parent="world/leafTree5" unique_id=901794021]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-13, 64)
+texture = ExtResource("6_trtic")
+
 [node name="leafTree11" parent="world" unique_id=405072360 instance=ExtResource("8_dinhu")]
+z_index = 1
 position = Vector2(1050, 1815)
 
+[node name="shadow" type="Sprite2D" parent="world/leafTree11" unique_id=1688712133]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-13, 64)
+texture = ExtResource("6_trtic")
+
 [node name="leafTree6" parent="world" unique_id=1148245034 instance=ExtResource("8_dinhu")]
+z_index = 1
 position = Vector2(1825, 447)
 
+[node name="shadow" type="Sprite2D" parent="world/leafTree6" unique_id=613133363]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-13, 64)
+texture = ExtResource("6_trtic")
+
 [node name="leafTree7" parent="world" unique_id=792703473 instance=ExtResource("8_dinhu")]
+z_index = 1
 position = Vector2(374, 1821)
 
+[node name="shadow" type="Sprite2D" parent="world/leafTree7" unique_id=1738308182]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-13, 64)
+texture = ExtResource("6_trtic")
+
 [node name="leafTree8" parent="world" unique_id=1694909685 instance=ExtResource("8_dinhu")]
+z_index = 1
 position = Vector2(881, 809)
 
+[node name="shadow" type="Sprite2D" parent="world/leafTree8" unique_id=2096246326]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-13, 64)
+texture = ExtResource("6_trtic")
+
 [node name="leafTree9" parent="world" unique_id=2034808006 instance=ExtResource("8_dinhu")]
+z_index = 1
 position = Vector2(496, 1302)
 
+[node name="shadow" type="Sprite2D" parent="world/leafTree9" unique_id=1909788772]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-13, 64)
+texture = ExtResource("6_trtic")
+
 [node name="leafTree10" parent="world" unique_id=81538291 instance=ExtResource("8_dinhu")]
+z_index = 1
 position = Vector2(1433, 886)
 
+[node name="shadow" type="Sprite2D" parent="world/leafTree10" unique_id=822443556]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-13, 64)
+texture = ExtResource("6_trtic")
+
 [node name="bush" parent="world" unique_id=183363945 instance=ExtResource("9_kvuet")]
+z_index = 1
 position = Vector2(1093, 736)
 
+[node name="shadow" type="Sprite2D" parent="world/bush" unique_id=1583564176]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-92, 33)
+texture = ExtResource("6_trtic")
+
 [node name="bush2" parent="world" unique_id=1719855527 instance=ExtResource("9_kvuet")]
+z_index = 1
 position = Vector2(1134, 664)
 
+[node name="shadow" type="Sprite2D" parent="world/bush2" unique_id=2091956158]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 4)
+texture = ExtResource("6_trtic")
+
 [node name="bush3" parent="world" unique_id=1904607579 instance=ExtResource("9_kvuet")]
+z_index = 1
 position = Vector2(1192, 607)
 
+[node name="shadow" type="Sprite2D" parent="world/bush3" unique_id=349401300]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 4)
+texture = ExtResource("6_trtic")
+
 [node name="bush4" parent="world" unique_id=2015772960 instance=ExtResource("9_kvuet")]
+z_index = 1
 position = Vector2(1006, 765)
 
+[node name="shadow" type="Sprite2D" parent="world/bush4" unique_id=1051414369]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 4)
+texture = ExtResource("6_trtic")
+
 [node name="bush5" parent="world" unique_id=746709261 instance=ExtResource("9_kvuet")]
+z_index = 1
 position = Vector2(1280, 683)
 
+[node name="shadow" type="Sprite2D" parent="world/bush5" unique_id=384711509]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 4)
+texture = ExtResource("6_trtic")
+
 [node name="bush6" parent="world" unique_id=595344975 instance=ExtResource("9_kvuet")]
+z_index = 1
 position = Vector2(1245, 765)
 
+[node name="shadow" type="Sprite2D" parent="world/bush6" unique_id=1875862896]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 4)
+texture = ExtResource("6_trtic")
+
 [node name="bush7" parent="world" unique_id=641711795 instance=ExtResource("9_kvuet")]
+z_index = 1
 position = Vector2(1254, 838)
 
+[node name="shadow" type="Sprite2D" parent="world/bush7" unique_id=235134242]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 4)
+texture = ExtResource("6_trtic")
+
 [node name="bush8" parent="world" unique_id=1174452818 instance=ExtResource("9_kvuet")]
+z_index = 1
 position = Vector2(1624, 1545)
 
+[node name="shadow" type="Sprite2D" parent="world/bush8" unique_id=1512822658]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 4)
+texture = ExtResource("6_trtic")
+
 [node name="bush9" parent="world" unique_id=1351232897 instance=ExtResource("9_kvuet")]
+z_index = 1
 position = Vector2(1550, 1557)
 
+[node name="shadow" type="Sprite2D" parent="world/bush9" unique_id=1157126469]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 4)
+texture = ExtResource("6_trtic")
+
 [node name="bush10" parent="world" unique_id=2035559860 instance=ExtResource("9_kvuet")]
+z_index = 1
 position = Vector2(1482, 1614)
 
+[node name="shadow" type="Sprite2D" parent="world/bush10" unique_id=735958303]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 4)
+texture = ExtResource("6_trtic")
+
 [node name="bush11" parent="world" unique_id=1122160839 instance=ExtResource("9_kvuet")]
+z_index = 1
 position = Vector2(1459, 1723)
 
+[node name="shadow" type="Sprite2D" parent="world/bush11" unique_id=303665106]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 4)
+texture = ExtResource("6_trtic")
+
 [node name="bush12" parent="world" unique_id=1536509510 instance=ExtResource("9_kvuet")]
+z_index = 1
 position = Vector2(218, 1665)
 
+[node name="shadow" type="Sprite2D" parent="world/bush12" unique_id=744321020]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 4)
+texture = ExtResource("6_trtic")
+
 [node name="bush13" parent="world" unique_id=1878629474 instance=ExtResource("9_kvuet")]
+z_index = 1
 position = Vector2(171, 1571)
 
+[node name="shadow" type="Sprite2D" parent="world/bush13" unique_id=501944214]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 4)
+texture = ExtResource("6_trtic")
+
 [node name="bush14" parent="world" unique_id=898857973 instance=ExtResource("9_kvuet")]
+z_index = 1
 position = Vector2(261, 1372)
 
+[node name="shadow" type="Sprite2D" parent="world/bush14" unique_id=615931402]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 4)
+texture = ExtResource("6_trtic")
+
 [node name="bush15" parent="world" unique_id=554339134 instance=ExtResource("9_kvuet")]
+z_index = 1
 position = Vector2(339, 1210)
 
+[node name="shadow" type="Sprite2D" parent="world/bush15" unique_id=963339544]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 4)
+texture = ExtResource("6_trtic")
+
 [node name="bush16" parent="world" unique_id=1011113427 instance=ExtResource("9_kvuet")]
+z_index = 1
 position = Vector2(2118, 1748)
 
+[node name="shadow" type="Sprite2D" parent="world/bush16" unique_id=1102052509]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 4)
+texture = ExtResource("6_trtic")
+
 [node name="bush17" parent="world" unique_id=2117373111 instance=ExtResource("9_kvuet")]
+z_index = 1
 position = Vector2(2005, 1871)
 
+[node name="shadow" type="Sprite2D" parent="world/bush17" unique_id=1680620586]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 4)
+texture = ExtResource("6_trtic")
+
 [node name="bush18" parent="world" unique_id=1352251731 instance=ExtResource("9_kvuet")]
+z_index = 1
 position = Vector2(2264, 1218)
+
+[node name="shadow" type="Sprite2D" parent="world/bush18" unique_id=307000505]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 4)
+texture = ExtResource("6_trtic")
 
 [node name="GameHUD" parent="." unique_id=43781371 instance=ExtResource("5_iywne")]
 

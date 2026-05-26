@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://bvnnwapupafc1" path="res://world/images/deer/male-deer-sidewalk.png" id="5_m30ex"]
 [ext_resource type="Texture2D" uid="uid://bvbqhtclgfx21" path="res://world/images/deer/female-deer-up.png" id="6_kncb1"]
 [ext_resource type="Texture2D" uid="uid://cuvchsclijd7b" path="res://world/images/deer/male-deer-up.png" id="7_vtlvn"]
+[ext_resource type="Texture2D" uid="uid://dp0qafu8lj6n0" path="res://world/shadow_player.png" id="8_c4sl8"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_kndnv"]
 atlas = ExtResource("2_68u04")
@@ -265,6 +266,7 @@ animations = [{
 radius = 23.086792
 
 [node name="Deer" type="CharacterBody2D" unique_id=1771496701]
+z_index = 1
 script = ExtResource("1_ddg5q")
 RestMinDuration = 2.0
 RestMaxDuration = 6.0
@@ -280,3 +282,9 @@ animation = &"walk_down_female"
 shape = SubResource("CircleShape2D_f1xvg")
 
 [node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="." unique_id=1347199156]
+
+[node name="shadow" type="Sprite2D" parent="." unique_id=327461546]
+modulate = Color(1, 1, 1, 0.47843137)
+z_index = -1
+position = Vector2(-5, 19)
+texture = ExtResource("8_c4sl8")
