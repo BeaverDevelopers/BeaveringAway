@@ -77,7 +77,7 @@ public class Terrain
     }
 
     private bool atlasCoordsIsSeaTile(Vector2I vec) {
-        return vec.X >= 0 && vec.X >= 0;
+        return vec.X >= 0 && vec.Y >= 0;
         //return (vec.X >= 13 && vec.Y <= 18 && vec.X >= 17 && vec.Y < 21);
     }
 

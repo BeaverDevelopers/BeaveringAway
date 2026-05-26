@@ -219,6 +219,8 @@ stream = ExtResource("6_18mvg")
 stream = ExtResource("7_dmmp0")
 
 [node name="DryTree" type="Sprite2D" parent="." unique_id=568214879]
+position = Vector2(-1, -97)
+scale = Vector2(2, 2)
 texture = ExtResource("10_r7adx")
 
 [node name="DryTreeSoundPlayer" type="AudioStreamPlayer2D" parent="." unique_id=102814397]

@@ -7,6 +7,7 @@ public partial class PlayerMove : CharacterBody2D
     public const float Speed = 210.0f;
     public Vector2 MoveTarget = Vector2.Zero;
     public bool InWater = false;
+    public bool DigOnArrival = false;
     public ItemData ItemToPlace = null;
 
     private double _playNextWaterJumpSound = 0;
@@ -17,6 +18,7 @@ public partial class PlayerMove : CharacterBody2D
     private AudioStreamPlayer2D _audioSwimmingPlayer;
     private AudioStreamPlayer2D _jumpInWaterPlayer;
     private AudioStreamPlayer2D _foxStealPlayer;
+    private AudioStreamPlayer2D _audioDigPlayer;
 
     public override void _Ready()
     {
@@ -25,10 +27,16 @@ public partial class PlayerMove : CharacterBody2D
         _audioRunPlayer = GetNode<AudioStreamPlayer2D>("AudioRunPlayer");
         _audioSwimmingPlayer = GetNode<AudioStreamPlayer2D>("AudioSwimmingPlayer");
         _jumpInWaterPlayer = GetNode<AudioStreamPlayer2D>("JumpInWaterPlayer");
+        _audioDigPlayer = GetNode<AudioStreamPlayer2D>("AudioDigPlayer");
 
         _foxStealPlayer = new AudioStreamPlayer2D { Name = "FoxStealPlayer" };
         _foxStealPlayer.Stream = GD.Load<AudioStream>("res://sounds/stealSound.wav");
         AddChild(_foxStealPlayer);
+    }
+
+    public void PlayDigSound()
+    {
+        _audioDigPlayer.Play();
     }
 
     public void PlayFoxStealFeedback(Texture2D itemIcon)
@@ -52,6 +60,7 @@ public partial class PlayerMove : CharacterBody2D
         {
             MoveTarget = Vector2.Zero;
             ItemToPlace = null;
+            DigOnArrival = false;
         }
         else if (MoveTarget != Vector2.Zero)
         {

@@ -45,19 +45,29 @@ public partial class Game : Node
     TileMapLayer terrainLayer;
 
 
-    Vector2I WATER_CENTER = new Vector2I(5, 17);
-    Vector2I WATER_DANGEROUS = new Vector2I(15, 19);
-    Vector2I DAM_TILE = new Vector2I(14, 12);
+    Vector2I WATER_CENTER = new Vector2I(0, 0);
+    Vector2I WATER_DANGEROUS = new Vector2I(0, 0);
+    Vector2I DAM_TILE = new Vector2I(0, 0);
 
-    const int WATER_SOURCE_ID = 2;
+    const int DAM_SOURCE_ID = 81;
+    const int WATER_SOURCE_ID = 80;
     static readonly Vector2I WATER_SOURCE_TILE = new(71, 0);
 
     public override void _Input(InputEvent @event)
     {
-        if (@event is InputEventMouseButton mouseButton && mouseButton.ButtonIndex == MouseButton.Left && mouseButton.Pressed)
+        if (@event is InputEventMouseButton mouseButton && mouseButton.Pressed)
         {
-            // alternatively: Player.MoveTarget = MainCamera.GetCanvasTransform().AffineInverse() * mouseButton.GlobalPosition;
-            Player.MoveTarget = MainCamera.GetGlobalMousePosition();
+            if (mouseButton.ButtonIndex == MouseButton.Left)
+            {
+                Player.MoveTarget = MainCamera.GetGlobalMousePosition();
+                Player.DigOnArrival = false;
+            }
+            else if (mouseButton.ButtonIndex == MouseButton.Right)
+            {
+                Player.MoveTarget = MainCamera.GetGlobalMousePosition();
+                Player.DigOnArrival = true;
+            }
+            
         }
     }
 
@@ -130,7 +140,7 @@ public partial class Game : Node
 
                 if (tile.ObstructionHeight > 0)
                 {
-                    obstructionLayer.SetCell(coords, 6, DAM_TILE);
+                    obstructionLayer.SetCell(coords, DAM_SOURCE_ID, DAM_TILE);
                 }
                 else
                 {
@@ -146,6 +156,14 @@ public partial class Game : Node
                 
             }
         }
+    }
+
+    public void DigOnPosition(Vector2 pos)
+    {
+        var mapPos = obstructionLayer.LocalToMap(pos);
+        simulator.Terrain.Tiles[mapPos.X, mapPos.Y].GroundHeight = Terrain.MUDFLOOR_TILE_HEIGHT;
+        simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight = 0;
+        terrainLayer.SetCell(mapPos, -1); // TODO: Fix this ugly hack.
     }
 
     public void RunDebugCommands()
@@ -179,11 +197,7 @@ public partial class Game : Node
 
         if (Input.IsPhysicalKeyPressed(Key.L))
         {
-            var mapPos = obstructionLayer.LocalToMap(MainCamera.GetGlobalMousePosition());
-            Debug.WriteLine(mapPos);
-            simulator.Terrain.Tiles[mapPos.X, mapPos.Y].GroundHeight = Terrain.MUDFLOOR_TILE_HEIGHT;
-            simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight = 0;
-            terrainLayer.SetCell(mapPos, -1); // TODO: Fix this ugly hack.
+            DigOnPosition(MainCamera.GetGlobalMousePosition());
         }
 
         if (Input.IsPhysicalKeyPressed(Key.N))
@@ -226,6 +240,15 @@ public partial class Game : Node
             Debug.WriteLine(mapPos);
             simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight = (byte)Math.Min(simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight + 1, 4);
             simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHealth = 100;
+            return 1;
+        }
+
+        if (item.ItemId == 5)
+        {
+            var sapplingScene = GD.Load<PackedScene>("res://scenes/tree.tscn");
+            var itemScene = sapplingScene.Instantiate<Node2D>();
+            WorldNode.AddChild(itemScene);
+            itemScene.GlobalPosition = Player.Position;
             return 1;
         }
 
@@ -330,6 +353,12 @@ public partial class Game : Node
                 inventory.PurgeEmptyStacks();
             }
             Player.ItemToPlace = null;
+        }
+        if (Player.DigOnArrival && Player.MoveTarget == Vector2.Zero)
+        {
+            Player.DigOnArrival = false;
+            Player.PlayDigSound();
+            DigOnPosition(Player.Position);
         }
 
         //Switching trees from dead to alive

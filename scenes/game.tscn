@@ -38,6 +38,9 @@ position = Vector2(501, 60)
 [node name="Tree4" parent="world" unique_id=546086668 instance=ExtResource("5_vtaks")]
 position = Vector2(571, 583)
 
+[node name="Tree9" parent="world" unique_id=1643600123 instance=ExtResource("5_vtaks")]
+position = Vector2(1418, 1941)
+
 [node name="Tree5" parent="world" unique_id=1426982154 instance=ExtResource("5_vtaks")]
 position = Vector2(797, 1173)
 
@@ -75,6 +78,7 @@ position = Vector2(2144, 402)
 position = Vector2(1356, 95)
 
 [node name="Player" parent="world" unique_id=2057284693 groups=["player"] instance=ExtResource("3_0tnpc")]
+position = Vector2(1112, 274)
 
 [node name="AudioStreamPlayer2D" parent="world/Player" unique_id=1664354570 instance=ExtResource("2_kvpfn")]
 position = Vector2(-2, 0)
@@ -90,6 +94,9 @@ position = Vector2(932, 175)
 
 [node name="leafTree5" parent="world" unique_id=208838915 instance=ExtResource("8_dinhu")]
 position = Vector2(96, 808)
+
+[node name="leafTree11" parent="world" unique_id=405072360 instance=ExtResource("8_dinhu")]
+position = Vector2(1050, 1815)
 
 [node name="leafTree6" parent="world" unique_id=1148245034 instance=ExtResource("8_dinhu")]
 position = Vector2(1825, 447)
@@ -107,25 +114,58 @@ position = Vector2(496, 1302)
 position = Vector2(1433, 886)
 
 [node name="bush" parent="world" unique_id=183363945 instance=ExtResource("9_kvuet")]
-position = Vector2(1104, 739)
+position = Vector2(1093, 736)
 
 [node name="bush2" parent="world" unique_id=1719855527 instance=ExtResource("9_kvuet")]
-position = Vector2(1138, 696)
+position = Vector2(1134, 664)
 
 [node name="bush3" parent="world" unique_id=1904607579 instance=ExtResource("9_kvuet")]
-position = Vector2(1175, 656)
+position = Vector2(1192, 607)
 
 [node name="bush4" parent="world" unique_id=2015772960 instance=ExtResource("9_kvuet")]
-position = Vector2(1051, 760)
+position = Vector2(1006, 765)
 
 [node name="bush5" parent="world" unique_id=746709261 instance=ExtResource("9_kvuet")]
 position = Vector2(1280, 683)
 
 [node name="bush6" parent="world" unique_id=595344975 instance=ExtResource("9_kvuet")]
-position = Vector2(1243, 733)
+position = Vector2(1245, 765)
 
 [node name="bush7" parent="world" unique_id=641711795 instance=ExtResource("9_kvuet")]
-position = Vector2(1215, 773)
+position = Vector2(1254, 838)
+
+[node name="bush8" parent="world" unique_id=1174452818 instance=ExtResource("9_kvuet")]
+position = Vector2(1624, 1545)
+
+[node name="bush9" parent="world" unique_id=1351232897 instance=ExtResource("9_kvuet")]
+position = Vector2(1550, 1557)
+
+[node name="bush10" parent="world" unique_id=2035559860 instance=ExtResource("9_kvuet")]
+position = Vector2(1482, 1614)
+
+[node name="bush11" parent="world" unique_id=1122160839 instance=ExtResource("9_kvuet")]
+position = Vector2(1459, 1723)
+
+[node name="bush12" parent="world" unique_id=1536509510 instance=ExtResource("9_kvuet")]
+position = Vector2(218, 1665)
+
+[node name="bush13" parent="world" unique_id=1878629474 instance=ExtResource("9_kvuet")]
+position = Vector2(171, 1571)
+
+[node name="bush14" parent="world" unique_id=898857973 instance=ExtResource("9_kvuet")]
+position = Vector2(261, 1372)
+
+[node name="bush15" parent="world" unique_id=554339134 instance=ExtResource("9_kvuet")]
+position = Vector2(339, 1210)
+
+[node name="bush16" parent="world" unique_id=1011113427 instance=ExtResource("9_kvuet")]
+position = Vector2(2118, 1748)
+
+[node name="bush17" parent="world" unique_id=2117373111 instance=ExtResource("9_kvuet")]
+position = Vector2(2005, 1871)
+
+[node name="bush18" parent="world" unique_id=1352251731 instance=ExtResource("9_kvuet")]
+position = Vector2(2264, 1218)
 
 [node name="GameHUD" parent="." unique_id=43781371 instance=ExtResource("5_iywne")]
 
