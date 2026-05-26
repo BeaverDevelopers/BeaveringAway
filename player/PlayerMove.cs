@@ -10,6 +10,16 @@ public partial class PlayerMove : CharacterBody2D
     public bool DigOnArrival = false;
     public ItemData ItemToPlace = null;
 
+    // Energy system
+    [Export] public float MaxEnergy = 100f;
+    [Export] public float DigEnergyCost = 10f;
+    [Export] public float EnergyRecoveryRate = 15f; // Per second
+    [Export] public float RecoveryDelayAfterAction = 1f; // Delay before recovery starts
+
+    private float _currentEnergy = 100f;
+    private double _lastEnergyConsumptionTime = 0;
+    private bool _isRecovering = false;
+
     private double _playNextWaterJumpSound = 0;
     private Vector2 _lastDirection = Vector2.Down;
 
@@ -19,6 +29,7 @@ public partial class PlayerMove : CharacterBody2D
     private AudioStreamPlayer2D _jumpInWaterPlayer;
     private AudioStreamPlayer2D _foxStealPlayer;
     private AudioStreamPlayer2D _audioDigPlayer;
+    private ColorRect _energyBarFill;
 
     public override void _Ready()
     {
@@ -32,6 +43,23 @@ public partial class PlayerMove : CharacterBody2D
         _foxStealPlayer = new AudioStreamPlayer2D { Name = "FoxStealPlayer" };
         _foxStealPlayer.Stream = GD.Load<AudioStream>("res://sounds/stealSound.wav");
         AddChild(_foxStealPlayer);
+
+        // Initialize energy
+        _currentEnergy = MaxEnergy;
+        _lastEnergyConsumptionTime = Time.GetTicksMsec() / 1000.0;
+
+        // Try to get the energy bar from the scene
+        // Look for a node named "EnergyBar" that should be a ColorRect
+        try
+        {
+            _energyBarFill = GetNode<ColorRect>("EnergyBar/EnergyBarFill");
+            Debug.WriteLine("Energy bar found in scene!");
+        }
+        catch (InvalidOperationException)
+        {
+            Debug.WriteLine("WARNING: Energy bar not found in scene. Please add it manually.");
+            Debug.WriteLine("You need to add a CanvasLayer -> Control -> ColorRect structure.");
+        }
     }
 
     public void PlayDigSound()
@@ -132,6 +160,16 @@ public partial class PlayerMove : CharacterBody2D
 
         UpdateAnimation(direction);
 
+        // Update energy recovery
+        UpdateEnergyRecovery(delta);
+
+        // Update energy bar UI if it exists
+        if (_energyBarFill != null)
+        {
+            float energyPercent = _currentEnergy / MaxEnergy;
+            _energyBarFill.Size = new Vector2(80 * energyPercent, 12);
+        }
+
         Velocity = direction * (Speed * (float)(InWater ? 1.5 : 1.0));
         MoveAndSlide();
     }
@@ -169,4 +207,36 @@ public partial class PlayerMove : CharacterBody2D
             _animSprite.Play(isIdle ? "idle_left" : "walk_left");
         }
     }
+
+    // Energy system methods
+    public void ConsumeEnergy(float amount)
+    {
+        _currentEnergy = Mathf.Max(0, _currentEnergy - amount);
+        _lastEnergyConsumptionTime = Time.GetTicksMsec() / 1000.0;
+        _isRecovering = false;
+        Debug.WriteLine($"Energy consumed: {amount}, Current: {_currentEnergy}/{MaxEnergy}");
+    }
+
+    private void UpdateEnergyRecovery(double delta)
+    {
+        double timeSinceLastConsumption = (Time.GetTicksMsec() / 1000.0) - _lastEnergyConsumptionTime;
+
+        // Check if we should start recovering (1 second delay)
+        if (timeSinceLastConsumption >= RecoveryDelayAfterAction && _currentEnergy < MaxEnergy)
+        {
+            _isRecovering = true;
+        }
+
+        // Apply recovery if active
+        if (_isRecovering && _currentEnergy < MaxEnergy)
+        {
+            _currentEnergy = Mathf.Min(MaxEnergy, _currentEnergy + EnergyRecoveryRate * (float)delta);
+        }
+    }
+
+    public float GetCurrentEnergy() => _currentEnergy;
+    public float GetMaxEnergy() => MaxEnergy;
+    public float GetEnergyPercentage() => _currentEnergy / MaxEnergy;
+
+    public bool HasEnoughEnergy(float amount) => _currentEnergy >= amount;
 }

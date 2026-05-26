@@ -8,8 +8,8 @@
 [ext_resource type="PackedScene" uid="uid://g2fcng8hjdv0" path="res://scenes/clouds.tscn" id="3_ir15t"]
 [ext_resource type="PackedScene" uid="uid://dwxdlrvfoand2" path="res://ui/UILegacy/GameHUD.tscn" id="5_iywne"]
 [ext_resource type="PackedScene" uid="uid://clxfw103c3bt1" path="res://scenes/tree.tscn" id="5_vtaks"]
-[ext_resource type="PackedScene" uid="uid://cqpub2mcdvkd0" path="res://scenes/leafTree.tscn" id="8_dinhu"]
-[ext_resource type="PackedScene" uid="uid://exxrk8on8c5q" path="res://scenes/bush.tscn" id="9_kvuet"]
+[ext_resource type="PackedScene" path="res://scenes/leafTree.tscn" id="8_dinhu"]
+[ext_resource type="PackedScene" path="res://scenes/bush.tscn" id="9_kvuet"]
 [ext_resource type="Script" uid="uid://bellygsignteq" path="res://ui/Core/UIRoot.cs" id="12_kvuet"]
 [ext_resource type="Script" uid="uid://csffcwef02br8" path="res://ui/Core/LegacyInventoryAdapter.cs" id="13_trtic"]
 [ext_resource type="PackedScene" uid="uid://dxyrnkjl5io8n" path="res://Inventory/InventoryWindow.tscn" id="14_invwn"]
@@ -79,6 +79,24 @@ position = Vector2(1356, 95)
 
 [node name="Player" parent="world" unique_id=2057284693 groups=["player"] instance=ExtResource("3_0tnpc")]
 position = Vector2(1208, 233)
+
+[node name="EnergyBar" type="CanvasLayer" parent="world/Player" unique_id=1263571094]
+layer = 10
+
+[node name="EnergyBarBg" type="ColorRect" parent="world/Player/EnergyBar" unique_id=1320324806]
+offset_left = 603.0
+offset_top = 874.0
+offset_right = 683.0
+offset_bottom = 886.0
+localize_numeral_system = false
+color = Color(0.19607843, 0.19607843, 0.19607843, 1)
+
+[node name="EnergyBarFill" type="ColorRect" parent="world/Player/EnergyBar" unique_id=945015604]
+offset_left = 603.0
+offset_top = 874.0
+offset_right = 683.0
+offset_bottom = 886.0
+color = Color(0, 0.8862745, 0, 1)
 
 [node name="AudioStreamPlayer2D" parent="world/Player" unique_id=1664354570 instance=ExtResource("2_kvpfn")]
 position = Vector2(-2, 0)

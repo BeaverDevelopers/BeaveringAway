@@ -164,6 +164,12 @@ public partial class Game : Node
         simulator.Terrain.Tiles[mapPos.X, mapPos.Y].GroundHeight = Terrain.MUDFLOOR_TILE_HEIGHT;
         simulator.Terrain.Tiles[mapPos.X, mapPos.Y].ObstructionHeight = 0;
         terrainLayer.SetCell(mapPos, -1); // TODO: Fix this ugly hack.
+
+        // Consume player energy for digging
+        if (Player != null)
+        {
+            Player.ConsumeEnergy(Player.DigEnergyCost);
+        }
     }
 
     public void RunDebugCommands()
@@ -357,8 +363,17 @@ public partial class Game : Node
         if (Player.DigOnArrival && Player.MoveTarget == Vector2.Zero)
         {
             Player.DigOnArrival = false;
-            Player.PlayDigSound();
-            DigOnPosition(Player.Position);
+
+            // Check if player has enough energy to dig
+            if (Player.HasEnoughEnergy(Player.DigEnergyCost))
+            {
+                Player.PlayDigSound();
+                DigOnPosition(Player.Position);
+            }
+            else
+            {
+                Debug.WriteLine("Not enough energy to dig!");
+            }
         }
 
         //Switching trees from dead to alive
