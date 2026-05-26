@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://dwxdlrvfoand2" path="res://ui/UILegacy/GameHUD.tscn" id="5_iywne"]
 [ext_resource type="PackedScene" uid="uid://clxfw103c3bt1" path="res://scenes/tree.tscn" id="5_vtaks"]
 [ext_resource type="PackedScene" uid="uid://cqpub2mcdvkd0" path="res://scenes/leafTree.tscn" id="8_dinhu"]
+[ext_resource type="PackedScene" uid="uid://exxrk8on8c5q" path="res://scenes/bush.tscn" id="9_kvuet"]
 [ext_resource type="Script" uid="uid://bellygsignteq" path="res://ui/Core/UIRoot.cs" id="12_kvuet"]
 [ext_resource type="Script" uid="uid://csffcwef02br8" path="res://ui/Core/LegacyInventoryAdapter.cs" id="13_trtic"]
 [ext_resource type="PackedScene" uid="uid://dxyrnkjl5io8n" path="res://Inventory/InventoryWindow.tscn" id="14_invwn"]
@@ -85,7 +86,7 @@ position = Vector2(1319, 1469)
 position = Vector2(1941, 172)
 
 [node name="leafTree4" parent="world" unique_id=162016880 instance=ExtResource("8_dinhu")]
-position = Vector2(876, 158)
+position = Vector2(932, 175)
 
 [node name="leafTree5" parent="world" unique_id=208838915 instance=ExtResource("8_dinhu")]
 position = Vector2(96, 808)
@@ -97,13 +98,34 @@ position = Vector2(1825, 447)
 position = Vector2(374, 1821)
 
 [node name="leafTree8" parent="world" unique_id=1694909685 instance=ExtResource("8_dinhu")]
-position = Vector2(822, 809)
+position = Vector2(881, 809)
 
 [node name="leafTree9" parent="world" unique_id=2034808006 instance=ExtResource("8_dinhu")]
 position = Vector2(496, 1302)
 
 [node name="leafTree10" parent="world" unique_id=81538291 instance=ExtResource("8_dinhu")]
 position = Vector2(1433, 886)
+
+[node name="bush" parent="world" unique_id=183363945 instance=ExtResource("9_kvuet")]
+position = Vector2(1104, 739)
+
+[node name="bush2" parent="world" unique_id=1719855527 instance=ExtResource("9_kvuet")]
+position = Vector2(1138, 696)
+
+[node name="bush3" parent="world" unique_id=1904607579 instance=ExtResource("9_kvuet")]
+position = Vector2(1175, 656)
+
+[node name="bush4" parent="world" unique_id=2015772960 instance=ExtResource("9_kvuet")]
+position = Vector2(1051, 760)
+
+[node name="bush5" parent="world" unique_id=746709261 instance=ExtResource("9_kvuet")]
+position = Vector2(1280, 683)
+
+[node name="bush6" parent="world" unique_id=595344975 instance=ExtResource("9_kvuet")]
+position = Vector2(1243, 733)
+
+[node name="bush7" parent="world" unique_id=641711795 instance=ExtResource("9_kvuet")]
+position = Vector2(1215, 773)
 
 [node name="GameHUD" parent="." unique_id=43781371 instance=ExtResource("5_iywne")]
 

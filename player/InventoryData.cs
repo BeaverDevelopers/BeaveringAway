@@ -1,5 +1,13 @@
 using Godot;
 using System.Collections.Generic;
+using System.IO;
+
+public readonly struct StolenItemResult
+{
+	public int ItemId { get; init; }
+	public Texture2D Icon { get; init; }
+	public string DisplayName { get; init; }
+}
 
 public partial class InventoryData : Node
 {
@@ -16,6 +24,97 @@ public partial class InventoryData : Node
 	};
 
 	public static bool HasLogs() => HasItem(LogItemId);
+
+	public static bool HasAnyItems()
+	{
+		var activeInventory = GetActiveInventory();
+		if (activeInventory != null)
+		{
+			activeInventory.PurgeEmptyStacks();
+			foreach (var item in activeInventory.itemData)
+			{
+				if (item != null && item.ItemCount > 0)
+					return true;
+			}
+
+			return false;
+		}
+
+		return ItemId >= 0 && Count > 0;
+	}
+
+	public static bool TryStealRandomItem(out StolenItemResult stolen)
+	{
+		stolen = default;
+		var activeInventory = GetActiveInventory();
+		if (activeInventory != null)
+			return TryStealRandomFromInventory(activeInventory, out stolen);
+
+		if (ItemId < 0 || Count <= 0)
+			return false;
+
+		int stolenId = ItemId;
+		var legacyItem = LoadItemTemplate(stolenId);
+		var icon = legacyItem?.Icon;
+		var displayName = GetItemDisplayName(legacyItem);
+		if (!AddItem(stolenId, -1))
+			return false;
+
+		stolen = new StolenItemResult
+		{
+			ItemId = stolenId,
+			Icon = icon,
+			DisplayName = displayName
+		};
+		return true;
+	}
+
+	static bool TryStealRandomFromInventory(InventoryDataNew inventory, out StolenItemResult stolen)
+	{
+		stolen = default;
+		inventory.PurgeEmptyStacks();
+
+		var occupiedSlots = new List<int>();
+		for (int i = 0; i < inventory.itemData.Count; i++)
+		{
+			var item = inventory.itemData[i];
+			if (item != null && item.ItemCount > 0)
+				occupiedSlots.Add(i);
+		}
+
+		if (occupiedSlots.Count == 0)
+			return false;
+
+		var rng = new RandomNumberGenerator();
+		int slotIndex = occupiedSlots[rng.RandiRange(0, occupiedSlots.Count - 1)];
+		var stack = inventory.itemData[slotIndex];
+		int itemId = stack.ItemId;
+		var icon = stack.Icon;
+		var displayName = GetItemDisplayName(stack);
+
+		if (!inventory.TryRemoveItem(itemId, 1))
+			return false;
+
+		SyncLegacyCount(inventory, itemId);
+		stolen = new StolenItemResult
+		{
+			ItemId = itemId,
+			Icon = icon,
+			DisplayName = displayName
+		};
+		return true;
+	}
+
+	static string GetItemDisplayName(ItemData item)
+	{
+		if (item == null)
+			return "an item";
+
+		if (!string.IsNullOrEmpty(item.ResourcePath))
+			return Path.GetFileNameWithoutExtension(item.ResourcePath);
+
+		return $"item {item.ItemId}";
+	}
 
 	public static bool HasItem(int id)
 	{

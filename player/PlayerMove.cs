@@ -16,6 +16,7 @@ public partial class PlayerMove : CharacterBody2D
     private AudioStreamPlayer2D _audioRunPlayer;
     private AudioStreamPlayer2D _audioSwimmingPlayer;
     private AudioStreamPlayer2D _jumpInWaterPlayer;
+    private AudioStreamPlayer2D _foxStealPlayer;
 
     public override void _Ready()
     {
@@ -24,6 +25,23 @@ public partial class PlayerMove : CharacterBody2D
         _audioRunPlayer = GetNode<AudioStreamPlayer2D>("AudioRunPlayer");
         _audioSwimmingPlayer = GetNode<AudioStreamPlayer2D>("AudioSwimmingPlayer");
         _jumpInWaterPlayer = GetNode<AudioStreamPlayer2D>("JumpInWaterPlayer");
+
+        _foxStealPlayer = new AudioStreamPlayer2D { Name = "FoxStealPlayer" };
+        _foxStealPlayer.Stream = GD.Load<AudioStream>("res://sounds/stealSound.wav");
+        AddChild(_foxStealPlayer);
+    }
+
+    public void PlayFoxStealFeedback(Texture2D itemIcon)
+    {
+        if (_foxStealPlayer?.Stream != null)
+            _foxStealPlayer.Play();
+
+        if (itemIcon == null)
+            return;
+
+        var floater = new StolenItemFloater();
+        AddChild(floater);
+        floater.Play(itemIcon);
     }
 
     public override void _PhysicsProcess(double delta)
