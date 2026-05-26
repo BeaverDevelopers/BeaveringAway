@@ -48,7 +48,10 @@ func set_alive(alive: bool):
 			leaf_tree_sprite.show()
 	else:
 		dry_tree.show()
-		tree_anim.hide()
+		if leaf_tree:
+			leaf_tree_sprite.hide()
+		else:
+			tree_anim.hide()
 		
 	return is_alive
 	
